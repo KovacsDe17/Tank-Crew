@@ -5,13 +5,13 @@ using UnityEngine;
 /// </summary>
 public class HatchHandler : MonoBehaviour
 {
-    public float minDegree, maxDegree;
+    public float closedDegree, openedDegree;
     public Turret turret;
 
     private RectTransform _hatchRectTransform;
     private Vector2 _touchPosition;
     private bool _isOpen;
-    private UIAmmo _loadedAmmo;
+    private Ammo _loadedAmmo;
 
     void Awake()
     {
@@ -24,7 +24,7 @@ public class HatchHandler : MonoBehaviour
     private void Initialize()
     {
         _hatchRectTransform = GetComponent<RectTransform>();
-        _hatchRectTransform.eulerAngles = new Vector3(0f, 0f, minDegree);
+        _hatchRectTransform.eulerAngles = new Vector3(0f, 0f, closedDegree);
 
         _isOpen = false;
         _loadedAmmo = null;
@@ -39,16 +39,22 @@ public class HatchHandler : MonoBehaviour
 
         float rotation = GetRotationToPosition(_hatchRectTransform.position, _touchPosition);
 
-        if (rotation < minDegree || rotation > maxDegree)
+        if (rotation < closedDegree || rotation > openedDegree)
         {
             return;
         }
 
-        if (CloseToRotation(rotation, minDegree))
-            rotation = minDegree;
+        if (CloseToRotation(rotation, closedDegree))
+        {
+            rotation = closedDegree;
+            _isOpen = false;
+        }
 
-        if (CloseToRotation(rotation, maxDegree))
-            rotation = maxDegree;
+        if (CloseToRotation(rotation, openedDegree))
+        {
+            rotation = openedDegree;
+            _isOpen = true;
+        }
 
         //Set the rotation to make the crank "look at" the touch position
         _hatchRectTransform.rotation = Quaternion.Euler(
@@ -102,8 +108,11 @@ public class HatchHandler : MonoBehaviour
     /// Set the ammunition to be loaded
     /// </summary>
     /// <param name="ammo">The UI element which represents the ammunition</param>
-    public void LoadAmmo(UIAmmo ammo)
+    public void LoadAmmo(Ammo ammo)
     {
+        if (_loadedAmmo != null)
+            return;
+
         _loadedAmmo = ammo;
     }
 
@@ -120,10 +129,10 @@ public class HatchHandler : MonoBehaviour
     /// </summary>
     public void Shoot()
     {
-        if (_loadedAmmo == null || !_loadedAmmo.CanBeShot() || IsOpen())
+        if (_loadedAmmo == null || !_loadedAmmo.IsReady() || IsOpen())
             return;
 
-        _loadedAmmo.RemoveHead();
+        _loadedAmmo.Fire();
         turret.Fire();
     }
 }

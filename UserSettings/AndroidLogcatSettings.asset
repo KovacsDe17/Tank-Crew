@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "RF8N3022LRN",
         "name": "com.DefaultCompany.com.unity.template.mobile2D",
-        "processId": 6115,
+        "processId": 29322,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -11,43 +11,55 @@
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 8741,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 9001,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 15111,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 21378,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 4403,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 17827,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 6115,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.sec.android.app.launcher",
+            "processId": 3706,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 18918,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 23059,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 7319,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 5774,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 29322,
             "exited": false
         }
     ],

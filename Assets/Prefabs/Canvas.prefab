@@ -2987,6 +2987,14 @@ PrefabInstance:
       propertyPath: hatch
       value: 
       objectReference: {fileID: 697488056}
+    - target: {fileID: 7160006782612849075, guid: cf040932a101cd047b5d48e1345bf867, type: 3}
+      propertyPath: point
+      value: 
+      objectReference: {fileID: 1113013967}
+    - target: {fileID: 7160006782612849075, guid: cf040932a101cd047b5d48e1345bf867, type: 3}
+      propertyPath: chamberRectTransform
+      value: 
+      objectReference: {fileID: 922202267}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: cf040932a101cd047b5d48e1345bf867, type: 3}
