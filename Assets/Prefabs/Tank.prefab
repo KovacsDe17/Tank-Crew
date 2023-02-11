@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1801ab45668fc3419bca1d41d501623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crank: {fileID: 0}
+  crankRectTransform: {fileID: 0}
 --- !u!114 &1516588362116447090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b93854fbf262a479d6cddb312c57fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectile: {fileID: 9072874611502885149, guid: 777660dbd5317e04188b0e184a98a956, type: 3}
+  projectilePrefab: {fileID: 0}
   barrelEnd: {fileID: 6880250829569026821}
 --- !u!1 &6880250829377659925
 GameObject:
@@ -273,6 +273,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6880250830715747421}
   - component: {fileID: 6880250830715747420}
+  - component: {fileID: 6920490049806218275}
   - component: {fileID: 6880250829082833596}
   - component: {fileID: 6880250829082833599}
   m_Layer: 0
@@ -351,6 +352,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6920490049806218275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6880250830715747423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1036e197926f38488fd2f05d792c1e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6880250829082833596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,8 +376,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 937004c0b2f0a2441aca3df5ab187b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leverLeft: {fileID: 0}
-  leverRight: {fileID: 0}
+  leverLeftScrollbar: {fileID: 0}
+  leverRightScrollbar: {fileID: 0}
   moveSpeed: 7
   turnSpeed: 6
 --- !u!50 &6880250829082833599
