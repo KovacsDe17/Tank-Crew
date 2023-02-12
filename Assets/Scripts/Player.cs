@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     private void Initialize()
     {
-        _type = PlayerType.Gunner;
+        _type = PlayerType.Driver;
     }
 
     public PlayerType GetType()

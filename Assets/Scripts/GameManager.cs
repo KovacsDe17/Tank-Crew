@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
-/// This class is to manage the games main mechanincs
+/// This class manages the games main mechanincs
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -17,13 +14,14 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _driverCanvas, _gunnerCanvas;
 
-    private void Awake()
+    private void Start()
     {
         Initialize();
     }
 
     private void Initialize()
     {
+        //while(_player == null)
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         SetChangeButtonText(_player.GetType());
