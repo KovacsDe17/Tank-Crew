@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "RF8N3022LRN",
         "name": "com.DefaultCompany.com.unity.template.mobile2D",
-        "processId": 25630,
+        "processId": 22436,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -78,6 +78,12 @@
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 25630,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 22436,
             "exited": false
         }
     ],

@@ -8,11 +8,16 @@ public class MachineGun : MonoBehaviour
     private Transform _barrelEnd;
     [SerializeField]
     private LineRenderer _shootTrail;
+    [SerializeField]
+    private float _damage = 5f;
 
     private bool isShooting = false;
 
     private float _shootDistance = 5f;
     private float _roundPerMinute = 600f;
+
+    [SerializeField]
+    private LayerMask _layerMask;
 
     public void OnHoldTrigger()
     {
@@ -26,11 +31,15 @@ public class MachineGun : MonoBehaviour
 
         SetRandomAngle(-10f, 10f);
 
-        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up, shootDistance);
+        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up, shootDistance, _layerMask);
 
         if (hit)
         {
-            Debug.Log("We shot " + hit.transform.name);
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(_damage);
+            }
 
             DrawShootTrail(hit.point);
         } else

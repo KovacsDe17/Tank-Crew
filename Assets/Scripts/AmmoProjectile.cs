@@ -5,8 +5,16 @@ using UnityEngine;
 /// </summary>
 public class AmmoProjectile : MonoBehaviour
 {
-    public float moveSpeed = 1f;
-        
+    [SerializeField]
+    private float _moveSpeed = 25f;
+    [SerializeField]
+    private float _damage = 75f;
+    [SerializeField]
+    private GameObject _explosionEffect;
+
+    [SerializeField]
+    private LayerMask _layerMask;
+
     private float _timeAlive = 5f;
     private Rigidbody2D _rigidBody;
 
@@ -26,6 +34,23 @@ public class AmmoProjectile : MonoBehaviour
     private void Initialize()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
-        _rigidBody.AddForce(transform.up * moveSpeed, ForceMode2D.Impulse);
+        _rigidBody.AddForce(transform.up * _moveSpeed, ForceMode2D.Impulse);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if ((_layerMask.value & 1 << collision.gameObject.layer) != 0)
+        {
+            Enemy enemy = collision.collider.GetComponent<Enemy>();
+            if(enemy != null)
+            {
+                enemy.TakeDamage(_damage);
+            }
+
+            //Instantiate(_explosionEffect, transform.position, Quaternion.identity);
+
+            Destroy(gameObject);
+        }
+
     }
 }
