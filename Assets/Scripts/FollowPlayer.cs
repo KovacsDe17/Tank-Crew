@@ -1,35 +1,37 @@
 using UnityEngine;
 
 /// <summary>
-/// Camera to follow the players position. Catch up time can be set for the camera movement, where 0 means instant snapping
+/// Makes the object to follow the players position. Catch up time can be set for the camera movement, where 0 means instant snapping
 /// </summary>
 public class FollowPlayer : MonoBehaviour
 {
-    public float catchUpTime; //TODO: use this for the smooth camera movement
+    [SerializeField]
+    private float _catchUpSpeed = 10f; //TODO: use this for the smooth camera movement
+    [SerializeField]
+    private Vector3 _offset;
 
     private Transform _playerTransform;
 
     private void Awake()
     {
+        Initialize();
+    }
+
+    private void FixedUpdate()
+    {
+        Follow();
+    }
+
+    private void Initialize()
+    {
         _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        transform.position = GetPlayerPosition();
     }
 
-    private void Update()
+    private void Follow() 
     {
-        transform.position = GetPlayerPosition();
-    }
+        Vector3 desiredPosition = _playerTransform.position + _offset;
+        Vector3 smoothPosition = Vector3.Lerp(transform.position, desiredPosition, _catchUpSpeed * Time.deltaTime);
 
-    /// <summary>
-    /// Get the players position in world coordinates
-    /// </summary>
-    /// <returns>The Vector3 world coordinates of the player, with the z value of the camera</returns>
-    private Vector3 GetPlayerPosition()
-    {
-        return new Vector3(
-            _playerTransform.position.x,
-            _playerTransform.position.y,
-            transform.position.z
-            );
+        transform.position = smoothPosition;
     }
 }
