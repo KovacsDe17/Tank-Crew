@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
         _type = PlayerType.Driver;
     }
 
-    public PlayerType GetType()
+    public PlayerType GetPlayerType()
     {
         return _type;
     }

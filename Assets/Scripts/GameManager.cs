@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
         //while(_player == null)
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
-        SetChangeButtonText(_player.GetType());
-        SetCanvasType(_player.GetType());
+        SetChangeButtonText(_player.GetPlayerType());
+        SetCanvasType(_player.GetPlayerType());
     }
 
     public void PauseTime()
@@ -42,8 +42,8 @@ public class GameManager : MonoBehaviour
     {
         _player.ChangeType();
 
-        SetChangeButtonText(_player.GetType());
-        SetCanvasType(_player.GetType());
+        SetChangeButtonText(_player.GetPlayerType());
+        SetCanvasType(_player.GetPlayerType());
     }
 
     private void SetChangeButtonText(Player.PlayerType type)
