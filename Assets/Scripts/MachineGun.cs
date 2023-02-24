@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The front machine gun of the players tank
+/// </summary>
 public class MachineGun : MonoBehaviour
 {
     [SerializeField]
@@ -19,12 +22,21 @@ public class MachineGun : MonoBehaviour
     [SerializeField]
     private LayerMask _layerMask;
 
+    /// <summary>
+    /// Action when the trigger is being held
+    /// </summary>
     public void OnHoldTrigger()
     {
         if(!isShooting)
             StartCoroutine(Shoot(_shootDistance, _roundPerMinute));
     }
 
+    /// <summary>
+    /// Shoot continously to a specified distance using a given RPM
+    /// </summary>
+    /// <param name="shootDistance">The maximum distance the shots can travel</param>
+    /// <param name="roundPerMinute">How many rounds to shoot per minute</param>
+    /// <returns></returns>
     private IEnumerator Shoot(float shootDistance, float roundPerMinute)
     {
         isShooting = true;
@@ -58,12 +70,21 @@ public class MachineGun : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Generate an angle value based on the given minimum and maximum values (both inclusive)
+    /// </summary>
+    /// <param name="from">The minimum angle</param>
+    /// <param name="to">The maximum angle</param>
     private void SetRandomAngle(float from, float to)
     {
         float randomAngle = Random.Range(from, to);
         _barrelEnd.localEulerAngles = new Vector3 (0, 0, randomAngle);
     }
 
+    /// <summary>
+    /// Draw the shooting effect from the end of the barrel to the desired position
+    /// </summary>
+    /// <param name="shootPosition">The end position of the effect</param>
     private void DrawShootTrail(Vector2 shootPosition)
     {
         _shootTrail.gameObject.SetActive(true);
@@ -71,11 +92,18 @@ public class MachineGun : MonoBehaviour
         _shootTrail.SetPosition(1, shootPosition);
     }
 
+    /// <summary>
+    /// Disable the shooting effect
+    /// </summary>
     private void DisableShootTrail()
     {
         _shootTrail.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Rotate the attached object to look at a direction based on a percentile value
+    /// </summary>
+    /// <param name="percentage">0 means minimum, 1 means maximum</param>
     public void LookAt(float percentage)
     {
         float from = -60;

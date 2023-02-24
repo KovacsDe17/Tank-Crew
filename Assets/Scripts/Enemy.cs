@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// The casual enemies the player can destroy
+/// </summary>
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
@@ -19,6 +22,9 @@ public class Enemy : MonoBehaviour
         Initialize();
     }
 
+    /// <summary>
+    /// Setup health and health bar
+    /// </summary>
     private void Initialize()
     {
         _currentHealth = _maxHealth;
@@ -27,6 +33,10 @@ public class Enemy : MonoBehaviour
         UpdateHealthBar();
     }
 
+    /// <summary>
+    /// Decrease the health by the given amount
+    /// </summary>
+    /// <param name="damage">The amount of points to subtract</param>
     public void TakeDamage(float damage)
     {
         if (damage > _currentHealth)
@@ -41,6 +51,9 @@ public class Enemy : MonoBehaviour
         UpdateHealthBar();
     }
 
+    /// <summary>
+    /// Change the enemy to its destroyed version, while maintaining the physics attributes
+    /// </summary>
     private void Die()
     {
         _currentHealth = 0;
@@ -56,6 +69,9 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Change the health bar according to the current health status
+    /// </summary>
     private void UpdateHealthBar()
     {
         _healthBar.value = _currentHealth / _maxHealth;

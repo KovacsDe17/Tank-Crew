@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Class for the player representation
+/// The player representation
 /// </summary>
 public class Player : MonoBehaviour
 {
@@ -25,6 +25,9 @@ public class Player : MonoBehaviour
         return _type;
     }
 
+    /// <summary>
+    /// Change the playerType between driver and gunner
+    /// </summary>
     public void ChangeType()
     {
         if (_type == PlayerType.Driver)

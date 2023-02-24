@@ -37,6 +37,10 @@ public class AmmoProjectile : MonoBehaviour
         _rigidBody.AddForce(transform.up * _moveSpeed, ForceMode2D.Impulse);
     }
 
+    /// <summary>
+    /// Action when the projectile hit something
+    /// </summary>
+    /// <param name="collision">The object which the projectile collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if ((_layerMask.value & 1 << collision.gameObject.layer) != 0)
