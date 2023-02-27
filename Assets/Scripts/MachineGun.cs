@@ -14,7 +14,8 @@ public class MachineGun : MonoBehaviour
     [SerializeField]
     private float _damage = 5f;
 
-    private bool isShooting = false;
+    private bool _isShooting = false;
+    private bool _isHoldingTrigger = false;
 
     private float _shootDistance = 5f;
     private float _roundPerMinute = 600f;
@@ -22,13 +23,26 @@ public class MachineGun : MonoBehaviour
     [SerializeField]
     private LayerMask _layerMask;
 
+    public void FixedUpdate()
+    {
+        if(_isHoldingTrigger && !_isShooting)
+            StartCoroutine(Shoot(_shootDistance, _roundPerMinute)); 
+    }
+
     /// <summary>
     /// Action when the trigger is being held
     /// </summary>
     public void OnHoldTrigger()
     {
-        if(!isShooting)
-            StartCoroutine(Shoot(_shootDistance, _roundPerMinute));
+        _isHoldingTrigger = true;
+    }
+
+    /// <summary>
+    /// Action when the trigger is released
+    /// </summary>
+    public void OnReleaseTrigger()
+    {
+        _isHoldingTrigger = false;
     }
 
     /// <summary>
@@ -39,13 +53,13 @@ public class MachineGun : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Shoot(float shootDistance, float roundPerMinute)
     {
-        isShooting = true;
+        _isShooting = true;
 
-        SetRandomAngle(-10f, 10f);
+        SetRandomAngle(-5f, 5f);
 
-        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up, shootDistance, _layerMask);
+        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up.normalized, shootDistance, _layerMask);
 
-        if (hit)
+        if (hit.collider != null)
         {
             Enemy enemy = hit.collider.GetComponent<Enemy>();
             if (enemy != null)
@@ -56,22 +70,25 @@ public class MachineGun : MonoBehaviour
             DrawShootTrail(hit.point);
         } else
         {
-            Vector2 shootPosition = _barrelEnd.up * shootDistance;
+            Vector2 shootDirection = _barrelEnd.up.normalized * shootDistance;
+            Vector2 shootPosition = (Vector2) _barrelEnd.position + shootDirection;
             DrawShootTrail(shootPosition);
         }
 
-        float timeToWait = 60 / roundPerMinute;
-        yield return new WaitForSeconds(timeToWait);
+        float flashTime = 0.1f;
+        yield return new WaitForSeconds(flashTime);
 
         DisableShootTrail();
 
-        isShooting = false;
+        float waitBetweenRounds = 60 / roundPerMinute;
+        yield return new WaitForSeconds(waitBetweenRounds);
+        _isShooting = false;
 
         yield return null;
     }
 
     /// <summary>
-    /// Generate an angle value based on the given minimum and maximum values (both inclusive)
+    /// Generate an angle value between the given minimum and maximum values (both inclusive)
     /// </summary>
     /// <param name="from">The minimum angle</param>
     /// <param name="to">The maximum angle</param>
