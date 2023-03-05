@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 /// <summary>
 /// This class is responsible for the UI representation of an ammunition
@@ -7,8 +9,23 @@ public class Ammo : MonoBehaviour
 {
     public enum AmmoType { Practise, Regular, ArmorPiercing, HighExplosive, Incendiary }
 
-    public GameObject head;
-    public AmmoType type;
+    private Dictionary<AmmoType, Color> typeColors = new Dictionary<AmmoType, Color> 
+    {
+        {AmmoType.Practise, Color.green},
+        {AmmoType.Regular, Color.blue},
+        {AmmoType.ArmorPiercing, Color.grey},
+        {AmmoType.HighExplosive, Color.black},
+        {AmmoType.Incendiary, Color.red},
+    };
+
+    [SerializeField]
+    private GameObject _head;
+    [SerializeField]
+    private AmmoType _type;
+    [SerializeField]
+    private Image _stripe;
+
+    private AmmoHolder _ammoHolder;
 
     private bool _isReady, _isShot;
 
@@ -22,8 +39,26 @@ public class Ammo : MonoBehaviour
     /// </summary>
     private void Initalize()
     {
+        UpdateStripeColor();
+
         _isReady = true;
         _isShot = false;
+
+        _ammoHolder = GameObject.FindGameObjectWithTag("AmmoHolder").GetComponent<AmmoHolder>();
+    }
+
+    private void UpdateStripeColor()
+    {
+        _stripe.color = typeColors.GetValueOrDefault(_type);
+    }
+
+    public void SetType(AmmoType type)
+    {
+        _type = type;
+
+        UpdateStripeColor();
+
+        //TODO: UpdateFunctionality();
     }
 
     /// <summary>
@@ -34,9 +69,10 @@ public class Ammo : MonoBehaviour
         if (!_isReady || _isShot)
             return;
 
-        head.SetActive(false);
+        _head.SetActive(false);
         _isReady = false;
         _isShot = true;
+        _ammoHolder.RemoveFromHolder(this);
     }
 
 
@@ -62,4 +98,8 @@ public class Ammo : MonoBehaviour
     {
         return _isShot;
     }
+
+
+
+
 }

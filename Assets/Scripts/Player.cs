@@ -17,7 +17,8 @@ public class Player : MonoBehaviour
 
     private void Initialize()
     {
-        _type = PlayerType.Driver;
+        //Not in use
+        //_type = PlayerType.Driver;
     }
 
     public PlayerType GetPlayerType()

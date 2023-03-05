@@ -33,6 +33,7 @@ public class AmmoMovement : MonoBehaviour
 
     private bool _isSnappedToPlace;
 
+
     #endregion
 
     #region Initalization
@@ -250,7 +251,7 @@ public class AmmoMovement : MonoBehaviour
 
         } else
         {
-            RotateBetweenAngles(90, 270, ammoHolderThreshold, chamberThreshold);
+            RotateBetweenAngles(0, 180, ammoHolderThreshold, chamberThreshold);
         }
     }
 
@@ -270,15 +271,15 @@ public class AmmoMovement : MonoBehaviour
         }
     }
 
-    private void Flip(bool toChamber)
+    private void Flip(bool toHolder)
     {
-        if (toChamber && NormalizeAngle(_rigidbody.rotation) == 90)
+        if (toHolder && NormalizeAngle(_rigidbody.rotation) == 0)
             return;
 
-        if (!toChamber && NormalizeAngle(_rigidbody.rotation) == 270)
+        if (!toHolder && NormalizeAngle(_rigidbody.rotation) == 180)
             return;
 
-        string clip = toChamber ? "FlipToChamber" : "FlipToOrigin";
+        string clip = toHolder ? "FlipToHolder" : "FlipToChamber";
 
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName(clip))
             return;
