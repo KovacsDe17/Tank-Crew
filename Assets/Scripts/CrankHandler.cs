@@ -5,6 +5,10 @@ using UnityEngine;
 /// </summary>
 public class CrankHandler : MonoBehaviour
 {
+    [SerializeField]
+    [Header("Number of predefined steps")]
+    private int _subdivision = 24;
+
     private RectTransform _rectTransform;
     private Vector2 _touchPosition;
 
@@ -54,7 +58,7 @@ public class CrankHandler : MonoBehaviour
         _rectTransform.rotation = Quaternion.Euler(
             _rectTransform.eulerAngles.x,
             _rectTransform.eulerAngles.y,
-            rotation
+            SnapAngleToSteps(rotation)
             );
     }
 
@@ -78,5 +82,20 @@ public class CrankHandler : MonoBehaviour
         }
 
         return closest.position;
+    }
+
+    /// <summary>
+    /// Snaps the given rotation to calculated steps depending on predefined number of subdivisions (this can be set from the Editor)
+    /// </summary>
+    /// <param name="rotation">The rotation to snap to a calculated step</param>
+    /// <returns>The snapped rotation angle</returns>
+    private float SnapAngleToSteps(float rotation)
+    {
+        float step = 360 / _subdivision;
+        float remainder = rotation % step;
+
+        float angle = rotation - remainder;
+
+        return angle;
     }
 }
