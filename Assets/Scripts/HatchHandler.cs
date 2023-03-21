@@ -8,6 +8,8 @@ public class HatchHandler : MonoBehaviour
     public float closedDegree, openedDegree;
     public Turret turret;
 
+    private Animator _animator;
+
     private RectTransform _hatchRectTransform;
     private Vector2 _touchPosition;
     private bool _isOpen;
@@ -23,6 +25,8 @@ public class HatchHandler : MonoBehaviour
     /// </summary>
     private void Initialize()
     {
+        _animator = transform.parent.gameObject.GetComponent<Animator>();
+
         _hatchRectTransform = GetComponent<RectTransform>();
         _hatchRectTransform.eulerAngles = new Vector3(0f, 0f, closedDegree);
 
@@ -98,7 +102,7 @@ public class HatchHandler : MonoBehaviour
     /// <summary>
     /// Check if the hatch is open
     /// </summary>
-    /// <returns>Whether the hatch is open</returns>
+    /// <returns>True when the hatch is open</returns>
     public bool IsOpen()
     {
         return _isOpen;
@@ -127,12 +131,27 @@ public class HatchHandler : MonoBehaviour
     /// <summary>
     /// If it is possible to shoot, remove the head of the ammunitions UI representation and fire the turret
     /// </summary>
-    public void Shoot()
+    public void InitiateShooting()
     {
         if (_loadedAmmo == null || !_loadedAmmo.IsReady() || IsOpen())
             return;
 
+        string clip = "Shoot";
+        _animator.Play("Base Layer." + clip, 0, 0);
         _loadedAmmo.Fire();
         turret.Fire();
+    }
+
+    public void SwitchOpenState()
+    {
+        string clip = _isOpen ? "CloseHatch" : "OpenHatch";
+
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName(clip))
+            return;
+
+        _animator.Play("Base Layer." + clip, 0, 0);
+
+        _isOpen = !_isOpen;
+        Debug.Log("Hatch has been switched to _isOpen=" + _isOpen);
     }
 }
