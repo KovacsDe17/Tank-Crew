@@ -29,7 +29,8 @@ public class AmmoMovement : MonoBehaviour
     private HatchHandler _hatchHandler;
 
     private float _defaultDistanceFromChamber, _gapBetween, _layingOut;
-    private Vector2 _placeBeforeChamber, _placeInChamber;
+    
+    private Vector2 _placeInChamber;
 
     private bool _isSnappedToPlace;
 
@@ -61,10 +62,12 @@ public class AmmoMovement : MonoBehaviour
 
         _gapBetween = 250f;
         float xbeforeChamber = _chamber.position.x - _rectTransform.rect.height - _gapBetween;
-        _placeBeforeChamber = new Vector2(xbeforeChamber, _chamber.position.y);
+        //_placeBeforeChamber = new Vector2(xbeforeChamber, _chamber.position.y);
 
         _layingOut = 50f;
-        _placeInChamber = new Vector2(_chamber.position.x - _layingOut, _chamber.position.y);
+        //_placeInChamber = new Vector2(_chamber.position.x - _layingOut, _chamber.position.y);
+        _placeInChamber = GameObject.FindGameObjectWithTag("PlaceInChamber").transform.position;
+
 
         _isSnappedToPlace = false;
     }

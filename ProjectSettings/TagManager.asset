@@ -45,3 +45,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: AmmoShell
+    uniqueID: 2457352907
+    locked: 0
+  - name: AmmoTypeStripe
+    uniqueID: 3225494129
+    locked: 0
+  - name: AmmoHead
+    uniqueID: 657693483
+    locked: 0

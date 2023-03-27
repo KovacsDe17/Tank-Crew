@@ -152,6 +152,5 @@ public class HatchHandler : MonoBehaviour
         _animator.Play("Base Layer." + clip, 0, 0);
 
         _isOpen = !_isOpen;
-        Debug.Log("Hatch has been switched to _isOpen=" + _isOpen);
     }
 }
