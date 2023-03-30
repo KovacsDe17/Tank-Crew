@@ -20,6 +20,8 @@ public class TileMapGeneration : MonoBehaviour
 
     public void GenerateMap()
     {
+        tilemap.ClearAllTiles();
+
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);
         Texture2D texture = perlinNoise.GenerateTexture();
 
