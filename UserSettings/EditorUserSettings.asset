@@ -6,10 +6,13 @@ EditorUserSettings:
   serializedVersion: 4
   m_ConfigSettings:
     RecentlyUsedSceneGuid-0:
-      value: 5a050d5e070d510b0f0d5d2115700f4415151a7d7c297762757b4d6ab0e2306e
+      value: 5057575e04560d5f5c5d097413740c4414161e2f2a7e7365792d4b35e6e2373c
       flags: 0
     RecentlyUsedSceneGuid-1:
-      value: 5057575e04560d5f5c5d097413740c4414161e2f2a7e7365792d4b35e6e2373c
+      value: 5a050d5e070d510b0f0d5d2115700f4415151a7d7c297762757b4d6ab0e2306e
+      flags: 0
+    RecentlyUsedSceneGuid-2:
+      value: 0252030755020c0b54080a2715220644134f4f297a7d73362c711e60b6e1353b
       flags: 0
     UnityRemoteCompression:
       value: 337f73
