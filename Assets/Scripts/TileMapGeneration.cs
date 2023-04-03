@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class TileMapGeneration : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class TileMapGeneration : MonoBehaviour
     [SerializeField] private List<TileSetup> tiles;
 
     private List<float> _normalizedAbsoluteThresholds = new List<float>();
+    [SerializeField] private List<Slider> valuesFromSlider = new List<Slider>();
 
     public void GenerateMap()
     {
@@ -34,8 +36,8 @@ public class TileMapGeneration : MonoBehaviour
                 Vector2Int position = new Vector2Int(x, y);
                 float color = texture.GetPixel(x, y).r;
 
-                tilemap.SetTile((Vector3Int)position, GetTileByColorUniform(color));
-                //tilemap.SetTile((Vector3Int)position, GetTileByColorThresholds(color));
+                //tilemap.SetTile((Vector3Int)position, GetTileByColorUniform(color));
+                tilemap.SetTile((Vector3Int)position, GetTileByColorThresholds(color));
             }
         }
     }
@@ -73,21 +75,24 @@ public class TileMapGeneration : MonoBehaviour
             _normalizedAbsoluteThresholds.Add(absoluteSum);
             absoluteSum += threshold;
         }
+
+        _normalizedAbsoluteThresholds.Reverse();
     }
 
     private Tile GetTileByColorThresholds(float color)
     {
-        int level = 0;
+        int level = tiles.Count - 1;
+
         foreach(float threshold in _normalizedAbsoluteThresholds)
         {
-            if (color > threshold)
-                level++;
-            else
+            if (color >= threshold)
                 break;
+            else
+                level--;
         }
 
-        if (level >= tiles.Count)
-            level = tiles.Count-1;
+        if (level < 0)
+            level = 0;
 
         return tiles[level].tile;
     }
@@ -127,6 +132,19 @@ public class TileMapGeneration : MonoBehaviour
         _offset.y = num;
     }
 
+    public void SaveTilesThreshold()
+    {
+        Debug.Log("Saved thresholds:\n\n");
+
+        int index = 0;
+        foreach(TileSetup setup in tiles)
+        {
+            setup.SetThreshold(valuesFromSlider[index].value);
+            Debug.Log("Setup threshold for " + setup.tile.name + " is " + setup.threshold.ToString("0.000"));
+            index++;
+        }
+
+    }
 
     public List<TileSetup> GetTileSetups()
     {

@@ -1,25 +1,13 @@
 {
     "m_SelectedDeviceId": "RF8N3022LRN",
     "m_SelectedPackage": {
-        "deviceId": "RF8N3022LRN",
-        "name": "com.DefaultCompany.com.unity.template.mobile2D",
-        "processId": 18455,
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.vanced.android.youtube",
-            "processId": 5902,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 27983,
-            "exited": true
-        },
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
@@ -36,12 +24,18 @@
             "deviceId": "RF8N3022LRN",
             "name": "com.opera.browser",
             "processId": 9465,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 18455,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.sec.android.app.launcher",
+            "processId": 2832,
             "exited": false
         }
     ],
