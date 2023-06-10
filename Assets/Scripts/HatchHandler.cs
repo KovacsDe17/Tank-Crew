@@ -118,6 +118,8 @@ public class HatchHandler : MonoBehaviour
             return;
 
         _loadedAmmo = ammo;
+
+        SwitchEasyGrab(false);
     }
 
     /// <summary>
@@ -125,6 +127,7 @@ public class HatchHandler : MonoBehaviour
     /// </summary>
     public void UnloadAmmo()
     {
+        SwitchEasyGrab(true);
         _loadedAmmo = null;
     }
 
@@ -151,6 +154,17 @@ public class HatchHandler : MonoBehaviour
 
         _animator.Play("Base Layer." + clip, 0, 0);
 
+        SwitchEasyGrab(_isOpen);
+
         _isOpen = !_isOpen;
+    }
+
+    private void SwitchEasyGrab(bool activate)
+    {
+        if (_loadedAmmo == null)
+            return;
+
+        GameObject easyGrab = _loadedAmmo.transform.Find("EasyDrag").gameObject;
+        easyGrab.SetActive(!activate);
     }
 }
