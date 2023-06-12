@@ -33,6 +33,7 @@ public class AmmoMovement : MonoBehaviour
     private Vector2 _placeInChamber;
 
     private bool _isSnappedToPlace;
+    private bool _firstMove;
 
 
     #endregion
@@ -56,9 +57,7 @@ public class AmmoMovement : MonoBehaviour
         _hatchHandler = FindObjectOfType<HatchHandler>();
 
         _chamber = GameObject.FindGameObjectWithTag("Chamber").GetComponent<RectTransform>();
-        _defaultDistanceFromChamber = Vector2.Distance(_chamber.position, _rectTransform.position);
         SavePrevious();
-        SaveOrigin();
 
         _gapBetween = 250f;
         float xbeforeChamber = _chamber.position.x - _rectTransform.rect.height - _gapBetween;
@@ -70,6 +69,7 @@ public class AmmoMovement : MonoBehaviour
 
 
         _isSnappedToPlace = false;
+        _firstMove = true;
     }
 
     #endregion
@@ -81,6 +81,11 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     public void OnBeginDrag()
     {
+        if (_firstMove) {
+            SaveOrigin();
+            _firstMove = false;
+        }
+
         SavePrevious();
     }
 
@@ -89,7 +94,7 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     public void OnDrag()
     {
-        if (!_isSnappedToPlace)
+        if (!_isSnappedToPlace && !_ammo.IsShot())
         {
             if (CloseTo(_placeInChamber, 100f))
             {
@@ -102,6 +107,7 @@ public class AmmoMovement : MonoBehaviour
             if (CloseTo(_origin.position, 100f))
             {
                 SnapToPlace(_origin.position);
+                _hatchHandler.UnloadAmmo();
                 SavePrevious();
                 return;
             }
@@ -110,9 +116,9 @@ public class AmmoMovement : MonoBehaviour
             ReleaseFromPlace();
         }
 
-        SetAmmoPosition(GetClosestTouchPosition());
-        //RotateBasedOnDistance(0.85f, 0.7f);     //TODO: Flip 180 instead based on thresholds?        
-        FlipBasedOnDistance(0.85f);
+        //TODO: Stop ammo from going further when hatch is closed
+        SetAmmoPosition(GetClosestTouchPosition());      
+        FlipBasedOnDistance(0.8f);
     }
 
     /// <summary>
@@ -126,7 +132,7 @@ public class AmmoMovement : MonoBehaviour
             return;
         }
 
-        SetToPrevious();
+        SnapToPrevious();
     }
 
     #endregion
@@ -143,7 +149,7 @@ public class AmmoMovement : MonoBehaviour
     /// <summary>
     /// Set position and rotation to the last saved ones
     /// </summary>
-    private void SetToPrevious()
+    private void SnapToPrevious()
     {
         ReleaseFromPlace();
 
@@ -161,6 +167,7 @@ public class AmmoMovement : MonoBehaviour
     private void SaveOrigin()
     {
         _origin = new Placement(_rectTransform.position, _rectTransform.rotation);
+        _defaultDistanceFromChamber = Vector2.Distance(_chamber.position, _rectTransform.position);
     }
 
 
@@ -232,37 +239,14 @@ public class AmmoMovement : MonoBehaviour
         return Mathf.Atan2(directionY, directionX) * Mathf.Rad2Deg - 90;
     }
 
-    /// <summary>
-    /// Rotate the ammunition based on its distance from the chamber
-    /// </summary>
-    /// <param name="ammoHolderThreshold">Threshold of the distance to look at the ammoHolder (in percentage)</param>
-    /// <param name="chamberThreshold">Threshold of the distance to look at the chamber (in percentage)</param>
-    private void RotateBasedOnDistance(float ammoHolderThreshold, float chamberThreshold)
-    {
-        float distance = Vector2.Distance(_chamber.position, _rectTransform.position);
-        float distancePercentage = distance / _defaultDistanceFromChamber;
-
-        if (distancePercentage > ammoHolderThreshold)
-        {
-            Vector2 previousPosition = new Vector2(_previous.position.x - _rectTransform.rect.height, _previous.position.y);
-            //TurnToPosition(previousPosition);
-            RotateToAngle(90);
-
-        } else if(distancePercentage < chamberThreshold)
-        {
-            RotateToAngle(270);
-
-        } else
-        {
-            RotateBetweenAngles(0, 180, ammoHolderThreshold, chamberThreshold);
-        }
-    }
 
     //TODO: based on direction ((lastPos - currentPos) > threshold)
     private void FlipBasedOnDistance(float threshold)
     {
         float distance = Vector2.Distance(_chamber.position, _rectTransform.position);
         float distancePercentage = distance / _defaultDistanceFromChamber;
+
+        Debug.Log(threshold + " / " + distancePercentage);
 
         if (distancePercentage <= threshold)
         {
@@ -363,4 +347,10 @@ public class AmmoMovement : MonoBehaviour
     }
 
     #endregion
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(_origin.position, 25f);
+    }
 }
