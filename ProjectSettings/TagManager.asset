@@ -8,6 +8,7 @@ TagManager:
   - Chamber
   - AmmoHolder
   - Crank
+  - PlaceInChamber
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Enemy
   - Ammo
   - Hatch
-  - 
+  - Collectible
   - 
   - 
   - 

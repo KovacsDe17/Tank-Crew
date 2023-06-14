@@ -2,37 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class AmmoHolder : MonoBehaviour
 {
     [SerializeField]
     private RectTransform _ammoPrefab;
 
-    [System.Serializable]
-    internal class AmmoPlace
-    {
-        [SerializeField]
-        internal RectTransform rectTransform;
-        [SerializeField]
-        internal Ammo.AmmoType type;
-
-        internal Ammo ammoHeld;
-
-        internal void GenerateAmmo(RectTransform ammoPrefab, Transform parent)
-        {
-            RectTransform ammoRect = Instantiate(ammoPrefab, parent);
-
-            ammoRect.anchorMin = rectTransform.anchorMin;
-            ammoRect.anchorMax = rectTransform.anchorMax;
-            ammoRect.anchoredPosition = rectTransform.anchoredPosition;
-
-            ammoHeld = ammoRect.GetComponent<Ammo>();
-            ammoHeld.SetType(type);
-        }
-    }
+    [SerializeField]
+    private static Dictionary<Ammo.AmmoType, int> _ammoCount;
 
     [SerializeField]
     private List<AmmoPlace> _places;
+
+    [SerializeField]
+    private Animator _animator;
 
     public void Awake()
     {
@@ -41,6 +25,25 @@ public class AmmoHolder : MonoBehaviour
 
     private void Initialize()
     {
+        _ammoCount = new Dictionary<Ammo.AmmoType, int>()
+        {
+            { Ammo.AmmoType.Practise, 2},
+            { Ammo.AmmoType.Incendiary, 4}
+        };
+
+        UpdateHolders();
+    }
+
+    public void AddAmmo(Ammo.AmmoType ammoType, int count)
+    {
+        if (_ammoCount.ContainsKey(ammoType))
+        {
+            _ammoCount[ammoType] = _ammoCount[ammoType] + count;
+        } else
+        {
+            _ammoCount.Add(ammoType, count);
+        }
+
         UpdateHolders();
     }
 
@@ -63,6 +66,44 @@ public class AmmoHolder : MonoBehaviour
             {
                 holder.ammoHeld = null;
                 holder.GenerateAmmo(_ammoPrefab, gameObject.transform);
+            }
+        }
+    }
+
+    [System.Serializable]
+    internal class AmmoPlace
+    {
+        [SerializeField]
+        internal RectTransform rectTransform;
+        [SerializeField]
+        internal Ammo.AmmoType type;
+
+        internal Ammo ammoHeld;
+
+        internal bool canShow;
+
+        [SerializeField]
+        internal TextMeshProUGUI countInfoText;
+
+        internal void GenerateAmmo(RectTransform ammoPrefab, Transform parent)
+        {
+            if (_ammoCount.GetValueOrDefault(type, 0) <= 0)
+                return;
+
+            RectTransform ammoRect = Instantiate(ammoPrefab, parent);
+
+            ammoRect.anchorMin = rectTransform.anchorMin;
+            ammoRect.anchorMax = rectTransform.anchorMax;
+            ammoRect.anchoredPosition = rectTransform.anchoredPosition;
+
+            ammoHeld = ammoRect.GetComponent<Ammo>();
+            ammoHeld.SetType(type);
+
+            if (_ammoCount.ContainsKey(type))
+            {
+                _ammoCount[type] = _ammoCount[type] - 1;
+
+                countInfoText.SetText(_ammoCount[type].ToString());
             }
         }
     }

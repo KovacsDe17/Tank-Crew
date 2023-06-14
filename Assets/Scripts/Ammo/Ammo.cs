@@ -99,7 +99,10 @@ public class Ammo : MonoBehaviour
         return _isShot;
     }
 
-
+    public AmmoHolder GetAmmoHolder()
+    {
+        return _ammoHolder;
+    }
 
 
 }

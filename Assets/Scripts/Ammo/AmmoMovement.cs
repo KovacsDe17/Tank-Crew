@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -21,7 +22,7 @@ public class AmmoMovement : MonoBehaviour
     #endregion
 
     #region Variables
-    private RectTransform _rectTransform, _chamber;
+    private RectTransform _rectTransform, _chamberRectTransform, _hatchRectTransform;
     private Rigidbody2D _rigidbody;
     private Placement _origin, _previous;
     private Ammo _ammo;
@@ -34,7 +35,7 @@ public class AmmoMovement : MonoBehaviour
 
     private bool _isSnappedToPlace;
     private bool _firstMove;
-
+    private bool _canMoveToHolder;
 
     #endregion
 
@@ -55,12 +56,13 @@ public class AmmoMovement : MonoBehaviour
         _ammo = GetComponent<Ammo>();
         _animator = GetComponent<Animator>();
         _hatchHandler = FindObjectOfType<HatchHandler>();
+        _hatchRectTransform = _hatchHandler.GetComponent<RectTransform>();
 
-        _chamber = GameObject.FindGameObjectWithTag("Chamber").GetComponent<RectTransform>();
+        _chamberRectTransform = GameObject.FindGameObjectWithTag("Chamber").GetComponent<RectTransform>();
         SavePrevious();
 
         _gapBetween = 250f;
-        float xbeforeChamber = _chamber.position.x - _rectTransform.rect.height - _gapBetween;
+        float xbeforeChamber = _chamberRectTransform.position.x - _rectTransform.rect.height - _gapBetween;
         //_placeBeforeChamber = new Vector2(xbeforeChamber, _chamber.position.y);
 
         _layingOut = 50f;
@@ -70,6 +72,7 @@ public class AmmoMovement : MonoBehaviour
 
         _isSnappedToPlace = false;
         _firstMove = true;
+        _canMoveToHolder = true;
     }
 
     #endregion
@@ -86,6 +89,9 @@ public class AmmoMovement : MonoBehaviour
             _firstMove = false;
         }
 
+        if (_ammo.IsShot())
+            _canMoveToHolder = false;
+
         SavePrevious();
     }
 
@@ -94,6 +100,12 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     public void OnDrag()
     {
+        if (CloseTo(_origin.position, 0) && !_canMoveToHolder)
+            return;
+
+        if (CloseTo(_placeInChamber, _rectTransform.rect.width) && !_hatchHandler.IsOpen())
+            return;
+
         if (!_isSnappedToPlace && !_ammo.IsShot())
         {
             if (CloseTo(_placeInChamber, 100f))
@@ -116,9 +128,10 @@ public class AmmoMovement : MonoBehaviour
             ReleaseFromPlace();
         }
 
-        //TODO: Stop ammo from going further when hatch is closed
-        SetAmmoPosition(GetClosestTouchPosition());      
-        FlipBasedOnDistance(0.8f);
+        SetAmmoPosition(GetClosestTouchPosition());    
+        
+        if(!_ammo.IsShot())
+            FlipBasedOnDistance(0.65f);
     }
 
     /// <summary>
@@ -167,7 +180,7 @@ public class AmmoMovement : MonoBehaviour
     private void SaveOrigin()
     {
         _origin = new Placement(_rectTransform.position, _rectTransform.rotation);
-        _defaultDistanceFromChamber = Vector2.Distance(_chamber.position, _rectTransform.position);
+        _defaultDistanceFromChamber = Vector2.Distance(_chamberRectTransform.position, _rectTransform.position);
     }
 
 
@@ -204,6 +217,7 @@ public class AmmoMovement : MonoBehaviour
     {
         _hatchHandler.UnloadAmmo();
         _rigidbody.bodyType = RigidbodyType2D.Dynamic;
+        //TODO: Add force depending on movement speed
         _rigidbody.gravityScale = 250;
         ReleaseFromPlace();
         Destroy(gameObject, 3f);
@@ -213,40 +227,11 @@ public class AmmoMovement : MonoBehaviour
     #endregion
 
     #region Rotating
-    /// <summary>
-    /// Turns the ammunition to the desired angle
-    /// </summary>
-    /// <param name="angle">The angle which the ammunition rotates to</param>
-    private void RotateToAngle(float angle)
-    {
-        
-        if (_rigidbody.rotation == angle)
-            return;
-
-        _rigidbody.MoveRotation(angle);
-    }
-
-    //Don't delete this, this could be useful!
-    /// <summary>
-    /// Angle for the ammunition to face the facePosition
-    /// </summary>
-    /// <param name="facePosition">The position which the ammunition turns to</param>
-    private float AngleTo(Vector2 facePosition)
-    {
-        float directionX = facePosition.x - _rectTransform.position.x;
-        float directionY = facePosition.y - _rectTransform.position.y;
-
-        return Mathf.Atan2(directionY, directionX) * Mathf.Rad2Deg - 90;
-    }
-
-
     //TODO: based on direction ((lastPos - currentPos) > threshold)
     private void FlipBasedOnDistance(float threshold)
     {
-        float distance = Vector2.Distance(_chamber.position, _rectTransform.position);
+        float distance = Vector2.Distance(_chamberRectTransform.position, _rectTransform.position);
         float distancePercentage = distance / _defaultDistanceFromChamber;
-
-        Debug.Log(threshold + " / " + distancePercentage);
 
         if (distancePercentage <= threshold)
         {
@@ -273,18 +258,6 @@ public class AmmoMovement : MonoBehaviour
 
 
         _animator.Play("Base Layer." + clip,0,0);
-    }
-
-    private void RotateBetweenAngles(float angleFrom, float angleTo, float thresholdFrom, float thresholdTo)
-    {
-        float distance = Vector2.Distance(_chamber.position, _rectTransform.position);
-        float distancePercentage = distance / _defaultDistanceFromChamber;
-
-        float angleDistance = angleTo - angleFrom;
-        float relativeDistancePercentage = (distancePercentage - thresholdFrom) / (thresholdFrom - thresholdTo);
-        float angle = angleFrom + NormalizeAngle(angleDistance * relativeDistancePercentage);
-
-        _rigidbody.MoveRotation(angle);
     }
 
     #endregion
@@ -347,10 +320,4 @@ public class AmmoMovement : MonoBehaviour
     }
 
     #endregion
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(_origin.position, 25f);
-    }
 }
