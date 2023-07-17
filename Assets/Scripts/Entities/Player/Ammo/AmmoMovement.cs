@@ -22,14 +22,14 @@ public class AmmoMovement : MonoBehaviour
     #endregion
 
     #region Variables
-    private RectTransform _rectTransform, _chamberRectTransform, _hatchRectTransform;
+    private RectTransform _rectTransform, _chamberRectTransform;
     private Rigidbody2D _rigidbody;
     private Placement _origin, _previous;
     private Ammo _ammo;
     private Animator _animator;
     private HatchHandler _hatchHandler;
 
-    private float _defaultDistanceFromChamber, _gapBetween, _layingOut;
+    private float _defaultDistanceFromChamber, _gapBetween;
     
     private Vector2 _placeInChamber;
 
@@ -56,17 +56,13 @@ public class AmmoMovement : MonoBehaviour
         _ammo = GetComponent<Ammo>();
         _animator = GetComponent<Animator>();
         _hatchHandler = FindObjectOfType<HatchHandler>();
-        _hatchRectTransform = _hatchHandler.GetComponent<RectTransform>();
 
         _chamberRectTransform = GameObject.FindGameObjectWithTag("Chamber").GetComponent<RectTransform>();
         SavePrevious();
 
         _gapBetween = 250f;
         float xbeforeChamber = _chamberRectTransform.position.x - _rectTransform.rect.height - _gapBetween;
-        //_placeBeforeChamber = new Vector2(xbeforeChamber, _chamber.position.y);
 
-        _layingOut = 50f;
-        //_placeInChamber = new Vector2(_chamber.position.x - _layingOut, _chamber.position.y);
         _placeInChamber = GameObject.FindGameObjectWithTag("PlaceInChamber").transform.position;
 
 

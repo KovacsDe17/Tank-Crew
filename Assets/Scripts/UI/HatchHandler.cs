@@ -5,7 +5,6 @@ using UnityEngine;
 /// </summary>
 public class HatchHandler : MonoBehaviour
 {
-    public float closedDegree, openedDegree;
     public Turret turret;
 
     private Animator _animator;
@@ -28,75 +27,10 @@ public class HatchHandler : MonoBehaviour
         _animator = transform.parent.gameObject.GetComponent<Animator>();
 
         _hatchRectTransform = GetComponent<RectTransform>();
-        _hatchRectTransform.eulerAngles = new Vector3(0f, 0f, closedDegree);
+        //_hatchRectTransform.eulerAngles = new Vector3(0f, 0f, closedDegree);
 
         _isOpen = false;
         _loadedAmmo = null;
-    }
-
-    /// <summary>
-    /// Set the rotation of the hatch to look at the touch position
-    /// </summary>
-    public void LookAtFinger()
-    {
-        _touchPosition = Application.isEditor ? (Vector2) Input.mousePosition : Input.GetTouch(0).position;
-
-        float rotation = GetRotationToPosition(_hatchRectTransform.position, _touchPosition);
-
-        if (rotation < closedDegree || rotation > openedDegree)
-        {
-            return;
-        }
-
-        if (CloseToRotation(rotation, closedDegree))
-        {
-            rotation = closedDegree;
-            _isOpen = false;
-        }
-
-        if (CloseToRotation(rotation, openedDegree))
-        {
-            rotation = openedDegree;
-            _isOpen = true;
-        }
-
-        //Set the rotation to make the crank "look at" the touch position
-        _hatchRectTransform.rotation = Quaternion.Euler(
-            _hatchRectTransform.eulerAngles.x,
-            _hatchRectTransform.eulerAngles.y,
-            rotation
-            );
-    }
-
-    /// <summary>
-    /// Check if two rotations are close to each other, irrespectively of overlapping
-    /// </summary>
-    /// <param name="rotationA">The rotation to compare</param>
-    /// <param name="rotationB">The rotation to compare to</param>
-    /// <returns>Whether the difference of the rotations are in a certain proximity</returns>
-    private bool CloseToRotation(float rotationA, float rotationB)
-    {
-        float proximity = 15f;
-
-        float simple = Mathf.Abs(rotationA - rotationB);
-        float added = Mathf.Abs(rotationA - rotationB + 360);
-        float subtracted = Mathf.Abs(rotationA - rotationB - 360);
-
-        if (simple <= proximity || added <= proximity || subtracted <= proximity)
-            return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Get the absolute rotational value, where the object is set to look at a position
-    /// </summary>
-    /// <param name="center"></param>
-    /// <param name="desiredPosition"></param>
-    /// <returns>The rotational value</returns>
-    private float GetRotationToPosition(Vector2 center, Vector2 desiredPosition)
-    {
-        return Mathf.Atan2((desiredPosition.y - center.y), (desiredPosition.x - center.x)) * Mathf.Rad2Deg + 180;
     }
 
     /// <summary>

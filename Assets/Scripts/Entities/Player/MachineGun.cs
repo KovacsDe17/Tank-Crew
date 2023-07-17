@@ -26,7 +26,7 @@ public class MachineGun : MonoBehaviour
     public void FixedUpdate()
     {
         if(_isHoldingTrigger && !_isShooting)
-            StartCoroutine(Shoot(_shootDistance, _roundPerMinute)); 
+            StartCoroutine(Shoot()); 
     }
 
     /// <summary>
@@ -48,16 +48,14 @@ public class MachineGun : MonoBehaviour
     /// <summary>
     /// Shoot continously to a specified distance using a given RPM
     /// </summary>
-    /// <param name="shootDistance">The maximum distance the shots can travel</param>
-    /// <param name="roundPerMinute">How many rounds to shoot per minute</param>
     /// <returns></returns>
-    private IEnumerator Shoot(float shootDistance, float roundPerMinute)
+    private IEnumerator Shoot()
     {
         _isShooting = true;
 
         SetRandomAngle(-5f, 5f);
 
-        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up.normalized, shootDistance, _layerMask);
+        RaycastHit2D hit = Physics2D.Raycast(_barrelEnd.position, _barrelEnd.up.normalized, _shootDistance, _layerMask);
 
         if (hit.collider != null)
         {
@@ -70,7 +68,7 @@ public class MachineGun : MonoBehaviour
             DrawShootTrail(hit.point);
         } else
         {
-            Vector2 shootDirection = _barrelEnd.up.normalized * shootDistance;
+            Vector2 shootDirection = _barrelEnd.up.normalized * _shootDistance;
             Vector2 shootPosition = (Vector2) _barrelEnd.position + shootDirection;
             DrawShootTrail(shootPosition);
         }
@@ -80,7 +78,7 @@ public class MachineGun : MonoBehaviour
 
         DisableShootTrail();
 
-        float waitBetweenRounds = 60 / roundPerMinute;
+        float waitBetweenRounds = 60 / _roundPerMinute;
         yield return new WaitForSeconds(waitBetweenRounds);
         _isShooting = false;
 

@@ -6,9 +6,8 @@ using UnityEngine.UI;
 /// </summary>
 public class TankMove : MonoBehaviour
 {
-    public Scrollbar leverLeftScrollbar, leverRightScrollbar;
+    public Lever leftLever, rightLever;
     public float moveSpeed, turnSpeed;
-    private float leftMoveDirection, rightMoveDirection;
     private Rigidbody2D rigidBody;
 
     // Start is called before the first frame update
@@ -19,7 +18,6 @@ public class TankMove : MonoBehaviour
 
     private void Update()
     {
-        NormalizeMoveDirections();
         MoveByDirections();
     }
 
@@ -36,26 +34,7 @@ public class TankMove : MonoBehaviour
     /// </summary>
     private void MoveByDirections()
     {
-        rigidBody.AddForce(transform.up * (leftMoveDirection + rightMoveDirection) * moveSpeed);
-        rigidBody.AddTorque((rightMoveDirection - leftMoveDirection) * turnSpeed);
-    }
-
-    /// <summary>
-    /// Correct the move direction values of handles to the -1.0-1.0 range
-    /// </summary>
-    private void NormalizeMoveDirections()
-    {
-        leftMoveDirection = Normalize(leverLeftScrollbar.value);
-        rightMoveDirection = Normalize(leverRightScrollbar.value);
-    }
-
-    /// <summary>
-    /// Transform the 0.0-1.0 range of the lever handle to a -1.0-1.0 range
-    /// </summary>
-    /// <param name="value">The value based on the lever handles position</param>
-    /// <returns>The normalized value of the lever handles position</returns>
-    private float Normalize(float value)
-    {
-        return (value - 0.5f) * -2f;
+        rigidBody.AddForce(transform.up * (leftLever.GetNormalizedValue() + rightLever.GetNormalizedValue()) * moveSpeed);
+        rigidBody.AddTorque((rightLever.GetNormalizedValue() - leftLever.GetNormalizedValue()) * turnSpeed);
     }
 }
