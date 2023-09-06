@@ -28,10 +28,19 @@ public class AmmoHolder : MonoBehaviour
         _ammoCount = new Dictionary<Ammo.AmmoType, int>()
         {
             { Ammo.AmmoType.Practise, 2},
-            { Ammo.AmmoType.Incendiary, 4}
+            { Ammo.AmmoType.ArmorPiercing, 4}
         };
 
+        SetupAmmoPlaces();
         UpdateHolders();
+    }
+
+    private void SetupAmmoPlaces()
+    {
+        foreach(AmmoPlace place in _places)
+        {
+            place.countInfoText = place.rectTransform.transform.GetComponentInChildren<TextMeshProUGUI>();
+        }
     }
 
     public void AddAmmo(Ammo.AmmoType ammoType, int count)
@@ -82,7 +91,6 @@ public class AmmoHolder : MonoBehaviour
 
         internal bool canShow;
 
-        [SerializeField]
         internal TextMeshProUGUI countInfoText;
 
         internal void GenerateAmmo(RectTransform ammoPrefab, Transform parent)

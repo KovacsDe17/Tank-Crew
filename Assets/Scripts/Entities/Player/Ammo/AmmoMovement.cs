@@ -32,6 +32,8 @@ public class AmmoMovement : MonoBehaviour
     private float _defaultDistanceFromChamber, _gapBetween;
     
     private Vector2 _placeInChamber;
+    private Vector2 _previousTouchPosition;
+    private Vector2 _currentTouchPosition;
 
     private bool _isSnappedToPlace;
     private bool _firstMove;
@@ -124,7 +126,7 @@ public class AmmoMovement : MonoBehaviour
             ReleaseFromPlace();
         }
 
-        SetAmmoPosition(GetClosestTouchPosition());    
+        SetAmmoPosition(GetClosestTouchPosition());
         
         if(!_ammo.IsShot())
             FlipBasedOnDistance(0.65f);
@@ -186,6 +188,11 @@ public class AmmoMovement : MonoBehaviour
     /// <param name="position">The desired position</param>
     private void SetAmmoPosition(Vector2 position)
     {
+        _previousTouchPosition = _currentTouchPosition;
+        _currentTouchPosition = position;
+
+        Debug.Log("Prev: " + _previousTouchPosition + "\nCurr: " + _currentTouchPosition);
+
         _rigidbody.MovePosition(position);
     }
 
@@ -213,11 +220,17 @@ public class AmmoMovement : MonoBehaviour
     {
         _hatchHandler.UnloadAmmo();
         _rigidbody.bodyType = RigidbodyType2D.Dynamic;
-        //TODO: Add force depending on movement speed
-        _rigidbody.gravityScale = 250;
+        _rigidbody.gravityScale = 500;
+
+        Vector2 direction = _currentTouchPosition - _previousTouchPosition;
+        Vector2 force = new Vector2(direction.x, 0);
+        float forceMultiplier = 25;
+        _rigidbody.AddForceAtPosition(force * forceMultiplier, _currentTouchPosition, ForceMode2D.Impulse);
         ReleaseFromPlace();
         Destroy(gameObject, 3f);
-        //TODO: load a new ammo to this ammo's origin
+
+        Debug.Log("EJECTED with force: " + force);
+        //TODO: load a new ammo to this ammo's origin [?]
     }
 
     #endregion
