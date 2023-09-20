@@ -9,6 +9,10 @@ using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
+    const string KEY_GAME_MODE = "GameMode";
+    const string KEY_GAME_MAP = "Map";
+    const string KEY_START_GAME = "StartGame_RelayCode";
+
     private Lobby hostLobby; //The lobby that the local player creates
     private Lobby joinedLobby; //The lobby that the local player joins in
     
@@ -20,6 +24,7 @@ public class LobbyManager : MonoBehaviour
     
     [SerializeField] public List<Button> hostButtons;
     [SerializeField] JoinedLobbyMenuUI joinedLobbyMenu;
+    [SerializeField] GameObject multiplayerMenu;
 
     public static LobbyManager Instance { get; private set; }
     private void Awake()
@@ -96,6 +101,19 @@ public class LobbyManager : MonoBehaviour
                     joinedLobby = null;
                 }
             }
+
+            //If the host initiated the game start, this value changes from "0" to the relay code
+            if (joinedLobby.Data[KEY_START_GAME].Value != "0")
+            {
+                //The host is automatically joined to the relay, there's no need to invoke joining for the host
+                if (!IsLobbyHost())
+                {
+                    TestRelay.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
+                    joinedLobby = null;
+                }   
+                
+                multiplayerMenu.SetActive(false);
+            }
         }
         else
         {
@@ -118,8 +136,9 @@ public class LobbyManager : MonoBehaviour
                 Player = GetPlayer(),
                 Data = new Dictionary<string, DataObject>
                 {
-                    { "GameMode", new DataObject(DataObject.VisibilityOptions.Public, gameMode)},
-                    { "Map", new DataObject(DataObject.VisibilityOptions.Public, map)}
+                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, gameMode)},
+                    { KEY_GAME_MAP, new DataObject(DataObject.VisibilityOptions.Public, map)},
+                    { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0")}
                 }
             };
 
@@ -169,7 +188,7 @@ public class LobbyManager : MonoBehaviour
 
             foreach(Lobby lobby in queryResponse.Results)
             {
-                Debug.Log(lobby.Name + " (" + lobby.Players.Count + "/" + lobby.MaxPlayers + ") - GameMode: \"" + lobby.Data["GameMode"].Value + "\"");
+                Debug.Log(lobby.Name + " (" + lobby.Players.Count + "/" + lobby.MaxPlayers + ") - GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\"");
             }
         } catch (LobbyServiceException e)
         {
@@ -260,7 +279,7 @@ public class LobbyManager : MonoBehaviour
 
     public void PrintPlayers(Lobby lobby)
     {
-        Debug.Log("Players in Lobby \"" + lobby.Name + "\" (GameMode: \"" + lobby.Data["GameMode"].Value + "\", Map: \"" + lobby.Data["Map"].Value + "\"):");
+        Debug.Log("Players in Lobby \"" + lobby.Name + "\" (GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\", Map: \"" + lobby.Data[KEY_GAME_MAP].Value + "\"):");
 
         //Not the same Player class as in the project!
         foreach(Unity.Services.Lobbies.Models.Player player in lobby.Players)
@@ -287,7 +306,7 @@ public class LobbyManager : MonoBehaviour
                 Data = new Dictionary<string, DataObject>
                 {
                     //Only the specified parameters get updated, the others stay unmodified 
-                    { "GameMode", new DataObject(DataObject.VisibilityOptions.Public, gameMode)} //Here we only update the GameMode (so the Map stays the same)
+                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, gameMode)} //Here we only update the GameMode (so the Map stays the same)
                 }
             });
 
@@ -304,7 +323,7 @@ public class LobbyManager : MonoBehaviour
         if (hostLobby == null) return;
 
         //Switch between TDM and CTF modes
-        string gameMode = hostLobby.Data["GameMode"].Value == "Team Deathmatch" ? "Capture The Flag" : "Team Deathmatch";
+        string gameMode = hostLobby.Data[KEY_GAME_MODE].Value == "Team Deathmatch" ? "Capture The Flag" : "Team Deathmatch";
 
         UpdateLobbyGameMode(gameMode);
     }
@@ -441,5 +460,42 @@ public class LobbyManager : MonoBehaviour
         joinedLobbyMenu.gameObject.SetActive(true);
         joinedLobby = null;
         hostLobby = null;
+    }
+
+    private bool IsLobbyHost()
+    {
+        if(joinedLobby != null && joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public async void StartGame()
+    {
+        if (IsLobbyHost())
+        {
+            try
+            {
+                Debug.Log("Starting Game");
+
+                string relayCode = await TestRelay.Instance.CreateRelay();
+
+                Lobby lobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id,
+                    new UpdateLobbyOptions()
+                    {
+                        Data = new Dictionary<string, DataObject> {
+                            { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                        }
+                    }
+                    );
+
+                joinedLobby = lobby;
+            } catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
     }
 }
