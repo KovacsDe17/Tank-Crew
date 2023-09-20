@@ -6,7 +6,7 @@ using UnityEngine;
 // TODO: Another way to rotate the turret?
 public class TurretRotation : MonoBehaviour
 {
-    public Crank crank;
+    private Crank _crank;
 
     [SerializeField]
     private float _catchUpSpeed = 5f;
@@ -79,7 +79,7 @@ public class TurretRotation : MonoBehaviour
     /// </summary>
     private void UpdateRotationalValues()
     {
-        _rotation = Mathf.RoundToInt(crank.getRotation());
+        _rotation = Mathf.RoundToInt(_crank.getRotation());
         _rotationDifference = _rotation - _previousRotation;
     }
 
@@ -88,7 +88,8 @@ public class TurretRotation : MonoBehaviour
     /// </summary>
     private void InitalizeValues()
     {
-        _rotation = Mathf.RoundToInt(crank.getRotation()) + 360 * _rotationOverflow;
+        _crank = GameManager.Instance.getLocalPlayer().getCrank();
+        _rotation = Mathf.RoundToInt(_crank.getRotation()) + 360 * _rotationOverflow;
         _previousRotation = _rotation;
         _rotationDifference = _rotation - _previousRotation;
         _previousRotationDifference = _rotationDifference;

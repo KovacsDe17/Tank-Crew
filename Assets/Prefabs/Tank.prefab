@@ -92,8 +92,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 155430533852083646}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 155430534386700119}
@@ -264,7 +264,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 7
   m_Sprite: {fileID: 21300000, guid: 670b81b2f6c64e84a9df5929ac2a25fa, type: 3}
   m_Color: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
   m_FlipX: 0
@@ -348,7 +348,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 7
   m_Sprite: {fileID: 21300000, guid: 670b81b2f6c64e84a9df5929ac2a25fa, type: 3}
   m_Color: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
   m_FlipX: 0
@@ -455,7 +455,6 @@ GameObject:
   m_Component:
   - component: {fileID: 155430534422533667}
   - component: {fileID: 155430534422533666}
-  - component: {fileID: 4420627845105573469}
   - component: {fileID: 2792383299873477751}
   - component: {fileID: 155430533842950338}
   - component: {fileID: 155430533842950337}
@@ -525,7 +524,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 8
   m_Sprite: {fileID: 21300000, guid: c32babee56e43cf4c92222119d696030, type: 3}
   m_Color: {r: 0.5566038, g: 0.44265708, b: 0.21202071, a: 1}
   m_FlipX: 0
@@ -537,19 +536,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4420627845105573469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155430534422533665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1036e197926f38488fd2f05d792c1e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _type: 1
 --- !u!114 &2792383299873477751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -574,10 +560,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 937004c0b2f0a2441aca3df5ab187b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leverLeftScrollbar: {fileID: 0}
-  leverRightScrollbar: {fileID: 0}
-  moveSpeed: 7
-  turnSpeed: 6
+  leftLever: {fileID: 0}
+  rightLever: {fileID: 0}
+  moveSpeed: 10
+  turnSpeed: 5
 --- !u!50 &155430533842950337
 Rigidbody2D:
   serializedVersion: 4
@@ -623,7 +609,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.65, y: 1.7}
+  m_Size: {x: 5.75, y: 5.5}
   m_EdgeRadius: 0
 --- !u!1 &1578291176756022906
 GameObject:

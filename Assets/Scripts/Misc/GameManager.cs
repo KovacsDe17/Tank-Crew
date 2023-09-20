@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -6,7 +8,20 @@ using UnityEngine;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    private Player _player;
+    public static GameManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(this);
+        } else
+        {
+            Instance = this;
+        }
+    }
+
+    [SerializeField] private List<Player> _players;
 
     [SerializeField]
     private TextMeshProUGUI _changeButtonText;
@@ -21,11 +36,11 @@ public class GameManager : MonoBehaviour
 
     private void Initialize()
     {
-        //while(_player == null)
-        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-
-        SetChangeButtonText(_player.GetPlayerType());
-        SetCanvasType(_player.GetPlayerType());
+        foreach(Player player in _players)
+        {
+            SetChangeButtonText(player.GetPlayerType());
+            SetCanvasType(player.GetPlayerType());
+        }
     }
 
     public void PauseTime()
@@ -40,10 +55,15 @@ public class GameManager : MonoBehaviour
 
     public void ChangePlayerType()
     {
+        //TODO: Make a request for the other player and change only when it is accepted
+
+
+        /*
         _player.ChangeType();
 
         SetChangeButtonText(_player.GetPlayerType());
         SetCanvasType(_player.GetPlayerType());
+        */
     }
 
     private void SetChangeButtonText(Player.PlayerType type)
@@ -64,5 +84,37 @@ public class GameManager : MonoBehaviour
             _gunnerCanvas.SetActive(true);
             _driverCanvas.SetActive(false);
         }
+    }
+
+    public Player getLocalPlayer()
+    {
+        //TODO: Find another way...
+        return _players[0];
+    }
+
+    public Player getPlayerByName(string name)
+    {
+        foreach(Player player in _players)
+        {
+            if (player.name.Equals(name))
+            {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
+    public Player getPlayerByType(Player.PlayerType type)
+    {
+        foreach (Player player in _players)
+        {
+            if (player.GetPlayerType() == type)
+            {
+                return player;
+            }
+        }
+
+        return null;
     }
 }

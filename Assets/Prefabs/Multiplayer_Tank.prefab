@@ -164,7 +164,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1801ab45668fc3419bca1d41d501623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crank: {fileID: 0}
   _catchUpSpeed: 10
 --- !u!114 &5215095279821639948
 MonoBehaviour:
@@ -597,6 +596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c5323ea97743045bc657bd8845b71e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnedObjectPrefab: {fileID: 19267912006057092, guid: d648d24351991384ea470a8566964717, type: 3}
 --- !u!114 &-7218203013110405380
 MonoBehaviour:
   m_ObjectHideFlags: 0

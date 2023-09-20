@@ -160,6 +160,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Netcode.Runtime.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Burst.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.Relay.dll
+--root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.Lobbies.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Notifications.Android.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.Authentication.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.Core.Environments.dll

@@ -753,7 +753,8 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Collab: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -767,11 +768,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 
+  cloudProjectId: bfb4ca4a-d23a-4b4a-8aa6-17a69e908454
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: Tank Crew
+  organizationId: kovacsde17
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 
