@@ -3,7 +3,6 @@ using UnityEngine;
 /// <summary>
 /// This class is responsible for the movement of the tanks turret
 /// </summary>
-// TODO: Another way to rotate the turret?
 public class TurretRotation : MonoBehaviour
 {
     private Crank _crank;
@@ -22,7 +21,14 @@ public class TurretRotation : MonoBehaviour
 
     void FixedUpdate()
     {
-        UpdateRotationalValues();
+        if (_crank == null) return;
+        
+        RotateTurret(_crank.GetRotation());
+    }
+
+    public void RotateTurret(float rotation)
+    {
+        UpdateRotationalValues(rotation);
 
         UpdateRotationOverflow();
         CalculateAndSetRotation();
@@ -77,9 +83,9 @@ public class TurretRotation : MonoBehaviour
     /// <summary>
     /// Update rotation to equal to rotation of the crank
     /// </summary>
-    private void UpdateRotationalValues()
+    public void UpdateRotationalValues(float rotation)
     {
-        _rotation = Mathf.RoundToInt(_crank.getRotation());
+        _rotation = Mathf.RoundToInt(rotation);
         _rotationDifference = _rotation - _previousRotation;
     }
 
@@ -88,11 +94,16 @@ public class TurretRotation : MonoBehaviour
     /// </summary>
     private void InitalizeValues()
     {
-        _crank = GameManager.Instance.getLocalPlayer().getCrank();
-        _rotation = Mathf.RoundToInt(_crank.getRotation()) + 360 * _rotationOverflow;
+        //_crank = Player.Local.GetCrank();
+        _rotation = 0;  // Mathf.RoundToInt(_crank.GetRotation()) + 360 * _rotationOverflow;
         _previousRotation = _rotation;
         _rotationDifference = _rotation - _previousRotation;
         _previousRotationDifference = _rotationDifference;
         _rotationOverflow = 0;
+    }
+
+    public void SetCrank(Crank crank)
+    {
+        _crank = crank;
     }
 }

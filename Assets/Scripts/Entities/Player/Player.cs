@@ -1,3 +1,6 @@
+using System;
+using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 
 /// <summary>
@@ -5,66 +8,115 @@ using UnityEngine;
 /// </summary>
 public class Player : MonoBehaviour
 {
-    public static bool IsInitialized = false;
-    public enum PlayerType { Driver, Gunner};
+    public static Player Local { get; private set; } //The player on this device
 
+    public enum PlayerRole { Driver, Gunner };
+    public const string DRIVER_ROLE = "Driver";
+    public const string GUNNER_ROLE = "Gunner";
+
+    [Header("Main Properties")]
     [SerializeField] private string _name;
-    [SerializeField] private PlayerType _type;
+    [SerializeField] private PlayerRole _role;
+    [SerializeField] private ulong _clientId;
+
+    [Header("Controls")]
     [SerializeField] private Crank _crank;
-    [SerializeField] private Levers _levers;
+    [SerializeField] private Lever _leverLeft;
+    [SerializeField] private Lever _leverRight;
+
+    [Header("UI")]
+    [SerializeField] public GameObject BaseUI;
+    [SerializeField] public GameObject DriverUI;
+    [SerializeField] public GameObject GunnerUI;
+    [SerializeField] public GameObject LoadingScreen;
+
+    private void Awake()
+    {
+        SetLocalPlayer();
+    }
 
     private void Start()
     {
         Initialize();
     }
 
+    private void SetLocalPlayer()
+    {
+        if (Local != null && Local != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Local = this;
+        }
+
+        Local.SetName("Player_" + UnityEngine.Random.Range(10, 100));
+    }
+
     private void Initialize()
     {
         //Not in use
         //_type = PlayerType.Driver;
-        IsInitialized = true;
     }
 
-    public void setName(string name)
+    public void SetName(string name)
     {
         _name = name;
     }
 
-    public string getName()
+    public string GetName()
     {
         return _name;
     }
 
-    public PlayerType GetPlayerType()
+    public void SetClientId(ulong clientId)
     {
-        return _type;
+        _clientId = clientId;
     }
+
+    public ulong GetClientId()
+    {
+        return _clientId;
+    }
+
+    public PlayerRole GetPlayerRole()
+    {
+        return _role;
+    }
+
+    public static string GetPlayerRoleString(PlayerRole playerRole)
+    {
+        return (playerRole == PlayerRole.Driver) ? DRIVER_ROLE : GUNNER_ROLE;
+    }
+
+    
 
     /// <summary>
     /// Change the playerType between driver and gunner
     /// </summary>
-    public void ChangeType()
+    public void ChangeRole()
     {
-        if (_type == PlayerType.Driver)
-            _type = PlayerType.Gunner;
-        else
-            _type = PlayerType.Driver;
+        if (_role == PlayerRole.Driver)
+        {
+            _role = PlayerRole.Gunner;
+        } else
+        {
+            _role = PlayerRole.Driver;
+        }
     }
 
-    public Crank getCrank()
+    public Crank GetCrank()
     {
         return _crank;
     }
 
-    public Levers getLevers()
+    public Lever GetLeverLeft()
     {
-        return _levers;
+        return _leverLeft;
     }
-
-    [System.Serializable]
-    public struct Levers
+    public Lever GetLeverRight()
     {
-        [SerializeField] Lever left;
-        [SerializeField] Lever right;
+        return _leverRight;
     }
 }

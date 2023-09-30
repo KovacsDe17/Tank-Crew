@@ -1,9 +1,10 @@
+using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
 /// The 2D object of the projectile which is shot by a tank
 /// </summary>
-public class AmmoProjectile : MonoBehaviour
+public class AmmoProjectile : NetworkBehaviour
 {
     [SerializeField]
     private float _moveSpeed = 25f;
@@ -45,10 +46,10 @@ public class AmmoProjectile : MonoBehaviour
     {
         if ((_layerMask.value & 1 << collision.gameObject.layer) != 0)
         {
-            Enemy enemy = collision.collider.GetComponent<Enemy>();
-            if(enemy != null)
+            Tank tank = collision.collider.GetComponent<Tank>();
+            if(tank != null)
             {
-                enemy.TakeDamage(_damage);
+                tank.TakeDamage(_damage);
             }
 
             //Instantiate(_explosionEffect, transform.position, Quaternion.identity);

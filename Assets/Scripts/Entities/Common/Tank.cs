@@ -10,7 +10,7 @@ public class Tank : MonoBehaviour
     private float _maxHealth = 100f;
     private float _currentHealth = 100f;
 
-    private Slider _healthBar;
+    [SerializeField] private Slider _healthBar;
     private Turret _turret;
     private MachineGun _machineGun;
 
@@ -30,7 +30,7 @@ public class Tank : MonoBehaviour
 
     private void Initialize()
     {
-        _healthBar = GameObject.FindGameObjectWithTag("PlayerHealthBar").GetComponent<Slider>();
+        //_healthBar = GameObject.FindGameObjectWithTag("PlayerHealthBar").GetComponent<Slider>();
         _turret = GetComponentInChildren<Turret>();
         _machineGun = GetComponentInChildren<MachineGun>();
     }

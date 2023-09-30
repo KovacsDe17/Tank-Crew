@@ -6,8 +6,9 @@ using UnityEngine.UI;
 /// </summary>
 public class TankMove : MonoBehaviour
 {
-    public Lever leftLever, rightLever;
-    public float moveSpeed, turnSpeed;
+    private Lever _leftLever, _rightLever;
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _turnSpeed;
     private Rigidbody2D rigidBody;
 
     // Start is called before the first frame update
@@ -16,9 +17,11 @@ public class TankMove : MonoBehaviour
         InitalizeValues();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        MoveByDirections();
+        if (_leftLever == null || _rightLever == null) return;
+
+        MoveByDirections(_leftLever.GetNormalizedValue(), _rightLever.GetNormalizedValue());
     }
 
     /// <summary>
@@ -32,9 +35,15 @@ public class TankMove : MonoBehaviour
     /// <summary>
     /// Move the tank related to the levers handles positions
     /// </summary>
-    private void MoveByDirections()
+    public void MoveByDirections(float leftLeverNormalized, float rightLeverNormalized)
     {
-        rigidBody.AddForce(transform.up * (leftLever.GetNormalizedValue() + rightLever.GetNormalizedValue()) * moveSpeed);
-        rigidBody.AddTorque((rightLever.GetNormalizedValue() - leftLever.GetNormalizedValue()) * turnSpeed);
+        rigidBody.AddForce(transform.up * (leftLeverNormalized + rightLeverNormalized) * _moveSpeed);
+        rigidBody.AddTorque((rightLeverNormalized - leftLeverNormalized) * _turnSpeed);
+    }
+
+    public void SetLevers(Lever leftLever, Lever rightLever)
+    {
+        _leftLever = leftLever;
+        _rightLever = rightLever;
     }
 }
