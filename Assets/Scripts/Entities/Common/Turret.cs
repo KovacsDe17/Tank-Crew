@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// This class is responsible for handling the turret object of the tank
 /// </summary>
-public class Turret : MonoBehaviour
+public class Turret : NetworkBehaviour
 {
     public GameObject projectilePrefab;
     public Transform barrelEnd;
