@@ -17,126 +17,176 @@ public class LobbyManager : MonoBehaviour
     public const string KEY_PLAYER_NAME = "PlayerName";
     public const string KEY_PLAYER_ROLE = "PlayerRole";
 
-    private Lobby hostLobby; //The lobby that the local player creates
-    private Lobby joinedLobby; //The lobby that the local player joins in
-    private Unity.Services.Lobbies.Models.Player hostOfJoinedLobby; //Reference for the host of the lobby
+    private Lobby _hostLobby; //The lobby that the local player creates (and the host joins)
+    private Lobby _joinedLobby; //The lobby that the local player joins in
+    private Unity.Services.Lobbies.Models.Player _hostOfJoinedLobby; //Reference for the host of the lobby
     
-    private float heartbeatTimer; //Heartbeat, so the lobby won't be deleted automatically after 30 seconds
-    private int heartbeatCounter; //Number of heartbeats before deleting a lobby
-    private int heartbeatMaxCount; //Max number of heartbeats before deleting a lobby
-    private float lobbyUpdateTimer; //Timer for auto-updating lobby data
+    private float _heartbeatTimer; //Heartbeat, so the lobby won't be deleted automatically after 30 seconds
+    private float _lobbyUpdateTimer; //Timer for auto-updating lobby data
     
     [SerializeField] public List<Button> hostButtons;
-    [SerializeField] JoinedLobbyMenuUI joinedLobbyMenu;
-    [SerializeField] GameObject multiplayerMenu;
+    [SerializeField] private JoinedLobbyMenuUI _joinedLobbyMenu;
+    [SerializeField] private GameObject _multiplayerMenu;
 
     public static LobbyManager Instance { get; private set; }
+
+    #region Main Script Functions
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
+        SetupSingletonInstance();
     }
 
     private async void Start()
     {
-        await UnityServices.InitializeAsync();
+        await UnityServices.InitializeAsync(); //Initializing the UnityServices for later purposes
 
-        AuthenticationService.Instance.SignedIn += () =>
-        {
-            Debug.Log("Signed in with ID: " + AuthenticationService.Instance.PlayerId);
-        };
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
-        Debug.Log("Name: " + Player.Local.GetName() + " role: " + ((int)Player.Local.GetPlayerRole()).ToString());
+        await SignIn();
     }
 
     private void Update()
     {
         HandleLobbyHeartbeat();
-        HandleLobbyPollForUpdates();
+        HandleLobbyPollForUpdates(1.5f);
     }
 
+    #endregion
+
+    #region Lobby Related Functions
+
+    /// <summary>
+    /// Signs in the player anonymously.
+    /// </summary>
+    /// <returns>A Task if it was successful.</returns>
+    private static async Task SignIn()
+    {
+        AuthenticationService.Instance.SignedIn += () => //Subscribing to "Signed In" action
+        {
+            Debug.Log("Signed in with ID: " + AuthenticationService.Instance.PlayerId);
+        };
+        await AuthenticationService.Instance.SignInAnonymouslyAsync(); //Signing in anonymously (using a generated ID)
+
+        Debug.Log("Name: " + Player.Local.GetName() + " role: " + ((int)Player.Local.GetPlayerRole()).ToString()); //Printing out the name of the local player and it's role
+    }
+
+    /// <summary>
+    /// Send a heartbeat to the LobbyService, so the lobby won't get deleted until everyone leaves it.
+    /// </summary>
     private async void HandleLobbyHeartbeat()
     {
-        //TODO: specify max time (or max heartbeat count) to be alive or delete the whole heartbeat timer
-        if (hostLobby != null)
+        if (_hostLobby != null) //If we have a host lobby, then check the timer and set it according to the heartbeat ping
         {
-            heartbeatTimer -= Time.deltaTime;
-            if(heartbeatTimer < 0f)
+            _heartbeatTimer -= Time.deltaTime;
+            if(_heartbeatTimer < 0f)
             {
-                float heartbeatTimerMax = 15f;
-                heartbeatTimer = heartbeatTimerMax;
+                float heartbeatTimerMax = 15f;  //Currently it's 15 seconds, but can be higher, up to 30 seconds
+                _heartbeatTimer = heartbeatTimerMax;
 
-                await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
+                await LobbyService.Instance.SendHeartbeatPingAsync(_hostLobby.Id);   //Send the heartbeat ping
             }
         }
     }
 
-    private async void HandleLobbyPollForUpdates()
+    /// <summary>
+    /// Polls for an update after every X seconds for the joined lobby.
+    /// </summary>
+    /// <param name="pollAfterTime">Specified time between each poll, given in seconds.</param>
+    private async void HandleLobbyPollForUpdates(float pollAfterTime)
     {
-        if (joinedLobby != null)
+        if (_joinedLobby != null)   //If there is a lobby that we are in, set the timer for the poll
         {
-            lobbyUpdateTimer -= Time.deltaTime;
-            if (lobbyUpdateTimer < 0f)
-            {
-                float lobbyUpdateTimerMax = 1.5f; //Can't go below 1 call per second!
-                lobbyUpdateTimer = lobbyUpdateTimerMax;
+            await PollUpdateForJoinedLobbyByTimer(pollAfterTime); //Update Poll Timer and poll according to the time
 
-                try
-                {
-                    Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-                
-                    joinedLobbyMenu.UpdatePlayerInfo(joinedLobby);
-                    UpdateHostButtons();
-
-                    joinedLobby = lobby;
-
-                }catch(LobbyServiceException e)
-                {
-                    Debug.Log(e);
-                    joinedLobby = null;
-                }
-            }
-
-            CheckRoles();
-
-            //If the host initiated the game start, this value changes from "0" to the relay code
-            if (joinedLobby.Data[KEY_START_GAME] != null && joinedLobby.Data[KEY_START_GAME].Value != "0")
-            {
-                //The host is automatically joined to the relay, there's no need to invoke joining for the host
-                if (!IsLobbyHost())
-                {
-                    RelayManager.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
-                }   
-                
-                joinedLobby = null;
-
-                if(multiplayerMenu.activeInHierarchy)
-                    multiplayerMenu.SetActive(false);
-
-                //TODO: Run only once for the host (now it runs constantly!)
-
-                if (!Player.Local.LoadingScreen.activeInHierarchy)
-                {
-                    Player.Local.LoadingScreen.SetActive(true);
-                    Debug.Log(GetType().Name + " - LoadingScreen set to " + (Player.Local.LoadingScreen.activeInHierarchy ? "active" : "inactive"));
-                }
-            }
+            if (IsGameStartInvoked())
+                StartGame();
         }
-        else
+        else //If there is no lobby we are in
         {
-            //If there is no joined lobby and the joined lobby menu is active, hide it
-            if(joinedLobbyMenu.gameObject.activeInHierarchy)
-                joinedLobbyMenu.gameObject.SetActive(false);
+            //If the joined lobby menu is active, hide it
+            if(_joinedLobbyMenu.gameObject.activeInHierarchy)
+                _joinedLobbyMenu.gameObject.SetActive(false);
         }
     }
 
+    /// <summary>
+    /// Polls an update for the Joined Lobby after every period of time set as the <paramref name="pollTimer"/>.
+    /// </summary>
+    /// <param name="pollTimer">The time which an update is being polled after, in seconds.</param>
+    /// <returns>A Task if the action was successful.</returns>
+    private async Task PollUpdateForJoinedLobbyByTimer(float pollTimer)
+    {
+        _lobbyUpdateTimer -= Time.deltaTime;
+        if (_lobbyUpdateTimer < 0f) //If the timer is up, 
+        {
+            float lobbyUpdateTimerMax = pollTimer; //Can't go below 1 call per second!
+            _lobbyUpdateTimer = lobbyUpdateTimerMax;
+
+            await UpdateJoinedLobby();  //Poll an update
+            _joinedLobbyMenu.UpdatePlayerInfo(_joinedLobby); //Update the Player info UI based on the current info of the joined lobby
+            UpdateHostButtons(); //Update the host buttons of the lobby UI
+        }
+    }
+
+    /// <summary>
+    /// Check if the host initiated the Game Start.
+    /// </summary>
+    /// <returns>True if the host started the game.</returns>
+    private bool IsGameStartInvoked()
+    {
+        //If the host initiated the game start, this value changes from "0" to the relay code
+        return (_joinedLobby.Data[KEY_START_GAME] != null && _joinedLobby.Data[KEY_START_GAME].Value != "0");
+    }
+
+    /// <summary>
+    /// Connect the client to the host with relay, delete Joined Lobby reference, deactivate multiplayer menu, activate loading screen and start the game by the GameManager
+    /// </summary>
+    private void StartGame()
+    {
+        //The host automatically joines the relay, only the client needs to connect
+        if (!IsLobbyHost()) //Not the host = the client
+        {
+            RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_START_GAME].Value);
+        }
+
+        _joinedLobby = null; //Delete the joined lobby reference
+
+        if (_multiplayerMenu.activeInHierarchy) //Deactivate the multiplayer menu
+            _multiplayerMenu.SetActive(false);
+
+        //TODO: Run only once for the host (now it runs constantly!)
+
+        if (!Player.Local.LoadingScreen.activeInHierarchy) //Activate loading screen
+            Player.Local.LoadingScreen.SetActive(true);
+
+
+        GameManager.Instance.StartGame();   //Start the game
+    }
+
+    /// <summary>
+    /// Polls an update for the joined lobby.
+    /// </summary>
+    /// <returns>A Task if the operation was successful.</returns>
+    private async Task UpdateJoinedLobby()
+    {
+        try
+        {
+            Lobby lobby = await LobbyService.Instance.GetLobbyAsync(_joinedLobby.Id);
+
+            _joinedLobby = lobby;
+
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+            _joinedLobby = null;
+        }
+    }
+
+    /// <summary>
+    /// Create a lobby.
+    /// </summary>
+    /// <param name="lobbyName">The name of the lobby.</param>
+    /// <param name="gameMode">The game mode in which the game starts in.</param>
+    /// <param name="map">The map used in the game.</param>
     public async void CreateLobby(string lobbyName, string gameMode, string map)
     {
         try
@@ -161,20 +211,361 @@ public class LobbyManager : MonoBehaviour
 
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
 
-            hostLobby = lobby;
-            joinedLobby = lobby;
-            hostOfJoinedLobby = GetHostOfLobby(lobby);
+            _hostLobby = lobby;
+            _joinedLobby = lobby;
+            _hostOfJoinedLobby = GetHostOfLobby(lobby);
             
             SetupJoinedLobbyMenu();
 
             Debug.Log("Lobby created with name " + lobby.Name + "(ID: " + lobby.Id + ") , and has " + lobby.MaxPlayers + " players max. The lobby code is \"" + lobby.LobbyCode + "\"");
             
-            PrintPlayers(hostLobby);
+            PrintPlayers(_hostLobby);
         } catch (LobbyServiceException e)
         {
             Debug.Log(e);
         }
     }
+
+    /// <summary>
+    /// Join an existing lobby.
+    /// </summary>
+    /// <param name="lobbyCode">The Lobby Code which is used to connect to a lobby.</param>
+    public async void JoinLobby(string lobbyCode)
+    {
+        try
+        {
+            JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
+            {
+                Player = GetPlayer()
+            };
+
+            //Join a lobby by LobbyCode
+            Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
+            _joinedLobby = lobby;
+            _hostOfJoinedLobby = GetHostOfLobby(lobby);
+
+            CheckRoles();
+
+            SetupJoinedLobbyMenu();
+
+            Debug.Log("Joined lobby by code \"" + lobbyCode + "\"!");
+
+
+            PrintPlayers(lobby);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    /// <summary>
+    /// Join a lobby by LobbyCode using an inputField.
+    /// </summary>
+    /// <param name="inputField">The inputField which is used for LobbyCode input.</param>
+    public void JoinLobby(TMPro.TMP_InputField inputField)
+    {
+        JoinLobby(inputField.text);
+        inputField.SetTextWithoutNotify("");
+    }
+
+    /// <summary>
+    /// Retrieve a Player model for the lobby based on the Local Player.
+    /// </summary>
+    /// <returns>A Player model with name and role.</returns>
+    private Unity.Services.Lobbies.Models.Player GetPlayer()
+    {
+        return new Unity.Services.Lobbies.Models.Player
+        {
+            Data = new Dictionary<string, PlayerDataObject>
+                    {
+                        { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, Player.Local.GetName())},
+                        { KEY_PLAYER_ROLE, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int) Player.Local.GetPlayerRole()).ToString())}
+                    }
+        };
+    }
+
+    /// <summary> 
+    ///Update the Game Mode of the host lobby to the specified GameMode.
+    /// </summary>
+    /// <param name="gameMode">The Game Mode to switch to.</param>
+    private async void UpdateLobbyGameMode(string gameMode)
+    {
+        try
+        {
+            _hostLobby = await Lobbies.Instance.UpdateLobbyAsync(_hostLobby.Id, new UpdateLobbyOptions{
+                Data = new Dictionary<string, DataObject>
+                {
+                    //Only the specified parameters get updated, the others stay unmodified 
+                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, gameMode)} //Here we only update the GameMode (so the Map stays the same)
+                }
+            });
+
+            PrintPlayers(_hostLobby);
+        } catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    /// <summary>
+    /// Update a single piece of data of the player in the lobby.
+    /// </summary>
+    /// <param name="key">The key of the data to update.</param>
+    /// <param name="value">The value of the specified key.</param>
+    /// <returns></returns>
+    private async Task UpdatePlayerData(string key, string value)
+    {
+        try
+        {
+            //Update LobbyService Player name
+            Lobby lobby = await Lobbies.Instance.UpdatePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
+            {
+                Data = new Dictionary<string, PlayerDataObject>
+                {   
+                    //Only the specified parameters get updated, the others stay unmodified
+                    { key, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, value)}
+                }
+            });
+
+            _joinedLobby = lobby;
+        } catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    /// <summary>
+    /// Update the Player's data in the lobby.
+    /// </summary>
+    /// <param name="player">The player with the new data.</param>
+    private async void UpdatePlayerData(Player player)
+    {
+        try
+        {
+            //Update LobbyService Player name
+            Lobby lobby = await Lobbies.Instance.UpdatePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
+            {
+                Data = new Dictionary<string, PlayerDataObject>
+                {   
+                    //Only the specified parameters get updated, the others stay unmodified
+                    { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, player.GetName())},
+                    { KEY_PLAYER_ROLE, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)player.GetPlayerRole()).ToString())}
+                }
+            });
+
+            _joinedLobby = lobby;
+            _hostOfJoinedLobby = GetHostOfLobby(lobby);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    /// <summary>
+    /// Leave the Joined Lobby. If the Host leaves, the other joined player becomes the host. 
+    /// </summary>
+    public async void LeaveLobby()
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+            UpdateHostButtons();
+            LeaveJoinedLobby();
+        } catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+
+    /// <summary>
+    /// Kick the non-host player from the lobby.
+    /// </summary>
+    public async void KickPlayer()
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, _joinedLobby.Players[1].Id);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+
+    /// <summary>
+    /// Kick a specified player from the lobby.
+    /// </summary>
+    /// <param name="player">The player to be kicked out from the lobby.</param>
+    public async void KickPlayer(Unity.Services.Lobbies.Models.Player player)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, player.Id);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    /// <summary>
+    /// Leave the currently joined lobby and set the UI accordingly.
+    /// </summary>
+    private void LeaveJoinedLobby()
+    {
+        _joinedLobbyMenu.gameObject.SetActive(true);
+        _joinedLobby = null;
+        _hostLobby = null;
+        _hostOfJoinedLobby = null;
+    }
+
+    /// <summary>
+    /// Start the game from the lobby. Only works for the host.
+    /// </summary>
+    public async void StartGameByHost()
+    {
+        if (IsLobbyHost())
+        {
+            try
+            {
+                Debug.Log("Starting Game");
+
+                string relayCode = await RelayManager.Instance.CreateRelay();
+
+                Lobby lobby = await LobbyService.Instance.UpdateLobbyAsync(_joinedLobby.Id,
+                    new UpdateLobbyOptions()
+                    {
+                        Data = new Dictionary<string, DataObject> {
+                            { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                        }
+                    }
+                    );
+
+                _joinedLobby = lobby;
+            } catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Helper Functions
+
+    /// <summary>
+    /// Sets the singleton instance. Deletes this object if there is already another of this type.
+    /// </summary>
+    private void SetupSingletonInstance()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+
+    private void CheckRoles()
+    {
+        if (_hostOfJoinedLobby.Id == AuthenticationService.Instance.PlayerId) return; //Only apply for the non-host player!
+
+        //If the roles are the same with the host, change this players role
+        int playerRoleOfHost;
+        int.TryParse(_joinedLobby.Players[0].Data[KEY_PLAYER_ROLE].Value, out playerRoleOfHost);
+        if (Player.Local.GetPlayerRole() == (Player.PlayerRole)playerRoleOfHost)
+        {
+            ChangeRole();
+        }
+    }
+
+    public void ChangeRole()
+    {
+        Player.Local.ChangeRole(); //Change locally
+        UpdatePlayerData(Player.Local); //Change in the lobby
+    }
+
+    public void PrintPlayers(Lobby lobby)
+    {
+        Debug.Log("Players in Lobby \"" + lobby.Name + "\" (GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\", Map: \"" + lobby.Data[KEY_GAME_MAP].Value + "\"):");
+
+        //Not the same Player class as in the project!
+        foreach(Unity.Services.Lobbies.Models.Player player in lobby.Players)
+        {
+            bool isHost = lobby.HostId == player.Id;
+
+            //Host is marked with an asterisk (*)
+            Debug.Log(player.Id + " " + player.Data[KEY_PLAYER_NAME].Value + (isHost?"*":""));
+        }
+    }
+
+    /// <summary>
+    /// Set the host buttons in the lobby UI visible for the host and hide it for the client
+    /// </summary>
+    private void UpdateHostButtons()
+    {
+        bool isHost = _joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId);
+
+        //If the player is the host, enable buttons
+        foreach (Button button in hostButtons)
+        {
+            if(button.gameObject.activeInHierarchy == !isHost)
+                button.gameObject.SetActive(isHost);
+        }
+    }
+
+    
+
+    private void SetupJoinedLobbyMenu()
+    {
+        _joinedLobbyMenu.UpdateLobbyInfo(_joinedLobby);
+        _joinedLobbyMenu.UpdatePlayerInfo(_joinedLobby);
+        _joinedLobbyMenu.gameObject.SetActive(true);
+    }
+
+    #endregion
+
+    #region Getters and Setters
+
+    public Lobby GetJoinedLobby()
+    {
+        return _joinedLobby;
+    }
+
+    public Lobby GetHostLobby()
+    {
+        return _hostLobby;
+    }
+    private bool IsLobbyHost()
+    {
+        if (_joinedLobby != null && _joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId))
+        {
+            return true;
+        }
+
+        return false;
+    }
+    private Unity.Services.Lobbies.Models.Player GetHostOfLobby(Lobby lobby)
+    {
+        foreach (Unity.Services.Lobbies.Models.Player player in lobby.Players)
+        {
+            if (player.Id.Equals(lobby.HostId)) //If the hostId and the player's ID are the same, that player is the host
+                return player;
+        }
+
+        return lobby.Players[0]; //By default, return the first player (In most cases that player is the host)
+    }
+
+    #endregion
+
+    #region Unused but Later-Might-Use
 
     public void CreateLobby()
     {
@@ -201,11 +592,12 @@ public class LobbyManager : MonoBehaviour
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
             Debug.Log("Lobbies found: " + queryResponse.Results.Count);
 
-            foreach(Lobby lobby in queryResponse.Results)
+            foreach (Lobby lobby in queryResponse.Results)
             {
                 Debug.Log(lobby.Name + " (" + lobby.Players.Count + "/" + lobby.MaxPlayers + ") - GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\"");
             }
-        } catch (LobbyServiceException e)
+        }
+        catch (LobbyServiceException e)
         {
             Debug.Log(e);
         }
@@ -220,8 +612,8 @@ public class LobbyManager : MonoBehaviour
 
             //Joint the very first lobby (by ID)
             Lobby lobby = await LobbyService.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
-            joinedLobby = lobby;
-            hostOfJoinedLobby = GetHostOfLobby(lobby);
+            _joinedLobby = lobby;
+            _hostOfJoinedLobby = GetHostOfLobby(lobby);
 
             SetupJoinedLobbyMenu();
         }
@@ -230,188 +622,30 @@ public class LobbyManager : MonoBehaviour
             Debug.Log(e);
         }
     }
-
-    public async void JoinLobby(string lobbyCode)
-    {
-        try
-        {
-            JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
-            {
-                Player = GetPlayer()
-            };
-
-            //Join a lobby by LobbyCode
-            Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
-            joinedLobby = lobby;
-            hostOfJoinedLobby = GetHostOfLobby(lobby);
-
-            CheckRoles();
-
-            SetupJoinedLobbyMenu();
-
-            Debug.Log("Joined lobby by code \"" + lobbyCode + "\"!");
-
-
-            PrintPlayers(lobby);
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    private void CheckRoles()
-    {
-        if (hostOfJoinedLobby.Id == AuthenticationService.Instance.PlayerId) return; //Only apply for the non-host player!
-
-        //If the roles are the same with the host, change this players role
-        int playerRoleOfHost;
-        int.TryParse(joinedLobby.Players[0].Data[KEY_PLAYER_ROLE].Value, out playerRoleOfHost);
-        if (Player.Local.GetPlayerRole() == (Player.PlayerRole)playerRoleOfHost)
-        {
-            ChangeRole();
-        }
-    }
-
-    public void ChangeRole()
-    {
-        Player.Local.ChangeRole(); //Change locally
-        UpdatePlayerData(Player.Local); //Change in the lobby
-    }
-
-    /// <summary>
-    /// Join a lobby by LobbyCode using an inputField
-    /// </summary>
-    /// <param name="inputField">The inputField which is used for LobbyCode input</param>
-    public void JoinLobby(TMPro.TMP_InputField inputField)
-    {
-        JoinLobby(inputField.text);
-        inputField.SetTextWithoutNotify("");
-    }
-
     public async void QuickJoinLobby()
     {
         try
         {
             //Join a random lobby
             Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync();
-            joinedLobby = lobby;
+            _joinedLobby = lobby;
 
             SetupJoinedLobbyMenu();
 
             Debug.Log("Quick Join was successful! Joined lobby \"" + lobby.Name + "\".");
-        } catch(LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    private Unity.Services.Lobbies.Models.Player GetPlayer()
-    {
-        return new Unity.Services.Lobbies.Models.Player
-        {
-            Data = new Dictionary<string, PlayerDataObject>
-                    {
-                        { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, Player.Local.GetName())},
-                        { KEY_PLAYER_ROLE, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int) Player.Local.GetPlayerRole()).ToString())}
-                    }
-        };
-    }
-
-    public void PrintPlayers(Lobby lobby)
-    {
-        Debug.Log("Players in Lobby \"" + lobby.Name + "\" (GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\", Map: \"" + lobby.Data[KEY_GAME_MAP].Value + "\"):");
-
-        //Not the same Player class as in the project!
-        foreach(Unity.Services.Lobbies.Models.Player player in lobby.Players)
-        {
-            bool isHost = lobby.HostId == player.Id;
-
-            //Host is marked with an asterisk (*)
-            Debug.Log(player.Id + " " + player.Data[KEY_PLAYER_NAME].Value + (isHost?"*":""));
-        }
-    }
-
-    //Print players of the joined lobby
-    public void PrintPlayers()
-    {
-        PrintPlayers(joinedLobby);
-    }
-
-    //Update the GameMode of the host lobby to the specified GameMode
-    private async void UpdateLobbyGameMode(string gameMode)
-    {
-        try
-        {
-            hostLobby = await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions{
-                Data = new Dictionary<string, DataObject>
-                {
-                    //Only the specified parameters get updated, the others stay unmodified 
-                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, gameMode)} //Here we only update the GameMode (so the Map stays the same)
-                }
-            });
-
-            PrintPlayers(hostLobby);
-        } catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    public void SwitchLobbyGameMode()
-    {
-        //If we don't have a host lobby yet, just return
-        if (hostLobby == null) return;
-
-        //Switch between TDM and CTF modes
-        string gameMode = hostLobby.Data[KEY_GAME_MODE].Value == "Team Deathmatch" ? "Capture The Flag" : "Team Deathmatch";
-
-        UpdateLobbyGameMode(gameMode);
-    }
-
-    private async Task UpdatePlayerData(string key, string data)
-    {
-        try
-        {
-            //Update LobbyService Player name
-            Lobby lobby = await Lobbies.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
-            {
-                Data = new Dictionary<string, PlayerDataObject>
-                {   
-                    //Only the specified parameters get updated, the others stay unmodified
-                    { key, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, data)}
-                }
-            });
-
-            joinedLobby = lobby;
-        } catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    private async void UpdatePlayerData(Player player)
-    {
-        try
-        {
-            //Update LobbyService Player name
-            Lobby lobby = await Lobbies.Instance.UpdatePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId, new UpdatePlayerOptions
-            {
-                Data = new Dictionary<string, PlayerDataObject>
-                {   
-                    //Only the specified parameters get updated, the others stay unmodified
-                    { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, player.GetName())},
-                    { KEY_PLAYER_ROLE, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)player.GetPlayerRole()).ToString())}
-                }
-            });
-
-            joinedLobby = lobby;
-            hostOfJoinedLobby = GetHostOfLobby(lobby);
         }
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
         }
+    }
+
+    /// <summary>
+    /// Print players of the joined lobby
+    /// </summary>
+    public void PrintPlayers()
+    {
+        PrintPlayers(_joinedLobby);
     }
 
     public async void UpdatePlayerNameRandom()
@@ -421,53 +655,16 @@ public class LobbyManager : MonoBehaviour
         await UpdatePlayerData(KEY_PLAYER_NAME, randomName);
     }
 
-    public async void LeaveLobby()
-    {
-        try
-        {
-            await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
-            UpdateHostButtons();
-            LeaveJoinedLobby();
-        } catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    public async void KickPlayer()
-    {
-        try
-        {
-            await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, joinedLobby.Players[1].Id);
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    public async void KickPlayer(Unity.Services.Lobbies.Models.Player player)
-    {
-        try
-        {
-            await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, player.Id);
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
     public async void MigrateLobbyHost()
     {
         try
         {
-            hostLobby = await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions
+            _hostLobby = await Lobbies.Instance.UpdateLobbyAsync(_hostLobby.Id, new UpdateLobbyOptions
             {
-                HostId = joinedLobby.Players[1].Id
+                HostId = _joinedLobby.Players[1].Id
             });
 
-            PrintPlayers(hostLobby);
+            PrintPlayers(_hostLobby);
         }
         catch (LobbyServiceException e)
         {
@@ -479,94 +676,25 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            await Lobbies.Instance.DeleteLobbyAsync(hostLobby.Id);
+            await Lobbies.Instance.DeleteLobbyAsync(_hostLobby.Id);
         }
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
         }
     }
-
-    private void UpdateHostButtons()
+    public void SwitchLobbyGameMode()
     {
-        bool isHost = joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId);
+        //If we don't have a host lobby yet, just return
+        if (_hostLobby == null) return;
 
-        //If the player is the host, enable buttons
-        foreach (Button button in hostButtons)
-        {
-            if(button.gameObject.activeInHierarchy == !isHost)
-                button.gameObject.SetActive(isHost);
-        }
+        //Switch between TDM and CTF modes
+        string gameMode = _hostLobby.Data[KEY_GAME_MODE].Value == "Team Deathmatch" ? "Capture The Flag" : "Team Deathmatch";
+
+        UpdateLobbyGameMode(gameMode);
     }
 
-    public Lobby GetJoinedLobby()
-    {
-        return joinedLobby;
-    }
 
-    public Lobby GetHostLobby()
-    {
-        return hostLobby;
-    }
-    private bool IsLobbyHost()
-    {
-        if(joinedLobby != null && joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId))
-        {
-            return true;
-        }
 
-        return false;
-    }
-    private Unity.Services.Lobbies.Models.Player GetHostOfLobby(Lobby lobby)
-    {
-        foreach(Unity.Services.Lobbies.Models.Player player in lobby.Players)
-        {
-            if (player.Id.Equals(lobby.HostId)) //If the hostId and the player's ID are the same, that player is the host
-                return player;
-        }
-
-        return lobby.Players[0]; //By default, return the first player (In most cases that player is the host)
-    }
-
-    private void SetupJoinedLobbyMenu()
-    {
-        joinedLobbyMenu.UpdateLobbyInfo(joinedLobby);
-        joinedLobbyMenu.UpdatePlayerInfo(joinedLobby);
-        joinedLobbyMenu.gameObject.SetActive(true);
-    }
-
-    private void LeaveJoinedLobby()
-    {
-        joinedLobbyMenu.gameObject.SetActive(true);
-        joinedLobby = null;
-        hostLobby = null;
-        hostOfJoinedLobby = null;
-    }
-
-    public async void StartGame()
-    {
-        if (IsLobbyHost())
-        {
-            try
-            {
-                Debug.Log("Starting Game");
-
-                string relayCode = await RelayManager.Instance.CreateRelay();
-
-                Lobby lobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id,
-                    new UpdateLobbyOptions()
-                    {
-                        Data = new Dictionary<string, DataObject> {
-                            { KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
-                        }
-                    }
-                    );
-
-                joinedLobby = lobby;
-            } catch (LobbyServiceException e)
-            {
-                Debug.Log(e);
-            }
-        }
-    }
+    #endregion
 }
