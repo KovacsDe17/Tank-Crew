@@ -3,77 +3,103 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The casual enemies the player can destroy
+/// The enemies the player can destroy
 /// </summary>
-public class Enemy : MonoBehaviour
+public class Enemy : Entity
 {
-    [SerializeField]
-    private float _maxHealth;
+    private Transform _playerTransform; //The transform of the player
 
-    private float _currentHealth;
+    [SerializeField] LayerMask _obscureVisionLayerMask; //Define what obscures the vision of this enemy
+    [SerializeField] private float _range = 12f; //The range where the enemy can see and shoot
+    [SerializeField] private bool _canSeePlayer = true; //If there are no obstacles between the enemy and the player
+    [SerializeField] private bool _playerTankIsSpotted = false; //If the enemy has seen the player once
 
-    private Slider _healthBar;
-
-    [SerializeField]
-    private GameObject _deadEnemy;
-
-    private void Awake()
+    private void Start()
     {
         Initialize();
     }
 
-    /// <summary>
-    /// Setup health and health bar
-    /// </summary>
+    private void Update()
+    {
+        CheckIfCanSeePlayer(_playerTransform);
+    }
+
     private void Initialize()
     {
-        _currentHealth = _maxHealth;
-        _healthBar = GetComponentInChildren<Slider>();
+        _playerTransform = PlayerTank.Instance.transform;
 
-        UpdateHealthBar();
+        _canSeePlayer = false;
+        _playerTankIsSpotted = false;
+
+        enabled = false;
+
+        GameManager.Instance.OnGameStart.AddListener(() =>
+        {
+            enabled = true;
+        });
     }
 
-    /// <summary>
-    /// Decrease the health by the given amount
-    /// </summary>
-    /// <param name="damage">The amount of points to subtract</param>
-    public void TakeDamage(float damage)
+    public void CheckIfCanSeePlayer(Transform playerTransform)
     {
-        if (damage > _currentHealth)
+        Vector2 directionToPlayer = playerTransform.position - transform.position;
+        RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, directionToPlayer, _range, _obscureVisionLayerMask);
+
+        //If we hit something, and it's the player, set _canSeePlayer and _playerTankIsSpotted to true
+        if (raycastHit.collider != null && raycastHit.collider.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            Die();
-            return;
-        } else
-        {
-            _currentHealth -= damage;
+            _canSeePlayer = true;
+            _playerTankIsSpotted = true;
         }
+        else
+            _canSeePlayer = false;
 
-        UpdateHealthBar();
+        //Debug.DrawLine(transform.position, playerTransform.position, _canSeePlayer?Color.blue:Color.red);
     }
 
     /// <summary>
-    /// Change the enemy to its destroyed version, while maintaining the physics attributes
+    /// Calculate the distance from the Player.
     /// </summary>
-    private void Die()
+    /// <returns>The distance in world units.</returns>
+    public float DistanceFromPlayer(Transform playerTransform)
     {
-        _currentHealth = 0;
+        return Vector2.Distance(transform.position, playerTransform.position);
+    }
 
-        Rigidbody2D _rigidbody = gameObject.GetComponent<Rigidbody2D>();
-        
-        GameObject deadEnemy = Instantiate(_deadEnemy, transform.position, transform.rotation);
-        Rigidbody2D rigidbody = deadEnemy.GetComponent<Rigidbody2D>();
+    public float GetRange()
+    {
+        return _range;
+    }
 
-        rigidbody.velocity = _rigidbody.velocity;
-        rigidbody.angularVelocity = _rigidbody.angularVelocity;
+    public bool CanSeePlayer()
+    {
+        return _canSeePlayer;
+    }
 
-        Destroy(gameObject);
+    public bool PlayerTankIsSpotted()
+    {
+        return _playerTankIsSpotted;
     }
 
     /// <summary>
-    /// Change the health bar according to the current health status
+    /// Drop Pick Ups right before death
     /// </summary>
-    private void UpdateHealthBar()
+    public override void Die()
     {
-        _healthBar.value = _currentHealth / _maxHealth;
+        DropPickUps();
+
+        base.Die();
+    }
+
+    /// <summary>
+    /// Drop random pick ups, such as ammo and health
+    /// </summary>
+    private void DropPickUps()
+    {
+        //TODO: Implement, based on random number
+    }
+
+    public Transform GetPlayerTransform()
+    {
+        return _playerTransform;
     }
 }

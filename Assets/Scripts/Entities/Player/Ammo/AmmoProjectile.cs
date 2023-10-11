@@ -38,20 +38,26 @@ public class AmmoProjectile : NetworkBehaviour
         _rigidBody.AddForce(transform.up * _moveSpeed, ForceMode2D.Impulse);
     }
 
+    public void SetDamage(float damage)
+    {
+        _damage = damage;
+    }
+
     /// <summary>
     /// Action when the projectile hit something
     /// </summary>
     /// <param name="collision">The object which the projectile collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if ((_layerMask.value & 1 << collision.gameObject.layer) != 0)
+        if ((_layerMask.value & (1 << collision.gameObject.layer)) > 0)
         {
-            Tank tank = collision.collider.GetComponent<Tank>();
+            Entity tank = collision.collider.GetComponent<Entity>();
             if(tank != null)
             {
                 tank.TakeDamage(_damage);
             }
 
+            //TODO: Insert effect
             //Instantiate(_explosionEffect, transform.position, Quaternion.identity);
 
             Destroy(gameObject);

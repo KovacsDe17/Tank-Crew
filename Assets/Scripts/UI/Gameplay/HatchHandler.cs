@@ -25,7 +25,7 @@ public class HatchHandler : MonoBehaviour
         _loadedAmmo = null;
 
         _animator = transform.parent.gameObject.GetComponent<Animator>();
-        _turret = GameObject.FindGameObjectWithTag("PlayerTank").GetComponentInChildren<Turret>();
+        _turret = PlayerTank.Instance.GetComponentInChildren<Turret>();
     }
 
     /// <summary>

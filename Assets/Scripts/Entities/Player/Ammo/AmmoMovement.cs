@@ -191,7 +191,7 @@ public class AmmoMovement : MonoBehaviour
         _previousTouchPosition = _currentTouchPosition;
         _currentTouchPosition = position;
 
-        Debug.Log("Prev: " + _previousTouchPosition + "\nCurr: " + _currentTouchPosition);
+        //Debug.Log("Prev: " + _previousTouchPosition + "\nCurr: " + _currentTouchPosition);
 
         _rigidbody.MovePosition(position);
     }
@@ -229,7 +229,7 @@ public class AmmoMovement : MonoBehaviour
         ReleaseFromPlace();
         Destroy(gameObject, 3f);
 
-        Debug.Log("EJECTED with force: " + force);
+        //Debug.Log("EJECTED with force: " + force);
         //TODO: load a new ammo to this ammo's origin [?]
     }
 

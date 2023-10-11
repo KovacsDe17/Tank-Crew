@@ -128,7 +128,7 @@ MonoBehaviour:
   _explosionEffect: {fileID: 0}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 192
 --- !u!58 &3358736900517418458
 CircleCollider2D:
   m_ObjectHideFlags: 0

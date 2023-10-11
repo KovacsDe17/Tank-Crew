@@ -18,13 +18,16 @@ public class MultiplayerTankAccess : NetworkBehaviour
         {
             Instance = this;
         }
+    }
 
+    private void Start()
+    {
         Initialize();
     }
 
     private void Initialize()
     {
-        Transform playerTank = GameObject.FindGameObjectWithTag("PlayerTank").transform;
+        Transform playerTank = PlayerTank.Instance.transform;
 
         _tankMove = playerTank.GetComponent<TankMove>();
         _turretRotation = playerTank.GetComponentInChildren<TurretRotation>();

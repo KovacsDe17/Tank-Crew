@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 155430533612998251, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 155430533842950338, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: _moveSpeed
       value: 10
@@ -16,9 +20,21 @@ PrefabInstance:
       propertyPath: _turnSpeed
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 155430534307669156, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 155430534355674014, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 155430534422533665, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_Name
       value: ---PlayerTank---
+      objectReference: {fileID: 0}
+    - target: {fileID: 155430534422533665, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533665, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_TagString
@@ -72,7 +88,12 @@ PrefabInstance:
       propertyPath: _type
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8291330418893111697, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: _destroyedEntity
+      value: 
+      objectReference: {fileID: 155430534422533665, guid: 8999e78eda755da439a2bc056c25b9e9, type: 3}
+    m_RemovedComponents:
+    - {fileID: 2792383299873477751, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
 --- !u!1 &1431012625563076603 stripped

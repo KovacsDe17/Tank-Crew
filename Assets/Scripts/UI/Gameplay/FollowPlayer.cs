@@ -27,7 +27,7 @@ public class FollowPlayer : MonoBehaviour
     /// </summary>
     private void Initialize()
     {
-        _playerTransform = GameObject.FindGameObjectWithTag("PlayerTank").transform;
+        _playerTransform = PlayerTank.Instance.transform;
     }
 
     /// <summary>

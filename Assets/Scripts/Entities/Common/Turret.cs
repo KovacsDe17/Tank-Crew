@@ -18,4 +18,16 @@ public class Turret : NetworkBehaviour
         GameObject projectile = Instantiate(projectilePrefab, barrelEnd.position, barrelEnd.rotation);
         projectile.GetComponent<NetworkObject>().Spawn(true);
     }
+
+    /// <summary>
+    /// Create a projectile object at the end of the barrel and let it go forward
+    /// </summary>
+    /// <param name="damage">Damage applied to the hit entity</param>
+    [ServerRpc(RequireOwnership = false)]
+    public void FireProjectileServerRPC(float damage)
+    {
+        GameObject projectile = Instantiate(projectilePrefab, barrelEnd.position, barrelEnd.rotation);
+        projectile.GetComponent<AmmoProjectile>().SetDamage(damage);
+        projectile.GetComponent<NetworkObject>().Spawn(true);
+    }
 }

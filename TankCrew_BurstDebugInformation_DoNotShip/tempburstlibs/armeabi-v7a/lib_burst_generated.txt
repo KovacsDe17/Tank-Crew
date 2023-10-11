@@ -139,6 +139,7 @@ Library: lib_burst_generated
 --compilation-defines=ENABLE_SPRITESHAPE_BURST
 --compilation-defines=TIMELINE_FRAMEACCURATE
 --compilation-defines=RELAY_SDK_INSTALLED
+--compilation-defines=IS_TERRAIN_USED
 --compilation-defines=UGS_QOS_SUPPORTED
 --compilation-defines=COM_UNITY_MODULES_ANIMATION
 --compilation-defines=COM_UNITY_MODULES_PHYSICS
@@ -178,6 +179,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.Core.Scheduler.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Multiplayer.Tools.MetricTestData.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Multiplayer.Tools.MetricEvents.dll
+--root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\NavMeshPlus.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.2D.PixelPerfect.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Services.QoS.dll
 --root-assembly=C:\Unity_Projects\Tank Crew\Temp\StagingArea\Data\Managed\Unity.Netcode.Components.dll
