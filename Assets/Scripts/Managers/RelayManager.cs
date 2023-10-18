@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ public class RelayManager : MonoBehaviour
 {
     public static RelayManager Instance { get; private set; }
 
+    public event EventHandler OnRelayClientStarted;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -29,8 +32,11 @@ public class RelayManager : MonoBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
         {
             Debug.Log("Client with Id: " + clientId + " has entered the game!");
+        };
 
-            Player.Local.BaseUI.SetActive(true);
+        NetworkManager.Singleton.OnClientStarted += () =>
+        {
+            OnRelayClientStarted?.Invoke(this, EventArgs.Empty);
         };
     }
 
@@ -57,7 +63,7 @@ public class RelayManager : MonoBehaviour
         }
     }
 
-    public async void JoinRelay(string joinCode)
+    public async Task JoinRelay(string joinCode)
     {
         try
         {
@@ -75,10 +81,10 @@ public class RelayManager : MonoBehaviour
         }
     }
 
-    public void JoinRelay(TMP_InputField joinCodeInputField)
+    public async void JoinRelay(TMP_InputField joinCodeInputField)
     {
         string joinCode = joinCodeInputField.text;
 
-        JoinRelay(joinCode);
+        await JoinRelay(joinCode);
     }
 }

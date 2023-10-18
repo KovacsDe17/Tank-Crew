@@ -33,10 +33,10 @@ public class Enemy : Entity
 
         enabled = false;
 
-        GameManager.Instance.OnGameStart.AddListener(() =>
+        GameManager.Instance.OnGameStart += (sender, eventArgs) =>
         {
             enabled = true;
-        });
+        };
     }
 
     public void CheckIfCanSeePlayer(Transform playerTransform)

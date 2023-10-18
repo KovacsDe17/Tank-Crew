@@ -33,15 +33,15 @@ public class EnemyTurret : MonoBehaviour
 
         enabled = false;
 
-        GameManager.Instance.OnGameStart.AddListener(() =>
+        GameManager.Instance.OnGameStart += (sender, eventArgs) =>
         {
             enabled = true;
-        });
+        };
 
-        PlayerTank.Instance.OnPlayerDestroyed.AddListener(() =>
+        PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
         {
             enabled = false;
-        });
+        };
     }
 
    

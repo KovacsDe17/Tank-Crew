@@ -58,7 +58,7 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
-    public async void SetupTankControlUI()
+    public void SetupTankControlUI()
     {
         Debug.Log("Setup started");
         Debug.Log(GetType().Name + " - Player " + Player.Local.GetName() + " is " + (_isDriver?"driver":"gunner"));
@@ -66,15 +66,7 @@ public class PlayerControl : NetworkBehaviour
         Player.Local.DriverUI.SetActive(_isDriver);
         Player.Local.GunnerUI.SetActive(!_isDriver);
 
-        StartCoroutine(CloseLoadingScreen());
+        //StartCoroutine(CloseLoadingScreen());
         Debug.Log("Setup ended");
-    }
-
-    private IEnumerator CloseLoadingScreen()
-    {
-        yield return new WaitWhile(() => !Player.Local.LoadingScreen.activeInHierarchy);
-
-        Player.Local.LoadingScreen.SetActive(false);
-        Debug.Log(GetType().Name + " - LoadingScreen set to " + (Player.Local.LoadingScreen.activeInHierarchy ? "active" : "inactive"));
     }
 }

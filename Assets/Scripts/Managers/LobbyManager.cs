@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -17,6 +16,20 @@ public class LobbyManager : MonoBehaviour
     public const string KEY_PLAYER_NAME = "PlayerName";
     public const string KEY_PLAYER_ROLE = "PlayerRole";
 
+    public event EventHandler<LobbyEventArgs> OnJoinedLobby;
+    public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
+    public event EventHandler OnGameStartInvoked;
+    public event EventHandler OnLeaveLobby;
+    public event EventHandler OnKickedFromLobby;
+
+    /// <summary>
+    /// Data to pass through Lobby events
+    /// </summary>
+    public class LobbyEventArgs : EventArgs
+    {
+        public Lobby Lobby;
+    }
+
     private Lobby _hostLobby; //The lobby that the local player creates (and the host joins)
     private Lobby _joinedLobby; //The lobby that the local player joins in
     private Unity.Services.Lobbies.Models.Player _hostOfJoinedLobby; //Reference for the host of the lobby
@@ -25,7 +38,6 @@ public class LobbyManager : MonoBehaviour
     private float _lobbyUpdateTimer; //Timer for auto-updating lobby data
     
     [SerializeField] public List<Button> hostButtons;
-    [SerializeField] private JoinedLobbyMenuUI _joinedLobbyMenu;
     [SerializeField] private GameObject _multiplayerMenu;
 
     public static LobbyManager Instance { get; private set; }
@@ -41,6 +53,14 @@ public class LobbyManager : MonoBehaviour
         await UnityServices.InitializeAsync(); //Initializing the UnityServices for later purposes
 
         await SignIn();
+
+        SetupEvents();
+    }
+
+    private void SetupEvents()
+    {
+        OnLeaveLobby += UpdateLobbyInfoOnLeave;
+        OnKickedFromLobby += UpdateLobbyInfoOnLeave;
     }
 
     private void Update()
@@ -95,15 +115,6 @@ public class LobbyManager : MonoBehaviour
         if (_joinedLobby != null)   //If there is a lobby that we are in, set the timer for the poll
         {
             await PollUpdateForJoinedLobbyByTimer(pollAfterTime); //Update Poll Timer and poll according to the time
-
-            if (IsGameStartInvoked())
-                StartGame();
-        }
-        else //If there is no lobby we are in
-        {
-            //If the joined lobby menu is active, hide it
-            if(_joinedLobbyMenu.gameObject.activeInHierarchy)
-                _joinedLobbyMenu.gameObject.SetActive(false);
         }
     }
 
@@ -121,8 +132,7 @@ public class LobbyManager : MonoBehaviour
             _lobbyUpdateTimer = lobbyUpdateTimerMax;
 
             await UpdateJoinedLobby();  //Poll an update
-            _joinedLobbyMenu.UpdatePlayerInfo(_joinedLobby); //Update the Player info UI based on the current info of the joined lobby
-            UpdateHostButtons(); //Update the host buttons of the lobby UI
+            CheckGameStarted();
         }
     }
 
@@ -133,32 +143,30 @@ public class LobbyManager : MonoBehaviour
     private bool IsGameStartInvoked()
     {
         //If the host initiated the game start, this value changes from "0" to the relay code
-        return (_joinedLobby.Data[KEY_START_GAME] != null && _joinedLobby.Data[KEY_START_GAME].Value != "0");
+        return (_joinedLobby != null && _joinedLobby.Data[KEY_START_GAME] != null && _joinedLobby.Data[KEY_START_GAME].Value != "0");
     }
 
     /// <summary>
-    /// Connect the client to the host with relay, delete Joined Lobby reference, deactivate multiplayer menu, activate loading screen and start the game by the GameManager
+    /// Check if Host started the game, and if so, connect the client to the host with relay, delete Joined Lobby reference and start the game by the GameManager
     /// </summary>
-    private void StartGame()
+    private async void CheckGameStarted()
     {
-        //The host automatically joines the relay, only the client needs to connect
-        if (!IsLobbyHost()) //Not the host = the client
+        if (IsGameStartInvoked())
         {
-            RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_START_GAME].Value);
+
+            //The host automatically joines the relay, only the client needs to connect
+            if (!IsLobbyHost()) //Not the host = the client
+            {
+                Debug.Log("Invoking Game Start...");
+                //OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
+
+                await RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_START_GAME].Value);
+            }
+
+            _joinedLobby = null; //Delete the joined lobby reference
+
+            GameManager.Instance.StartGame();   //Start the game
         }
-
-        _joinedLobby = null; //Delete the joined lobby reference
-
-        if (_multiplayerMenu.activeInHierarchy) //Deactivate the multiplayer menu
-            _multiplayerMenu.SetActive(false);
-
-        //TODO: Run only once for the host (now it runs constantly!)
-
-        if (!Player.Local.LoadingScreen.activeInHierarchy) //Activate loading screen
-            Player.Local.LoadingScreen.SetActive(true);
-
-
-        GameManager.Instance.StartGame();   //Start the game
     }
 
     /// <summary>
@@ -173,11 +181,13 @@ public class LobbyManager : MonoBehaviour
 
             _joinedLobby = lobby;
 
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
         }
         catch (LobbyServiceException e)
         {
+            OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
+
             Debug.Log(e);
-            _joinedLobby = null;
         }
     }
 
@@ -214,8 +224,8 @@ public class LobbyManager : MonoBehaviour
             _hostLobby = lobby;
             _joinedLobby = lobby;
             _hostOfJoinedLobby = GetHostOfLobby(lobby);
-            
-            SetupJoinedLobbyMenu();
+
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
 
             Debug.Log("Lobby created with name " + lobby.Name + "(ID: " + lobby.Id + ") , and has " + lobby.MaxPlayers + " players max. The lobby code is \"" + lobby.LobbyCode + "\"");
             
@@ -246,7 +256,7 @@ public class LobbyManager : MonoBehaviour
 
             CheckRoles();
 
-            SetupJoinedLobbyMenu();
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
 
             Debug.Log("Joined lobby by code \"" + lobbyCode + "\"!");
 
@@ -293,7 +303,7 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            _hostLobby = await Lobbies.Instance.UpdateLobbyAsync(_hostLobby.Id, new UpdateLobbyOptions{
+            Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(_hostLobby.Id, new UpdateLobbyOptions{
                 Data = new Dictionary<string, DataObject>
                 {
                     //Only the specified parameters get updated, the others stay unmodified 
@@ -301,7 +311,13 @@ public class LobbyManager : MonoBehaviour
                 }
             });
 
+            _hostLobby = lobby;
+            _joinedLobby = lobby;
+
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
+
             PrintPlayers(_hostLobby);
+
         } catch (LobbyServiceException e)
         {
             Debug.Log(e);
@@ -329,6 +345,9 @@ public class LobbyManager : MonoBehaviour
             });
 
             _joinedLobby = lobby;
+
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
+
         } catch (LobbyServiceException e)
         {
             Debug.Log(e);
@@ -356,6 +375,8 @@ public class LobbyManager : MonoBehaviour
 
             _joinedLobby = lobby;
             _hostOfJoinedLobby = GetHostOfLobby(lobby);
+
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
         }
         catch (LobbyServiceException e)
         {
@@ -371,8 +392,8 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId);
-            UpdateHostButtons();
-            LeaveJoinedLobby();
+
+            OnLeaveLobby?.Invoke(this, EventArgs.Empty);
         } catch (LobbyServiceException e)
         {
             Debug.Log(e);
@@ -405,6 +426,8 @@ public class LobbyManager : MonoBehaviour
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, player.Id);
+
+            OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
         }
         catch (LobbyServiceException e)
         {
@@ -415,9 +438,8 @@ public class LobbyManager : MonoBehaviour
     /// <summary>
     /// Leave the currently joined lobby and set the UI accordingly.
     /// </summary>
-    private void LeaveJoinedLobby()
+    private void UpdateLobbyInfoOnLeave(object sender, EventArgs e)
     {
-        _joinedLobbyMenu.gameObject.SetActive(true);
         _joinedLobby = null;
         _hostLobby = null;
         _hostOfJoinedLobby = null;
@@ -426,8 +448,10 @@ public class LobbyManager : MonoBehaviour
     /// <summary>
     /// Start the game from the lobby. Only works for the host.
     /// </summary>
-    public async void StartGameByHost()
+    public async void InvokeGameStart()
     {
+        OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
+
         if (IsLobbyHost())
         {
             try
@@ -446,11 +470,13 @@ public class LobbyManager : MonoBehaviour
                     );
 
                 _joinedLobby = lobby;
+
             } catch (LobbyServiceException e)
             {
                 Debug.Log(e);
             }
         }
+        
     }
 
     #endregion
@@ -506,30 +532,6 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Set the host buttons in the lobby UI visible for the host and hide it for the client
-    /// </summary>
-    private void UpdateHostButtons()
-    {
-        bool isHost = _joinedLobby.HostId.Equals(AuthenticationService.Instance.PlayerId);
-
-        //If the player is the host, enable buttons
-        foreach (Button button in hostButtons)
-        {
-            if(button.gameObject.activeInHierarchy == !isHost)
-                button.gameObject.SetActive(isHost);
-        }
-    }
-
-    
-
-    private void SetupJoinedLobbyMenu()
-    {
-        _joinedLobbyMenu.UpdateLobbyInfo(_joinedLobby);
-        _joinedLobbyMenu.UpdatePlayerInfo(_joinedLobby);
-        _joinedLobbyMenu.gameObject.SetActive(true);
-    }
-
     #endregion
 
     #region Getters and Setters
@@ -567,79 +569,6 @@ public class LobbyManager : MonoBehaviour
 
     #region Unused but Later-Might-Use
 
-    public void CreateLobby()
-    {
-        CreateLobby("MyLobby", "Team Deathmatch", "de_dust2");
-    }
-
-    public async void ListLobbies()
-    {
-        try
-        {
-            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
-            {
-                Count = 25, //List only 25 lobbies
-                Filters = new List<QueryFilter> { //Add filters
-                    //Filter for available slots: Only show the ones with more than (Greater Than) 0 available slots
-                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
-                },
-                Order = new List<QueryOrder> { //Set results in order
-                    //true=ascending, false=descending; then which field to be ordered by (this one lists the oldest created lobby first)
-                    new QueryOrder(false, QueryOrder.FieldOptions.Created)
-                }
-            };
-
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
-            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
-
-            foreach (Lobby lobby in queryResponse.Results)
-            {
-                Debug.Log(lobby.Name + " (" + lobby.Players.Count + "/" + lobby.MaxPlayers + ") - GameMode: \"" + lobby.Data[KEY_GAME_MODE].Value + "\"");
-            }
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
-    public async void JoinLobby()
-    {
-        try
-        {
-            //List lobbies
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-
-            //Joint the very first lobby (by ID)
-            Lobby lobby = await LobbyService.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
-            _joinedLobby = lobby;
-            _hostOfJoinedLobby = GetHostOfLobby(lobby);
-
-            SetupJoinedLobbyMenu();
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-    public async void QuickJoinLobby()
-    {
-        try
-        {
-            //Join a random lobby
-            Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync();
-            _joinedLobby = lobby;
-
-            SetupJoinedLobbyMenu();
-
-            Debug.Log("Quick Join was successful! Joined lobby \"" + lobby.Name + "\".");
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
-
     /// <summary>
     /// Print players of the joined lobby
     /// </summary>
@@ -661,6 +590,7 @@ public class LobbyManager : MonoBehaviour
         {
             _hostLobby = await Lobbies.Instance.UpdateLobbyAsync(_hostLobby.Id, new UpdateLobbyOptions
             {
+                //TODO: reference the other player using a function like GetOtherPlayer()
                 HostId = _joinedLobby.Players[1].Id
             });
 
@@ -672,17 +602,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public async void DeleteLobby()
-    {
-        try
-        {
-            await Lobbies.Instance.DeleteLobbyAsync(_hostLobby.Id);
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-        }
-    }
+    //TODO: Do we even need GameMode?
     public void SwitchLobbyGameMode()
     {
         //If we don't have a host lobby yet, just return
@@ -693,8 +613,6 @@ public class LobbyManager : MonoBehaviour
 
         UpdateLobbyGameMode(gameMode);
     }
-
-
 
     #endregion
 }

@@ -3,9 +3,9 @@ using TMPro;
 
 public class CreateLobbyMenuUI : MonoBehaviour
 {
-    [SerializeField] TMP_InputField lobbyNameInputField;
-    [SerializeField] TMP_Dropdown mapDropdown;
-    [SerializeField] TMP_Dropdown gameModeDropdown;
+    [SerializeField] private TMP_InputField lobbyNameInputField;
+    [SerializeField] private TMP_Dropdown mapDropdown;
+    [SerializeField] private TMP_Dropdown gameModeDropdown;
 
     public void CreateLobbyByFields()
     {

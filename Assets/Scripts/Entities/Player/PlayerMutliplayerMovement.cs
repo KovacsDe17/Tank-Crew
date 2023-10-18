@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class PlayerMutliplayerMovement : NetworkBehaviour
 {
-    [SerializeField] private Transform spawnedObjectPrefab;
-    private Transform spawnedObjectTransform;
+    [SerializeField] private Transform _spawnedObjectPrefab;
+    private Transform _spawnedObjectTransform;
     bool spawned = false;
 
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D _rigidbody;
     NetworkVariable<MyCustomData> count = new NetworkVariable<MyCustomData>(
         new MyCustomData {
             _int = 42,
@@ -38,7 +38,7 @@ public class PlayerMutliplayerMovement : NetworkBehaviour
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -47,7 +47,7 @@ public class PlayerMutliplayerMovement : NetworkBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            rigidbody.AddTorque(-2f);
+            _rigidbody.AddTorque(-2f);
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -73,12 +73,12 @@ public class PlayerMutliplayerMovement : NetworkBehaviour
     {
         if (!spawned)
         {
-            spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
-            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+            _spawnedObjectTransform = Instantiate(_spawnedObjectPrefab);
+            _spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
         }
         else
         {
-            Destroy(spawnedObjectTransform.gameObject);
+            Destroy(_spawnedObjectTransform.gameObject);
         }
 
         spawned = !spawned;

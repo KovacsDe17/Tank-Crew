@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        SetLocalPlayer();
+        SetLocalPlayerRandom();
     }
 
     private void Start()
@@ -40,7 +40,7 @@ public class Player : MonoBehaviour
         Initialize();
     }
 
-    private void SetLocalPlayer()
+    private void SetLocalPlayerRandom()
     {
         if (Local != null && Local != this)
         {

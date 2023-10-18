@@ -10,7 +10,7 @@ public class EnemyMovement : MonoBehaviour
     private NavMeshAgent _agent; //The Agent which moves the Enemy
     private Enemy _enemy; //The Enemy script attached to this object
     private Transform _playerTransform; //The Transform of the PlayerTank
-    [SerializeField] private float _rotationThreshold = 15f; //Threshold for checking the look rotation to face the player in degrees
+    //[SerializeField] private float _rotationThreshold = 15f; //Threshold for checking the look rotation to face the player in degrees
 
     private void Start()
     {
@@ -25,10 +25,10 @@ public class EnemyMovement : MonoBehaviour
 
         _agent.stoppingDistance = _enemy.GetRange() * 0.75f;
 
-        PlayerTank.Instance.OnPlayerDestroyed.AddListener(() =>
+        PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
         {
             enabled = false;
-        });
+        };
     }
 
     private void Update()

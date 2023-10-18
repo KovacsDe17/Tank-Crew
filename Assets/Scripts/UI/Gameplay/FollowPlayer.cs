@@ -12,7 +12,7 @@ public class FollowPlayer : MonoBehaviour
 
     private Transform _playerTransform;
 
-    private void Awake()
+    private void Start()
     {
         Initialize();
     }

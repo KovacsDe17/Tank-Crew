@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class PlayerTank : Entity
 {
     public static PlayerTank Instance { get; private set; }    //Singleton instance
 
-    [HideInInspector] public UnityEvent OnPlayerDestroyed;
+    [HideInInspector] public EventHandler OnPlayerDestroyed;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -24,7 +21,7 @@ public class PlayerTank : Entity
     public override void Die()
     {
         Debug.Log("The Player has Died!");
-        OnPlayerDestroyed.Invoke();
+        OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
 
         //base.Die();
     }
