@@ -51,6 +51,30 @@ public class PerlinNoise
         return texture;
     }
 
+    public Texture2D GenerateTextureBetweenValues(float floor, float ceil)
+    {
+        Texture2D texture = new Texture2D(_width, _height);
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                Color color = GenerateColor(x, y);
+                if(color.r >= floor && color.r <= ceil)
+                    texture.SetPixel(x, y, color);
+            }
+        }
+
+        texture.Apply();
+
+        return texture;
+    }
+
+    public Texture2D GenerateTextureBetweenValues(TileInfo.DivisionPoints divisionPoints)
+    {
+        return GenerateTextureBetweenValues(divisionPoints.from, divisionPoints.to);
+    }
+
     private Color GenerateColor(int x, int y)
     {
         float xCoord = (float)x / _width * _scale + _offsetX;

@@ -1,14 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class TileMapGeneration : MonoBehaviour
 {
-    [SerializeField] private RawImage testImage;
+    private enum DisplayTestImage { Colored, Perlin, Both}
+    private int currentImageDisplay = 0;
+    private enum MapQuarter { TopLeft, TopRight, BottomLeft, BottomRight };
 
-    [SerializeField] private Tilemap tilemap;
+    private struct EndPoints
+    {
+        internal Vector2Int objectivePoint;
+        internal Vector2Int playerSpawnPoint;
+    }
+
+    [SerializeField] private RawImage testImageColored;
+    [SerializeField] private RawImage testImagePerlin;
+    [SerializeField] private RawImage testImageMarked;
+    [SerializeField] private TextMeshProUGUI testButtonText;
+
+    [SerializeField] private Tilemap _baseTilemap;
+    [SerializeField] private Tilemap _markTilemap;
 
     [Space]
     [Header("Map setup")]
@@ -17,19 +34,24 @@ public class TileMapGeneration : MonoBehaviour
     [SerializeField] private Vector2Int _offset;
     [Space]
 
-    [SerializeField] private List<TileSetup> tiles;
+    [Space]
+    [Header("Tile setup")]
+    private Dictionary<Color, Tile> _colorToTile;
+    [SerializeField] private TileSetup _baseTileSetup;
+    [Space]
 
     private List<float> _normalizedAbsoluteThresholds = new List<float>();
     [SerializeField] private List<Slider> valuesFromSlider = new List<Slider>();
 
     public void GenerateTileMap()
     {
-        tilemap.ClearAllTiles();
+        _baseTilemap.ClearAllTiles();
 
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);
         Texture2D texture = perlinNoise.GenerateTexture();
 
-        UpdateThresholds();
+        //UpdateThresholds();
+        _baseTileSetup.UpdateDivisionPoints();
 
         for (int x = 0; x < texture.width; x++)
         {
@@ -39,7 +61,7 @@ public class TileMapGeneration : MonoBehaviour
                 float color = texture.GetPixel(x, y).r;
 
                 //tilemap.SetTile((Vector3Int)position, GetTileByColorUniform(color));
-                tilemap.SetTile((Vector3Int)position, GetTileTypeByColorThresholds(color).tile);
+                _baseTilemap.SetTile((Vector3Int)position, _baseTileSetup.GetTileByColorComponent(color).tile);
             }
         }
     }
@@ -48,7 +70,8 @@ public class TileMapGeneration : MonoBehaviour
     {
         Texture2D texture = new Texture2D(perlinMap.width, perlinMap.height);
 
-        UpdateThresholds();
+        //UpdateThresholds();
+        _baseTileSetup.UpdateDivisionPoints();
 
         for (int x = 0; x < perlinMap.width; x++)
         {
@@ -57,7 +80,7 @@ public class TileMapGeneration : MonoBehaviour
                 Vector2Int position = new Vector2Int(x, y);
                 float color = perlinMap.GetPixel(x, y).r;
 
-                texture.SetPixel(position.x, position.y, GetTileTypeByColorThresholds(color).getAverageColor());
+                texture.SetPixel(position.x, position.y, _baseTileSetup.GetTileByColorComponent(color).getAliasColor());
             }
         }
 
@@ -69,65 +92,179 @@ public class TileMapGeneration : MonoBehaviour
     public void GenerateOnTestImage()
     {
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);
-        Texture2D texture = GenerateColoredMap(perlinNoise.GenerateTexture());
+        Texture2D baseTexture = GenerateColoredMap(perlinNoise.GenerateTexture()); //Create colored base map
 
-        testImage.texture = texture;
+        Texture2D perlinTexture = perlinNoise.GenerateTextureBetweenValues(_baseTileSetup.GetWalkableTile().divisionPoints); //Create partial perlin map
+        
+        Texture2D markedTexture = new Texture2D(_mapSize.x,_mapSize.y); //Create a blank map to be the marked one
+        markedTexture = FillTexture(markedTexture, Color.clear);
+
+        List<Vector2Int> midPoints = FindMidPoints(perlinTexture, _baseTileSetup.GetWalkableTile().divisionPoints);
+        markedTexture = MarkPoints(midPoints, Color.yellow, markedTexture);
+
+        EndPoints endPoints = FindEndPoints(midPoints);
+        markedTexture = MarkPoints(endPoints, Color.red, markedTexture);
+
+        testImagePerlin.texture = perlinTexture;
+        testImageColored.texture = baseTexture;
+        testImageMarked.texture = markedTexture;
     }
 
-    private Tile GetTileByColorUniform(float color)
+    private Texture2D FillTexture(Texture2D texture, Color color)
     {
-        float span = (float)1 / tiles.Count;
+        for(int x = 0; x < _mapSize.x; x++)
+        {
+            for(int y = 0; y < _mapSize.y; y++)
+            {
+                texture.SetPixel(x, y, color);
+            }
+        }
 
-        int level = Mathf.FloorToInt(color / span);
+        texture.Apply();
 
-        if (level >= tiles.Count)
-            level = tiles.Count - 1;
-
-        return tiles[level].tile;
+        return texture;
     }
 
-    private void UpdateThresholds()
+    private EndPoints FindEndPoints(List<Vector2Int> midPoints)
     {
-        List<float> normalizedRelativeThresholds = new List<float>();
-        float relativeSum = 0;
+        Vector2Int center = new Vector2Int(_mapSize.x/2, _mapSize.y/2);
 
-        foreach (TileSetup ts in tiles)
+        Dictionary<Vector2Int, MapQuarter> pointsInQuarters = new Dictionary<Vector2Int, MapQuarter>();
+        Dictionary<MapQuarter, int> counts = new Dictionary<MapQuarter, int>();
+
+        EndPoints finalPoints = new EndPoints();
+
+        //Divide points into quarters
+        foreach (Vector2Int point in midPoints)
         {
-            relativeSum += ts.threshold;
+            if(point.x <= center.x && point.y > center.y)
+            {
+                pointsInQuarters.Add(point, MapQuarter.TopLeft);
+
+                if(counts.ContainsKey(MapQuarter.TopLeft))
+                    counts[MapQuarter.TopLeft] += 1;
+                else 
+                    counts[MapQuarter.TopLeft] = 1;
+            }
+
+            if (point.x > center.x && point.y > center.y)
+            {
+                pointsInQuarters.Add(point, MapQuarter.TopRight);
+
+                if (counts.ContainsKey(MapQuarter.TopRight))
+                    counts[MapQuarter.TopRight] += 1;
+                else
+                    counts[MapQuarter.TopRight] = 1;
+            }
+
+            if (point.x <= center.x && point.y <= center.y)
+            {
+                pointsInQuarters.Add(point, MapQuarter.BottomLeft);
+
+                if (counts.ContainsKey(MapQuarter.BottomLeft))
+                    counts[MapQuarter.BottomLeft] += 1;
+                else
+                    counts[MapQuarter.BottomLeft] = 1;
+            }
+
+            if (point.x > center.x && point.y <= center.y)
+            {
+                pointsInQuarters.Add(point, MapQuarter.BottomRight);
+
+                if (counts.ContainsKey(MapQuarter.BottomRight))
+                    counts[MapQuarter.BottomRight] += 1;
+                else
+                    counts[MapQuarter.BottomRight] = 1;
+            }
         }
 
-        foreach (TileSetup ts in tiles)
-        {
-            normalizedRelativeThresholds.Add(ts.threshold / relativeSum);
-        }
+        //Get the quarter with the most points and also get it's opposite quarter
+        MapQuarter objectiveQuarter = counts.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+        MapQuarter playerSpawnPointQuarter = Opposite(objectiveQuarter);
 
-        float absoluteSum = 0;
-        foreach(float threshold in normalizedRelativeThresholds)
-        {
-            _normalizedAbsoluteThresholds.Add(absoluteSum);
-            absoluteSum += threshold;
-        }
+        finalPoints.objectivePoint = GetFurthestPointInQuarter(pointsInQuarters, objectiveQuarter, center, center.x * 0.85f);
+        finalPoints.playerSpawnPoint = GetFurthestPointInQuarter(pointsInQuarters, playerSpawnPointQuarter, center, center.x * 0.85f);
 
-        _normalizedAbsoluteThresholds.Reverse();
+        Debug.Log("Final Points are: Obj = " +  finalPoints.objectivePoint + ", PSP = " + finalPoints.playerSpawnPoint);
+
+        return finalPoints;
     }
 
-    private TileSetup GetTileTypeByColorThresholds(float color)
+    private Vector2Int GetFurthestPointInQuarter(Dictionary<Vector2Int, MapQuarter> pointsInQuarters, MapQuarter myQuarter, Vector2Int center, float maxDistance)
     {
-        int level = tiles.Count - 1;
+        float highestDistance = 0f;
+        Vector2Int positionWithMaxDistance = center;
 
-        foreach(float threshold in _normalizedAbsoluteThresholds)
+        List<Vector2Int> pointsInMyQuarter = pointsInQuarters.Where(x => x.Value == myQuarter).Select(x => x.Key).ToList();
+
+        foreach(Vector2Int point in pointsInMyQuarter)
         {
-            if (color >= threshold)
-                break;
-            else
-                level--;
+            float distance = Vector2.Distance(point, center);
+
+            if(distance <= maxDistance && distance > highestDistance)
+            {
+                highestDistance = distance;
+                positionWithMaxDistance = point;
+            }
         }
 
-        if (level < 0)
-            level = 0;
-
-        return tiles[level];
+        return positionWithMaxDistance;
     }
+
+    private Texture2D MarkPoints(List<Vector2Int> points, Color color, Texture2D previousTexture)
+    {
+        foreach(Vector2Int position in  points)
+        {
+            previousTexture.SetPixel(position.x, position.y, color);
+        }
+
+        previousTexture.Apply();
+
+        return previousTexture;
+    }
+
+    private Texture2D MarkPoints(EndPoints points, Color color, Texture2D previousTexture)
+    {
+        previousTexture.SetPixel(points.objectivePoint.x, points.objectivePoint.y, color);
+        previousTexture.SetPixel(points.playerSpawnPoint.x, points.playerSpawnPoint.y, color);
+
+        previousTexture.Apply();
+
+        return previousTexture;
+    }
+
+    private List<Vector2Int> FindMidPoints(Texture2D perlinTexture, float floor, float ceil)
+    {
+        List<Vector2Int> midPoints = new List<Vector2Int>();
+
+        float mid = (floor + ceil) / 2f; //The middle between floor and ceil
+        decimal roundedMid = Math.Round((decimal)mid, 2);
+
+        for (int x = 0; x < perlinTexture.width; x++)
+        {
+            for (int y = 0; y < perlinTexture.height; y++)
+            {
+                Vector2Int position = new Vector2Int(x, y);
+                float color = perlinTexture.GetPixel(x, y).r;
+                decimal roundedColor = Math.Round((decimal)color, 2);
+
+                if (roundedColor == roundedMid) //If the current pixel is the same value as the mid
+                {
+                    midPoints.Add(position);    //Add the position to the list
+                }
+            }
+        }
+
+        Debug.Log("MidCount with MidPoint=" + roundedMid + " is " + midPoints.Count);
+
+        return midPoints;
+    }
+
+    private List<Vector2Int> FindMidPoints(Texture2D perlinTexture, TileInfo.DivisionPoints divisionPoints)
+    {
+        return FindMidPoints(perlinTexture, divisionPoints.from, divisionPoints.to);
+    }
+
     public void SetSizeX(int mapSizeX)
     {
         _mapSize.x = mapSizeX;
@@ -158,45 +295,9 @@ public class TileMapGeneration : MonoBehaviour
         Debug.Log("OffsetY set to " + offsetY);
     }
 
-    public void SaveTilesThreshold()
+    public TileSetup GetTileSetups()
     {
-        Debug.Log("Saved thresholds:\n\n");
-
-        int index = 0;
-        foreach(TileSetup setup in tiles)
-        {
-            setup.SetThreshold(valuesFromSlider[index].value);
-            Debug.Log("Setup threshold for " + setup.tile.name + " is " + setup.threshold.ToString("0.000"));
-            index++;
-        }
-
-    }
-
-    public List<TileSetup> GetTileSetups()
-    {
-        return tiles;
-    }
-
-    [System.Serializable]
-    public class TileSetup
-    {
-        [SerializeField] internal Tile tile;
-        [SerializeField] [Range(0f, 1f)] internal float threshold;
-        [SerializeField] internal Color averageColor;
-
-        public float GetPercentage()
-        {
-            return threshold;
-        }
-
-        public void SetThreshold(float percentage)
-        {
-            threshold = percentage;
-        }
-
-        internal Color getAverageColor() {
-            return averageColor;
-        }
+        return _baseTileSetup;
     }
 
     /// <summary>
@@ -220,5 +321,60 @@ public class TileMapGeneration : MonoBehaviour
     public void SetOffSetFromSeed(TMPro.TMP_InputField inputField)
     {
         SetOffsetFromSeed(inputField.text);
+    }
+
+    public void SwitchColoredAndPerlinMaps()
+    {
+        currentImageDisplay++;
+
+        if (currentImageDisplay > 2)
+            currentImageDisplay = 0;
+
+        bool displayColored;
+        bool displayPerlin;
+
+        switch ((DisplayTestImage) currentImageDisplay)
+        {
+            case DisplayTestImage.Colored:
+                displayColored = true;
+                displayPerlin = false;
+                testButtonText.text = "Show Perlin Map";
+                break;
+
+            case DisplayTestImage.Perlin:
+                displayColored = false;
+                displayPerlin = true;
+                testImagePerlin.color = new Color(1, 1, 1, 1);
+                testButtonText.text = "Show Both Maps";
+                break;
+
+            case DisplayTestImage.Both:
+                displayColored = true;
+                displayPerlin = true;
+                testImagePerlin.color = new Color(1, 1, 1, 0.3f);
+                testButtonText.text = "Show Colored Map";
+                break;
+
+            default:
+                displayColored = true;
+                displayPerlin = false;
+                break;
+        }
+
+        testImageColored.gameObject.SetActive(displayColored);
+        testImagePerlin.gameObject.SetActive(displayPerlin);
+    }
+
+    private MapQuarter Opposite(MapQuarter quarter)
+    {
+        switch (quarter)
+        {
+            case MapQuarter.TopLeft: return MapQuarter.BottomRight;
+            case MapQuarter.TopRight: return MapQuarter.BottomLeft;
+            case MapQuarter.BottomLeft: return MapQuarter.TopRight;
+            case MapQuarter.BottomRight: return MapQuarter.TopLeft;
+
+            default: return MapQuarter.TopLeft;
+        }
     }
 }
