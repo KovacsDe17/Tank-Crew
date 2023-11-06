@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tile: {fileID: 11400000, guid: 93f4325ca5b3186458892437fa07d4a3, type: 2}
   aliasColor: {r: 0, g: 0.40784317, b: 0.06666667, a: 1}
-  mainWalkable: 0
-  collider: 1
+  tileType: 2

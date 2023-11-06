@@ -127,6 +127,9 @@ public class TileMapGeneration : MonoBehaviour
         _objectiveSpawnPoint.GetComponent<SpawnPoint>().SetSpawnParent(_parentGrid);
         //Set the Objective Point Image to the spawn points position
         _objectivePointImage.rectTransform.anchoredPosition = (Vector2)_endPoints.objectivePoint * imagePositionScale;
+
+        Debug.Log("Image: " + _minimap.rectTransform.rect.width + ", Map: " + _mapSize.x + " -> Scale: " + imagePositionScale);
+        Debug.Log("EndPoints - OBJ: " + _endPoints.objectivePoint + ", PSP: " + _endPoints.playerSpawnPoint);
     }
 
     /// <summary>

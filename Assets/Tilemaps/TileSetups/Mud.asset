@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Mud
   m_EditorClassIdentifier: 
   tile: {fileID: 11400000, guid: c2320445a2990b74180ee719e7c5b23f, type: 2}
-  relativeThreshold: 0.1
   aliasColor: {r: 0.5058824, g: 0.25882354, b: 0, a: 1}
+  tileType: 1

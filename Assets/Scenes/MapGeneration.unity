@@ -5132,6 +5132,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1323739750}
     - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
+      propertyPath: _tileSetup
+      value: 
+      objectReference: {fileID: 11400000, guid: c914dc800455e4f4b88b568c1c070aac, type: 2}
+    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
       propertyPath: _baseTilemap
       value: 
       objectReference: {fileID: 1656437699}
