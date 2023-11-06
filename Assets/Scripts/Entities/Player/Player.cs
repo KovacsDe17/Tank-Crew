@@ -8,7 +8,10 @@ using UnityEngine;
 /// </summary>
 public class Player : MonoBehaviour
 {
-    public static Player Local { get; private set; } //The player on this device
+    /// <summary>
+    /// The player on this device
+    /// </summary>
+    public static Player Local { get; private set; } 
 
     public enum PlayerRole { Driver, Gunner };
     public const string DRIVER_ROLE = "Driver";
@@ -40,6 +43,9 @@ public class Player : MonoBehaviour
         Initialize();
     }
 
+    /// <summary>
+    /// Set a random name for the Player
+    /// </summary>
     private void SetLocalPlayerRandom()
     {
         if (Local != null && Local != this)

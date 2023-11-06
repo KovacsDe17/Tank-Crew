@@ -35,6 +35,9 @@ public class NetworkManagerUI : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// Disabling the GameObject and setting the pause button.
+    /// </summary>
     private void CommonBehavior()
     {
         gameObject.SetActive(false);

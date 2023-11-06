@@ -1,22 +1,24 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
+/// <summary>
+/// This class is responsible for the Relay connection between the Players.
+/// </summary>
 public class RelayManager : MonoBehaviour
 {
+    /// <summary>
+    /// Singleton instance.
+    /// </summary>
     public static RelayManager Instance { get; private set; }
 
-    public event EventHandler OnRelayClientStarted;
+    public event EventHandler OnRelayClientStarted; //When the client joins the relay
 
     private void Awake()
     {
@@ -40,6 +42,10 @@ public class RelayManager : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// Create a new relay.
+    /// </summary>
+    /// <returns>The join code for the relay.</returns>
     public async Task<string> CreateRelay()
     {
         try
@@ -63,6 +69,11 @@ public class RelayManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Join a relay using a join code.
+    /// </summary>
+    /// <param name="joinCode">The join code of the relay.</param>
+    /// <returns>A Task object, that specifies if the action was successful or not.</returns>
     public async Task JoinRelay(string joinCode)
     {
         try
@@ -81,6 +92,10 @@ public class RelayManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Join a relay using a join code.
+    /// </summary>
+    /// <param name="joinCodeInputField">The Input Field that has the join code.</param>
     public async void JoinRelay(TMP_InputField joinCodeInputField)
     {
         string joinCode = joinCodeInputField.text;

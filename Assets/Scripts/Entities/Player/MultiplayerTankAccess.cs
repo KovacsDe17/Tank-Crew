@@ -4,9 +4,17 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 
+/// <summary>
+/// This class is responsible for the usage of the common Tank of the Players
+/// </summary>
 public class MultiplayerTankAccess : NetworkBehaviour
 {
+    /// <summary>
+    /// Singleton instance
+    /// </summary>
     public static MultiplayerTankAccess Instance { get; private set; }
+    private TankMove _tankMove; //Handler for the movement of the tank
+    private TurretRotation _turretRotation; //Handler for the rotation of the turret
 
     private void Awake()
     {
@@ -25,6 +33,9 @@ public class MultiplayerTankAccess : NetworkBehaviour
         Initialize();
     }
 
+    /// <summary>
+    /// Set the playerTanks transform, the movement and the turret rotation
+    /// </summary>
     private void Initialize()
     {
         Transform playerTank = PlayerTank.Instance.transform;
@@ -33,15 +44,21 @@ public class MultiplayerTankAccess : NetworkBehaviour
         _turretRotation = playerTank.GetComponentInChildren<TurretRotation>();
     }
 
-    private TankMove _tankMove;
-    private TurretRotation _turretRotation;
-
+    /// <summary>
+    /// Server RPC for the movement.
+    /// </summary>
+    /// <param name="leverLeftNormalized">Value of the left lever.</param>
+    /// <param name="leverRightNormalized">Value of the right lever.</param>
     [ServerRpc(RequireOwnership = false)]
     public void MoveTankServerRPC(float leverLeftNormalized, float leverRightNormalized)
     {
         _tankMove.MoveByDirections(leverLeftNormalized, leverRightNormalized);
     }
 
+    /// <summary>
+    /// Server RPC for the turret rotation.
+    /// </summary>
+    /// <param name="rotation">Value of the crank rotation.</param>
     [ServerRpc(RequireOwnership = false)]
     public void RotateTurretServerRPC(float rotation)
     {

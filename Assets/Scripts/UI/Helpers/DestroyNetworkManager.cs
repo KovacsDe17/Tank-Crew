@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// This script ensures, that leaving the multiplayer section removes the Network Manager Singleton. Without this, multiple instances are created upon opening the multiplayer section.
+/// This script ensures, that leaving the multiplayer section removes the Network Manager Singleton.
+/// Without this, multiple instances are created upon opening the multiplayer section.
 /// </summary>
 public class DestroyNetworkManager : MonoBehaviour
 {

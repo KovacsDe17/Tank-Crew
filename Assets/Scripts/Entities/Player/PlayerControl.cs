@@ -60,6 +60,8 @@ public class PlayerControl : NetworkBehaviour
 
     public void SetupTankControlUI()
     {
+        if (IsOwner!) return;
+
         Debug.Log("Setup started");
         Debug.Log(GetType().Name + " - Player " + Player.Local.GetName() + " is " + (_isDriver?"driver":"gunner"));
 

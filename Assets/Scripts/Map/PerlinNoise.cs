@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Perlin Noise for map generation purposes.
+/// </summary>
 public class PerlinNoise
 {
     private int _width = 256;
@@ -33,6 +36,10 @@ public class PerlinNoise
         _offsetY = offset.y;
     }
 
+    /// <summary>
+    /// Generate a Perlin Noise texture.
+    /// </summary>
+    /// <returns>A monochrome texture, where values are between 0f and 1f.</returns>
     public Texture2D GenerateTexture()
     {
         Texture2D texture = new Texture2D(_width, _height);
@@ -51,6 +58,12 @@ public class PerlinNoise
         return texture;
     }
 
+    /// <summary>
+    /// Generate a Perlin Noise texture where the values only exist between the specified floor and ceil values.
+    /// </summary>
+    /// <param name="floor">The lower bound.</param>
+    /// <param name="ceil">The upper bound.</param>
+    /// <returns>A monochrome texture, where values are between floor and ceil.</returns>
     public Texture2D GenerateTextureBetweenValues(float floor, float ceil)
     {
         Texture2D texture = new Texture2D(_width, _height);
@@ -65,16 +78,28 @@ public class PerlinNoise
             }
         }
 
+        texture.filterMode = FilterMode.Point;
         texture.Apply();
 
         return texture;
     }
 
-    public Texture2D GenerateTextureBetweenValues(TileInfo.DivisionPoints divisionPoints)
+    /// <summary>
+    /// Generate a Perlin Noise texture where the values only exist between the specified division points.
+    /// </summary>
+    /// <param name="divisionPoints">The lower and upper bounds.</param>
+    /// <returns>A monochrome texture, where values are between division points.</returns>
+    public Texture2D GeneratePerlinBetweenValues(TileInfo.DivisionPoints divisionPoints)
     {
-        return GenerateTextureBetweenValues(divisionPoints.from, divisionPoints.to);
+        return GenerateTextureBetweenValues(divisionPoints.floor, divisionPoints.ceil);
     }
 
+    /// <summary>
+    /// Generate a greyscale color based on the given coordinate of the Perlin Noise.
+    /// </summary>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
+    /// <returns>A greyscale color.</returns>
     private Color GenerateColor(int x, int y)
     {
         float xCoord = (float)x / _width * _scale + _offsetX;

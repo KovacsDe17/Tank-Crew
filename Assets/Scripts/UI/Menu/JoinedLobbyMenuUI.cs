@@ -6,6 +6,9 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is responsible for the UI of the joined lobby.
+/// </summary>
 public class JoinedLobbyMenuUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _lobbyName;
@@ -23,6 +26,9 @@ public class JoinedLobbyMenuUI : MonoBehaviour
         SetupEvents();
     }
 
+    /// <summary>
+    /// Setup the lobby events.
+    /// </summary>
     private void SetupEvents()
     {
         LobbyManager lobby = LobbyManager.Instance;
@@ -32,11 +38,17 @@ public class JoinedLobbyMenuUI : MonoBehaviour
         lobby.OnKickedFromLobby += DisableJoinedLobbyUI;
     }
 
+    /// <summary>
+    /// Disable this GameObject.
+    /// </summary>
     private void DisableJoinedLobbyUI(object sender, EventArgs e)
     {
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Update information on the joined lobby UI.
+    /// </summary>
     private void UpdateJoinedLobbyUI(object sender, LobbyManager.LobbyEventArgs lobbyEventArgs)
     {
         if (transform.localScale.x == 0) //If it is hidden
@@ -47,6 +59,10 @@ public class JoinedLobbyMenuUI : MonoBehaviour
         UpdateHostButtons(lobbyEventArgs.Lobby);
     }
 
+    /// <summary>
+    /// Update the info regarding the joined lobby.
+    /// </summary>
+    /// <param name="joinedLobby">The joined lobby.</param>
     public void UpdateLobbyInfo(Lobby joinedLobby)
     {
         _lobbyName.SetText(joinedLobby.Name);
@@ -55,6 +71,10 @@ public class JoinedLobbyMenuUI : MonoBehaviour
         _gameMode.SetText(joinedLobby.Data[LobbyManager.KEY_GAME_MODE].Value);
     }
 
+    /// <summary>
+    /// Update the list of Players and their information in the joined lobby.
+    /// </summary>
+    /// <param name="joinedLobby">The joined lobby.</param>
     public void UpdatePlayerInfo(Lobby joinedLobby)
     {
         //Delete existing children
@@ -112,6 +132,12 @@ public class JoinedLobbyMenuUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Check if the player is the host of the lobby.
+    /// </summary>
+    /// <param name="lobby">The lobby to search in.</param>
+    /// <param name="playerId">The player to check.</param>
+    /// <returns>True if the given player is the host of the lobby.</returns>
     private bool IsHostOfLobby(Lobby lobby, string playerId)
     {
         return lobby.HostId.Equals(playerId);

@@ -12,6 +12,8 @@ TagManager:
   - PlayerTank
   - PlayerHealthBar
   - EnemyHolder
+  - PlayerSpawnPoint
+  - ObjectiveSpawnPoint
   layers:
   - Default
   - TransparentFX

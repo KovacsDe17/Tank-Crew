@@ -9,7 +9,10 @@ public class AddAmmo : MonoBehaviour
     [SerializeField]
     int count;
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    /// <summary>
+    /// Add ammo to the holder.
+    /// </summary>
+    private void AddAmmoToHolder()
     {
         Debug.Log("Touchy");
 
@@ -22,6 +25,10 @@ public class AddAmmo : MonoBehaviour
         Debug.Log("yaay, ammo added");
 
         Destroy(gameObject);
+    }
 
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        AddAmmoToHolder();
     }
 }

@@ -7,22 +7,25 @@ using TMPro;
 public class AmmoHolder : MonoBehaviour
 {
     [SerializeField]
-    private RectTransform _ammoPrefab;
+    private RectTransform _ammoPrefab; //Prefab for the instantiation of new ammos
 
     [SerializeField]
-    private static Dictionary<Ammo.AmmoType, int> _ammoCount;
+    private static Dictionary<Ammo.AmmoType, int> _ammoCount; //Dictionary for how many ammos are left of each Ammo Type
 
     [SerializeField]
-    private List<AmmoPlace> _places;
+    private List<AmmoPlace> _places; //Ammo places
 
     [SerializeField]
-    private Animator _animator;
+    private Animator _animator; //Animator for the ammos
 
     public void Awake()
     {
         Initialize();
     }
 
+    /// <summary>
+    /// Setup ammo counts, their places and update the holders.
+    /// </summary>
     private void Initialize()
     {
         _ammoCount = new Dictionary<Ammo.AmmoType, int>()
@@ -35,6 +38,9 @@ public class AmmoHolder : MonoBehaviour
         UpdateHolders();
     }
 
+    /// <summary>
+    /// Update the count for each Ammo Type
+    /// </summary>
     private void SetupAmmoPlaces()
     {
         foreach(AmmoPlace place in _places)
@@ -43,6 +49,11 @@ public class AmmoHolder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Add a number of ammos of a type.
+    /// </summary>
+    /// <param name="ammoType">The type of the ammo.</param>
+    /// <param name="count">The number of ammos to add.</param>
     public void AddAmmo(Ammo.AmmoType ammoType, int count)
     {
         if (_ammoCount.ContainsKey(ammoType))
@@ -56,6 +67,9 @@ public class AmmoHolder : MonoBehaviour
         UpdateHolders();
     }
 
+    /// <summary>
+    /// Update holders. If there are no ammos held, generate them.
+    /// </summary>
     private void UpdateHolders()
     {
         foreach(AmmoPlace holder in _places)
@@ -67,6 +81,10 @@ public class AmmoHolder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Remove ammo from the holder.
+    /// </summary>
+    /// <param name="ammo">THe ammo to remove from the holder.</param>
     public void RemoveFromHolder(Ammo ammo)
     {
         foreach (AmmoPlace holder in _places)
@@ -79,25 +97,35 @@ public class AmmoHolder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// A place where an ammo can be placed.
+    /// </summary>
     [System.Serializable]
     internal class AmmoPlace
     {
         [SerializeField]
-        internal RectTransform rectTransform;
+        internal RectTransform rectTransform; //Rect Transform of the place
         [SerializeField]
-        internal Ammo.AmmoType type;
+        internal Ammo.AmmoType type; //Type of the ammo being held
 
-        internal Ammo ammoHeld;
+        internal Ammo ammoHeld; //The actual ammo
 
-        internal bool canShow;
+        internal bool canShow; //To show the ammo or not
 
-        internal TextMeshProUGUI countInfoText;
+        internal TextMeshProUGUI countInfoText; //The count text of the ammo type
 
+        /// <summary>
+        /// Generate an ammo in the holder.
+        /// </summary>
+        /// <param name="ammoPrefab">The ammo prefab to generate from.</param>
+        /// <param name="parent">The parent to generate under.</param>
         internal void GenerateAmmo(RectTransform ammoPrefab, Transform parent)
         {
+            //If there are no ammos left of this type, return
             if (_ammoCount.GetValueOrDefault(type, 0) <= 0)
                 return;
 
+            //Create new ammo object and set its properties
             RectTransform ammoRect = Instantiate(ammoPrefab, parent);
 
             ammoRect.anchorMin = rectTransform.anchorMin;
@@ -107,6 +135,7 @@ public class AmmoHolder : MonoBehaviour
             ammoHeld = ammoRect.GetComponent<Ammo>();
             ammoHeld.SetType(type);
 
+            //Reduce the number of ammos of type left by one
             if (_ammoCount.ContainsKey(type))
             {
                 _ammoCount[type] = _ammoCount[type] - 1;

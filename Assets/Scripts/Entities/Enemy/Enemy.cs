@@ -14,7 +14,12 @@ public class Enemy : Entity
     [SerializeField] private bool _canSeePlayer = true; //If there are no obstacles between the enemy and the player
     [SerializeField] private bool _playerTankIsSpotted = false; //If the enemy has seen the player once
 
+    #region Main MonoBehaviour Functions
     private void Start()
+    {
+        SetEnabling();
+    }
+    private void OnEnable()
     {
         Initialize();
     }
@@ -24,13 +29,26 @@ public class Enemy : Entity
         CheckIfCanSeePlayer(_playerTransform);
     }
 
+    #endregion
+
+    #region Enemy Functions
+
+    /// <summary>
+    /// Setup variables.
+    /// </summary>
     private void Initialize()
     {
         _playerTransform = PlayerTank.Instance.transform;
 
         _canSeePlayer = false;
         _playerTankIsSpotted = false;
+    }
 
+    /// <summary>
+    /// Disable the Enemy script and re-enable on Game Start event.
+    /// </summary>
+    private void SetEnabling()
+    {
         enabled = false;
 
         GameManager.Instance.OnGameStart += (sender, eventArgs) =>
@@ -39,6 +57,10 @@ public class Enemy : Entity
         };
     }
 
+    /// <summary>
+    /// Check if this Enemy can see the Player and set the variable accordingly.
+    /// </summary>
+    /// <param name="playerTransform">The Transform component of the Player's Tank.</param>
     public void CheckIfCanSeePlayer(Transform playerTransform)
     {
         Vector2 directionToPlayer = playerTransform.position - transform.position;
@@ -52,8 +74,6 @@ public class Enemy : Entity
         }
         else
             _canSeePlayer = false;
-
-        //Debug.DrawLine(transform.position, playerTransform.position, _canSeePlayer?Color.blue:Color.red);
     }
 
     /// <summary>
@@ -64,6 +84,28 @@ public class Enemy : Entity
     {
         return Vector2.Distance(transform.position, playerTransform.position);
     }
+
+    /// <summary>
+    /// Drop Pick Ups right before death
+    /// </summary>
+    public override void Die()
+    {
+        DropPickUps();
+
+        base.Die();
+    }
+
+    /// <summary>
+    /// Drop random pick ups, such as ammo or health
+    /// </summary>
+    private void DropPickUps()
+    {
+        //TODO: Implement, based on random number
+    }
+
+    #endregion
+
+    #region Getters and setters
 
     public float GetRange()
     {
@@ -80,26 +122,11 @@ public class Enemy : Entity
         return _playerTankIsSpotted;
     }
 
-    /// <summary>
-    /// Drop Pick Ups right before death
-    /// </summary>
-    public override void Die()
-    {
-        DropPickUps();
-
-        base.Die();
-    }
-
-    /// <summary>
-    /// Drop random pick ups, such as ammo and health
-    /// </summary>
-    private void DropPickUps()
-    {
-        //TODO: Implement, based on random number
-    }
 
     public Transform GetPlayerTransform()
     {
         return _playerTransform;
     }
+
+    #endregion
 }

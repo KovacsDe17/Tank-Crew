@@ -26,6 +26,10 @@ public class TurretRotation : MonoBehaviour
         RotateTurret(_crank.GetRotation());
     }
 
+    /// <summary>
+    /// Rotate the turret in the specified rotation.
+    /// </summary>
+    /// <param name="rotation">The rotation for the turret in angles.</param>
     public void RotateTurret(float rotation)
     {
         UpdateRotationalValues(rotation);

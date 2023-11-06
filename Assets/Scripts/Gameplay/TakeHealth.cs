@@ -9,7 +9,16 @@ public class TakeHealth : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Entity tank = collision.GetComponent<Entity>();
+        TakeHealthFromEntity(collision);
+    }
+
+    /// <summary>
+    /// Take health from the entity.
+    /// </summary>
+    /// <param name="entity">The entity that collides with this object.</param>
+    private void TakeHealthFromEntity(Collider2D entity)
+    {
+        Entity tank = entity.GetComponent<Entity>();
 
         if (tank == null)
             return;

@@ -1,8 +1,14 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Tank of the Players
+/// </summary>
 public class PlayerTank : Entity
 {
+    /// <summary>
+    /// Singleton instance of the Players tank
+    /// </summary>
     public static PlayerTank Instance { get; private set; }    //Singleton instance
 
     [HideInInspector] public EventHandler OnPlayerDestroyed;

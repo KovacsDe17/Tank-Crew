@@ -34,6 +34,11 @@ public class Entity : MonoBehaviour
     /// </summary>
     private void UpdateHealthBar()
     {
+        if (_healthBar == null) {
+            Debug.LogWarning("Health Bar for the Player is not set!");
+            return;
+        }
+
         _healthBar.value = _currentHealth / _maxHealth;
     }
 
