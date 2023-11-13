@@ -6,9 +6,9 @@ using TMPro;
 /// </summary>
 public class CreateLobbyMenuUI : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField lobbyNameInputField;
-    [SerializeField] private TMP_Dropdown mapDropdown;
-    [SerializeField] private TMP_Dropdown gameModeDropdown;
+    [SerializeField] private TMP_InputField _lobbyNameInputField;
+    [SerializeField] private TMP_InputField _mapSeedInputField;
+    [SerializeField] private TMP_Dropdown _gameModeDropdown;
 
     /// <summary>
     /// Create a lobby by the previously given parameters.
@@ -16,9 +16,9 @@ public class CreateLobbyMenuUI : MonoBehaviour
     public void CreateLobbyByFields()
     {
         LobbyManager.Instance.CreateLobby(
-            lobbyNameInputField.text,
-            mapDropdown.options[mapDropdown.value].text,
-            gameModeDropdown.options[gameModeDropdown.value].text
+            _lobbyNameInputField.text,
+            _gameModeDropdown.options[_gameModeDropdown.value].text,
+            _mapSeedInputField.text
         );
     }
 
