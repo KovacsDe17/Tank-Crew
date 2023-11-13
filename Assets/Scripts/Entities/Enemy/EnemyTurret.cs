@@ -15,19 +15,21 @@ public class EnemyTurret : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        GameManager.Instance.OnPlayerSpawn += Initialize;
     }
 
 
     private void Update()
     {
+        if (PlayerTank.Instance == null) return;
+
         AimAndShootAtPlayer(_enemy.GetPlayerTransform());
     }
 
     /// <summary>
     /// Setup variables
     /// </summary>
-    private void Initialize()
+    private void Initialize(object sender, EventArgs e)
     {
         _enemy = GetComponent<Enemy>();
 

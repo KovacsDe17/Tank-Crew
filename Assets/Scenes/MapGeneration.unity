@@ -5132,10 +5132,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1323739750}
     - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: _tileSetup
-      value: 
-      objectReference: {fileID: 11400000, guid: c914dc800455e4f4b88b568c1c070aac, type: 2}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
       propertyPath: _baseTilemap
       value: 
       objectReference: {fileID: 1656437699}
@@ -5143,14 +5139,6 @@ PrefabInstance:
       propertyPath: _dragTilemap
       value: 
       objectReference: {fileID: 500917088}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: testImageMarked
-      value: 
-      objectReference: {fileID: 753261865}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: testImagePerlin
-      value: 
-      objectReference: {fileID: 280347016}
     - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
       propertyPath: _colliderTilemap
       value: 
@@ -5168,29 +5156,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 280347016}
     - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: testImageColored
-      value: 
-      objectReference: {fileID: 1323739750}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: _parentOfTilemaps
-      value: 
-      objectReference: {fileID: 1502825739}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: _parentOfMapObjects
-      value: 
-      objectReference: {fileID: 1502825739}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
       propertyPath: _objectivePointImage
       value: 
       objectReference: {fileID: 860109560}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: _playerSpawnPointPrefab
-      value: 
-      objectReference: {fileID: 2083113295324096695, guid: 091f11b4bd9a76a4eb75abb7d4213de6, type: 3}
-    - target: {fileID: 5791857893005491805, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
-      propertyPath: _objectiveSpawnPointPrefab
-      value: 
-      objectReference: {fileID: 4366970493290526977, guid: a0c0eaa8581c15b47ae8426a1fc18c6d, type: 3}
     - target: {fileID: 5791857893005491806, guid: 6ae801002f41d03468fade1c28ba0e56, type: 3}
       propertyPath: m_RootOrder
       value: 1

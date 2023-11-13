@@ -165,7 +165,7 @@ public class LobbyManager : MonoBehaviour
 
             _joinedLobby = null; //Delete the joined lobby reference
 
-            GameManager.Instance.StartGame();   //Start the game
+            //GameManager.Instance.StartGame();   //Start the game
         }
     }
 

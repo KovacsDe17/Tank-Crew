@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -14,18 +15,19 @@ public class FollowPlayer : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        GameManager.Instance.OnPlayerSpawn += SetPlayerTransform;
     }
 
     private void FixedUpdate()
     {
-        Follow(_playerTransform, _catchUpSpeed);
+        if(_playerTransform != null)
+            Follow(_playerTransform, _catchUpSpeed);
     }
 
     /// <summary>
-    /// Get the player transform
+    /// Set the Player transform
     /// </summary>
-    private void Initialize()
+    private void SetPlayerTransform(object sender, EventArgs e)
     {
         _playerTransform = PlayerTank.Instance.transform;
     }

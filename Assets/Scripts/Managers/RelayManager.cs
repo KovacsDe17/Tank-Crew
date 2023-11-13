@@ -61,6 +61,8 @@ public class RelayManager : MonoBehaviour
 
             NetworkManager.Singleton.StartHost();
 
+            GameManager.Instance.StartGame();
+
             return joinCode;
         } catch (RelayServiceException e)
         {

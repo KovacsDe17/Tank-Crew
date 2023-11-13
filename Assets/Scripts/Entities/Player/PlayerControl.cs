@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -19,28 +20,14 @@ public class PlayerControl : NetworkBehaviour
 
     private void Start()
     {
-        if (!IsOwner) return;
-
-        Initialize();
-        SetupTankControlUI();
-    }
-
-    private void Initialize()
-    {
-        Player.Local.SetClientId(OwnerClientId); //Set local player
-        _isDriver = Player.Local.GetPlayerRole() == Player.PlayerRole.Driver;
-
-        _leverLeft = Player.Local.GetLeverLeft();
-        _leverRight = Player.Local.GetLeverRight();
-
-        _crank = Player.Local.GetCrank();
-
-        Debug.Log("Control for " + OwnerClientId + " is owned by " + Player.Local.GetName());
+        GameManager.Instance.OnPlayerSpawn += Setup;
     }
 
     private void FixedUpdate()
     {
         if (!IsOwner) return;
+
+        if (MultiplayerTankAccess.Instance == null) return;
 
         if (_isDriver)
         {
@@ -58,6 +45,20 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
+    private void Initialize()
+    {
+        Player.Local.SetClientId(OwnerClientId); //Set local player
+        _isDriver = Player.Local.GetPlayerRole() == Player.PlayerRole.Driver;
+
+        _leverLeft = Player.Local.GetLeverLeft();
+        _leverRight = Player.Local.GetLeverRight();
+
+        _crank = Player.Local.GetCrank();
+
+        Debug.Log("Control for " + OwnerClientId + " is owned by " + Player.Local.GetName());
+    }
+
+
     public void SetupTankControlUI()
     {
         if (IsOwner!) return;
@@ -70,5 +71,13 @@ public class PlayerControl : NetworkBehaviour
 
         //StartCoroutine(CloseLoadingScreen());
         Debug.Log("Setup ended");
+    }
+
+    private void Setup(object sender, EventArgs e)
+    {
+        if (!IsOwner) return;
+
+        Initialize();
+        SetupTankControlUI();
     }
 }

@@ -35,7 +35,7 @@ public class Entity : MonoBehaviour
     private void UpdateHealthBar()
     {
         if (_healthBar == null) {
-            Debug.LogWarning("Health Bar for the Player is not set!");
+            Debug.LogWarning("Health Bar for the Entity is not set!");
             return;
         }
 

@@ -38,7 +38,8 @@ public class Enemy : Entity
     /// </summary>
     private void Initialize()
     {
-        _playerTransform = PlayerTank.Instance.transform;
+        if(PlayerTank.Instance != null)
+            _playerTransform = PlayerTank.Instance.transform;
 
         _canSeePlayer = false;
         _playerTankIsSpotted = false;
@@ -51,7 +52,7 @@ public class Enemy : Entity
     {
         enabled = false;
 
-        GameManager.Instance.OnGameStart += (sender, eventArgs) =>
+        GameManager.Instance.OnPlayerSpawn += (sender, eventArgs) =>
         {
             enabled = true;
         };

@@ -14,10 +14,10 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        GameManager.Instance.OnPlayerSpawn += Initialize;
     }
 
-    private void Initialize()
+    private void Initialize(object sender, EventArgs e)
     {
         _agent = GetComponent<NavMeshAgent>();
         _enemy = GetComponentInChildren<Enemy>();
@@ -33,9 +33,12 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
+        if (PlayerTank.Instance == null) return;
+        
         if (_enemy.PlayerTankIsSpotted())
             MoveToPlayerProximity();
     }
+        
 
 
     /// <summary>

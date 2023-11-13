@@ -24,6 +24,16 @@ public class PlayerTank : Entity
         }
     }
 
+    private void Start()
+    {
+        AssignHealthBar();
+    }
+
+    private void AssignHealthBar()
+    {
+        SetHealthBar(GameManager.Instance.GetPlayerHealthBar());
+    }
+
     public override void Die()
     {
         Debug.Log("The Player has Died!");

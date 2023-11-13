@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2953231924109131141}
   - component: {fileID: 2953231924109131147}
   - component: {fileID: 2852973550085198047}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Objective_Capture
   m_TagString: Untagged
   m_Icon: {fileID: 0}

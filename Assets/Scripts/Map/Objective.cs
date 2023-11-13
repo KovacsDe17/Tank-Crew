@@ -91,6 +91,7 @@ public class Objective : MonoBehaviour
 
     private void OnDestroy()
     {
-        OnObjectiveDestroyed();
+        if(_objectiveType == ObjectiveType.Destroy)
+            OnObjectiveDestroyed();
     }
 }
