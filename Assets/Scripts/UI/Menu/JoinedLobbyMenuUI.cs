@@ -67,8 +67,8 @@ public class JoinedLobbyMenuUI : MonoBehaviour
     {
         _lobbyName.SetText(joinedLobby.Name);
         _lobbyCode.SetText("Code: " + joinedLobby.LobbyCode);
-        _map.SetText(joinedLobby.Data[LobbyManager.KEY_GAME_MAP].Value);
-        _gameMode.SetText(joinedLobby.Data[LobbyManager.KEY_GAME_MODE].Value);
+        _gameMode.SetText("Game Mode: " + joinedLobby.Data[LobbyManager.KEY_GAME_MODE].Value);
+        _map.SetText("Map Seed: " + joinedLobby.Data[LobbyManager.KEY_GAME_MAP].Value);
     }
 
     /// <summary>
