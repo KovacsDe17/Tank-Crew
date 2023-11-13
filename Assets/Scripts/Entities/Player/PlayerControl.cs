@@ -20,7 +20,10 @@ public class PlayerControl : NetworkBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerSpawn += Setup;
+        if (PlayerTank.Instance == null)
+            GameManager.Instance.OnPlayerSpawn += Setup;
+        else
+            Setup(this, EventArgs.Empty);
     }
 
     private void FixedUpdate()
@@ -61,16 +64,10 @@ public class PlayerControl : NetworkBehaviour
 
     public void SetupTankControlUI()
     {
-        if (IsOwner!) return;
-
-        Debug.Log("Setup started");
         Debug.Log(GetType().Name + " - Player " + Player.Local.GetName() + " is " + (_isDriver?"driver":"gunner"));
 
         Player.Local.DriverUI.SetActive(_isDriver);
         Player.Local.GunnerUI.SetActive(!_isDriver);
-
-        //StartCoroutine(CloseLoadingScreen());
-        Debug.Log("Setup ended");
     }
 
     private void Setup(object sender, EventArgs e)

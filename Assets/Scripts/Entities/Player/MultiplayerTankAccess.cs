@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -30,7 +31,7 @@ public class MultiplayerTankAccess : NetworkBehaviour
 
     private void Start()
     {
-        Initialize();
+        GameManager.Instance.OnPlayerSpawn += Setup;
     }
 
     /// <summary>
@@ -63,5 +64,12 @@ public class MultiplayerTankAccess : NetworkBehaviour
     public void RotateTurretServerRPC(float rotation)
     {
         _turretRotation.RotateTurret(rotation);
+    }
+
+    private void Setup(object sender, EventArgs e)
+    {
+        if (!IsOwner) return;
+
+        Initialize();
     }
 }
