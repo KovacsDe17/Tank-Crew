@@ -16,9 +16,10 @@ public class TileMapGeneration : MonoBehaviour
     private Color _objectivePointColor = Color.magenta;
     private Color _midPointColor = Color.yellow;
 
-    [Header("Test image")]
-    [SerializeField] private RawImage _minimapInPauseMenu; //Minimap to be seen later in the Pause Menu
-    [SerializeField] private RawImage _minimapInLobbyMenu; //Minimap to be seen later in the Lobby Menu
+    [Header("Minimaps")]
+    [SerializeField] private List<Minimap> _minimaps; //All minimaps to be seen throughout the game (menu, lobby, ingame, etc)
+    [Space]
+    [Header("Test images")]
     [SerializeField] private RawImage _testImagePerlin; //Test image for the partial Perlin Noise
     [SerializeField] private RawImage _testImageMarked; //Test image for the Marked Map
     [Space]
@@ -40,10 +41,6 @@ public class TileMapGeneration : MonoBehaviour
     private GameObject _playerSpawnPoint; //Spawn point of the Player
     private GameObject _objectiveSpawnPoint; //Spawn point of the objective
     [Header("Endpoints")]
-    [SerializeField] private Image _startPointImageInPauseMenu; //Image on the map for the Player's spawn point (In the pause menu)
-    [SerializeField] private Image _objectivePointImageInPauseMenu; //Image on the map for the objective's spawn point (In the pause menu)
-    [SerializeField] private Image _startPointImageInLobbyMenu; //Image on the map for the Player's spawn point (In the lobby menu)
-    [SerializeField] private Image _objectivePointImageInLobbyMenu; //Image on the map for the objective's spawn point (In the lobby menu)
     private EndPoints _endPoints; //The position of the Player's and the objective's spawn point
 
     /// <summary>
@@ -62,6 +59,9 @@ public class TileMapGeneration : MonoBehaviour
 
         //Set the spawn points. The informataion needed for them are updated during the texture generation
         SetSpawnPoints();
+
+        //Update all of the minimaps
+        UpdateMinimaps(baseTexture);
 
         //Set the tiles based on the baseTexture
         ForEachPixel(baseTexture, (x,y) =>
@@ -106,23 +106,14 @@ public class TileMapGeneration : MonoBehaviour
     /// </summary>
     private void SetSpawnPoints()
     {
-        //The size of the image objects and the map can be different, hence the calculated scale which applies to these positions
-        float imagePositionScaleInPauseMenu = (_minimapInPauseMenu.rectTransform.rect.width / _mapSize.x);
-        float imagePositionScaleInLobbyMenu = (_minimapInLobbyMenu.rectTransform.rect.width / _mapSize.x);
-
         //Setting up Player Spawn Point
-        //
         //If there is already a spawn point, destroy it
         if (_playerSpawnPoint != null)
             Destroy(_playerSpawnPoint.gameObject);
         //Instantiate a new one and assign
         _playerSpawnPoint = Instantiate(_playerSpawnPointPrefab, (Vector2)_endPoints.playerSpawnPoint, _playerSpawnPointPrefab.transform.rotation);
-        //Set the Start Point Images to the spawn points position
-        _startPointImageInPauseMenu.rectTransform.anchoredPosition = (Vector2) _endPoints.playerSpawnPoint * imagePositionScaleInPauseMenu;
-        _startPointImageInLobbyMenu.rectTransform.anchoredPosition = (Vector2)_endPoints.playerSpawnPoint * imagePositionScaleInLobbyMenu;
-
+        
         //Setting up Objective Spawn Point
-        //
         //If there is already a spawn point, destroy it
         if (_objectiveSpawnPoint != null)
             Destroy(_objectiveSpawnPoint.gameObject);
@@ -130,12 +121,21 @@ public class TileMapGeneration : MonoBehaviour
         _objectiveSpawnPoint = Instantiate(_objectiveSpawnPointPrefab,(Vector2)_endPoints.objectivePoint, _objectiveSpawnPointPrefab.transform.rotation);
         //Set the parent to the map
         _objectiveSpawnPoint.GetComponent<SpawnPoint>().SetSpawnParent(_parentGrid);
-        //Set the Objective Point Images to the spawn points position
-        _objectivePointImageInPauseMenu.rectTransform.anchoredPosition = (Vector2)_endPoints.objectivePoint * imagePositionScaleInPauseMenu;
-        _objectivePointImageInLobbyMenu.rectTransform.anchoredPosition = (Vector2)_endPoints.objectivePoint * imagePositionScaleInLobbyMenu;
-
-        Debug.Log("Image: " + _minimapInPauseMenu.rectTransform.rect.width + ", Map: " + _mapSize.x + " -> Scale: " + imagePositionScaleInPauseMenu);
+       
         Debug.Log("EndPoints - OBJ: " + _endPoints.objectivePoint + ", PSP: " + _endPoints.playerSpawnPoint);
+    }
+
+    /// <summary>
+    /// Update the list of minimaps.
+    /// </summary>
+    /// <param name="baseTexture">The generated base texture.</param>
+    private void UpdateMinimaps(Texture2D baseTexture)
+    {
+        foreach(Minimap minimap in _minimaps)
+        {
+            minimap.SetTexture(baseTexture);
+            minimap.SetEndPointMarkers(_mapSize.x, _endPoints);
+        }
     }
 
     /// <summary>
@@ -219,10 +219,6 @@ public class TileMapGeneration : MonoBehaviour
 
         GenerateMarkedTexture(partialPerlinTexture);
 
-        //Set the colored texture to the minimaps
-        _minimapInPauseMenu.texture = baseTexture;
-        _minimapInLobbyMenu.texture = baseTexture;
-
         return baseTexture;
     }
 
@@ -263,9 +259,9 @@ public class TileMapGeneration : MonoBehaviour
         markedTexture = MarkPoints(midPoints, markedTexture, _midPointColor);
 
         //Find the endpoints (start and end positions) and set them on the marked texture
-        EndPoints endPoints = FindEndPoints(midPoints);
-        _endPoints = endPoints; //Also store this for later
-        markedTexture = MarkPoints(endPoints, markedTexture, _playerSpawnPointColor, _objectivePointColor);
+        _endPoints = FindEndPoints(midPoints);
+
+        markedTexture = MarkPoints(_endPoints, markedTexture, _playerSpawnPointColor, _objectivePointColor);
 
         //If there's a test image given, draw the marked map on it
         if (_testImageMarked != null)
@@ -568,11 +564,6 @@ public class TileMapGeneration : MonoBehaviour
     public EndPoints GetEndPoints()
     {
         return _endPoints;
-    }
-
-    public GameObject GetMinimap()
-    {
-        return _minimapInPauseMenu.gameObject;
     }
 
     #endregion

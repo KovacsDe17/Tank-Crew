@@ -14,7 +14,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     [SerializeField] private GameObject pauseButton;
 
-    private void Awake()
+    private void Start()
     {
         serverButton.onClick.AddListener(() =>
         {

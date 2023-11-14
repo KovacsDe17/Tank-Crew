@@ -20,7 +20,7 @@ public class RelayManager : MonoBehaviour
 
     public event EventHandler OnRelayClientStarted; //When the client joins the relay
 
-    private void Awake()
+    private void Start()
     {
         if (Instance != null && Instance != this)
         {
