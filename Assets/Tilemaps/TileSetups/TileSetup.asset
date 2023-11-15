@@ -21,3 +21,4 @@ MonoBehaviour:
   - 0.335
   - 0.437
   - 0.677
+  _invisibleTile: {fileID: 11400000, guid: c6dd21184a4fd3540a9403ea3dc0969a, type: 2}

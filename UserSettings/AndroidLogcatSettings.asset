@@ -1,31 +1,13 @@
 {
     "m_SelectedDeviceId": "RF8N3022LRN",
     "m_SelectedPackage": {
-        "deviceId": "RF8N3022LRN",
-        "name": "com.DefaultCompany.com.unity.template.mobile2D",
-        "processId": 30148,
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 20414,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 25970,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 29486,
-            "exited": true
-        },
         {
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
@@ -42,6 +24,24 @@
             "deviceId": "RF8N3022LRN",
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 30148,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 4565,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.google.android.youtube",
+            "processId": 27819,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.google.android.youtube",
+            "processId": 8786,
             "exited": false
         }
     ],

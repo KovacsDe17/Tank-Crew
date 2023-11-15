@@ -86,19 +86,20 @@ public class TileMapGeneration : MonoBehaviour
 
         //Get the proper tile based on the color
         TileInfo tileInfo = _tileSetup.GetTileInfoByColor(color);
-        
-        //Decide on which tilemap to apply the tile to
-        Tilemap whereToApply = null;
 
-        switch (tileInfo.tileType)
+        //Set the tile on the base tilemap
+        _baseTilemap.SetTile((Vector3Int)position, tileInfo.tile);
+
+        //If the tileinfo has a drag or a collide type, add an invisible tile to the corresponding tilemap
+        if(tileInfo.tileType == TileInfo.TileType.Drag)
         {
-            case TileInfo.TileType.Main: whereToApply = _baseTilemap; break;
-            case TileInfo.TileType.Drag: whereToApply = _dragTilemap; break;
-            case TileInfo.TileType.Collide: whereToApply = _colliderTilemap; break;
+            _dragTilemap.SetTile((Vector3Int)position, _tileSetup.GetInvisibleTile());
         }
 
-        //Set the tile on the appropriate tilemap
-        whereToApply.SetTile((Vector3Int)position, tileInfo.tile);
+        if (tileInfo.tileType == TileInfo.TileType.Collide)
+        {
+            _colliderTilemap.SetTile((Vector3Int)position, _tileSetup.GetInvisibleTile());
+        }
     }
 
     /// <summary>

@@ -18,6 +18,8 @@ public class TileSetup : ScriptableObject
     [Range(0f,1f)]
     [SerializeField] private List<float> _manualDivisionPoints; //List of points between 0 and 1, which determine where the different tiles are separated at, based on the Perlin Noise
 
+    [SerializeField] private Tile _invisibleTile; //Invisible tile for drag effect and collisions
+
     private Dictionary<Color, TileInfo> _tileInfosByColor = new Dictionary<Color, TileInfo>(); //A dictionary to access TileInfo objects by their AliasColor
 
     /// <summary>
@@ -108,5 +110,10 @@ public class TileSetup : ScriptableObject
 
         //Return the tile
         return tileInfo;
+    }
+
+    public Tile GetInvisibleTile()
+    {
+        return _invisibleTile;
     }
 }

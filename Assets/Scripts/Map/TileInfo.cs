@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(fileName = "TileInfo", menuName = "Tile Info")]
 public class TileInfo : ScriptableObject
 {
-    [SerializeField] internal Tile tile; //The tile which will be placed on the TileMap
+    [SerializeField] internal TileBase tile; //The tile which will be placed on the TileMap
     [SerializeField] internal Color aliasColor; //The associated color for the Map Generator
     [SerializeField] internal TileType tileType; //The type of this tile. Can be Main, Drag or Collide
 

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2bfa0410de5b0d46ba639fc1a431969, type: 3}
   m_Name: Water
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: ac4cf78c31b3a8d41b730074b4585751, type: 2}
+  tile: {fileID: 11400000, guid: 1381b97c78804404ba9da2b9aaa1b293, type: 2}
   aliasColor: {r: 0, g: 0.6156863, b: 1, a: 1}
   tileType: 2
