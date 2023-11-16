@@ -18,8 +18,6 @@ public class TileSetup : ScriptableObject
     [Range(0f,1f)]
     [SerializeField] private List<float> _manualDivisionPoints; //List of points between 0 and 1, which determine where the different tiles are separated at, based on the Perlin Noise
 
-    [SerializeField] private Tile _invisibleTile; //Invisible tile for drag effect and collisions
-
     private Dictionary<Color, TileInfo> _tileInfosByColor = new Dictionary<Color, TileInfo>(); //A dictionary to access TileInfo objects by their AliasColor
 
     /// <summary>
@@ -83,9 +81,9 @@ public class TileSetup : ScriptableObject
     /// Return the main, walkable TileInfo.
     /// </summary>
     /// <returns>The TileInfo marked as main.</returns>
-    public TileInfo GetMainTile()
+    public TileInfo GetGroundTileInfo()
     {
-        return _tileInfos.Where(x => x.tileType == TileInfo.TileType.Main).FirstOrDefault();
+        return _tileInfos.Where(x => x.tileType == TileInfo.TileType.Ground).FirstOrDefault();
     }
 
     /// <summary>
@@ -112,8 +110,8 @@ public class TileSetup : ScriptableObject
         return tileInfo;
     }
 
-    public Tile GetInvisibleTile()
+    public TileBase GetTileByType(TileInfo.TileType tileType)
     {
-        return _invisibleTile;
+        return _tileInfos.Where(x => x.tileType == tileType).FirstOrDefault().tile;
     }
 }

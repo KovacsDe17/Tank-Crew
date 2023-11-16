@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2bfa0410de5b0d46ba639fc1a431969, type: 3}
-  m_Name: Mud
+  m_Name: Forest
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: c2320445a2990b74180ee719e7c5b23f, type: 2}
-  aliasColor: {r: 0.5058824, g: 0.25882354, b: 0, a: 1}
-  tileType: 1
+  tile: {fileID: 11400000, guid: 474af13d80754f747af9d0217457aec0, type: 2}
+  aliasColor: {r: 0, g: 0.40784317, b: 0.06666667, a: 1}
+  tileType: 3

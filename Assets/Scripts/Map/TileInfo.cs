@@ -36,6 +36,6 @@ public class TileInfo : ScriptableObject
     /// <summary>
     /// Tile type which helps separating tilemaps to different layers.
     /// </summary>
-    public enum TileType { Main, Drag, Collide }
+    public enum TileType { Ground, Mud, Water, Forest }
 
 }

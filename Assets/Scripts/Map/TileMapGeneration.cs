@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -29,10 +30,14 @@ public class TileMapGeneration : MonoBehaviour
     [SerializeField] private Vector2Int _offset; //Offset of the Perlin Noise used for generating the map
     [SerializeField] private Tilemap _baseTilemap; //Tilemap for the main walkable surface
     [SerializeField] private Tilemap _dragTilemap; //Tilemap for the surfaces that use drag
-    [SerializeField] private Tilemap _colliderTilemap; //Tilemap for the colliders
+    [SerializeField] private Tilemap _lowerColliderTilemap; //Tilemap for the colliders in a lower layer
+    [SerializeField] private Tilemap _upperColliderTilemap; //Tilemap for the colliders in an upper layer
     [Space]
     [Header("Tiles")]
     [SerializeField] private TileSetup _tileSetup; //TileSetup that is being applied
+    [Space]
+    [Header("Loading Icon")]
+    [SerializeField] private GameObject _loadingIcon; //The loading icon get's enabled on map generation
     [Space]
     [Header("Spawning")]
     [SerializeField] private Transform _parentGrid; //The Grid that parents the tilemaps
@@ -40,7 +45,7 @@ public class TileMapGeneration : MonoBehaviour
     [SerializeField] private GameObject _objectiveSpawnPointPrefab; //Prefab for the objective's spawn point
     private GameObject _playerSpawnPoint; //Spawn point of the Player
     private GameObject _objectiveSpawnPoint; //Spawn point of the objective
-    [Header("Endpoints")]
+    
     private EndPoints _endPoints; //The position of the Player's and the objective's spawn point
 
     /// <summary>
@@ -48,10 +53,13 @@ public class TileMapGeneration : MonoBehaviour
     /// </summary>
     public void GenerateTileMaps()
     {
+        //_loadingIcon.SetActive(true);
+        //Debug.Log("I am " + (_loadingIcon.activeSelf ? "active" : "not active"));
+
         //Clear all tilemaps
         _baseTilemap.ClearAllTiles();
         _dragTilemap.ClearAllTiles();
-        _colliderTilemap.ClearAllTiles();
+        _lowerColliderTilemap.ClearAllTiles();
 
         //Create new Perlin Noise and generate the base texture from it
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);
@@ -63,11 +71,17 @@ public class TileMapGeneration : MonoBehaviour
         //Update all of the minimaps
         UpdateMinimaps(baseTexture);
 
+        //Fill Base layer with Main
+        _baseTilemap.BoxFill((Vector3Int)_mapSize, _tileSetup.GetGroundTileInfo().tile, 0, 0, _mapSize.x, _mapSize.y);
+
         //Set the tiles based on the baseTexture
         ForEachPixel(baseTexture, (x,y) =>
         {
             SetTileToPosition(baseTexture, x, y);
         });
+
+        //_loadingIcon.SetActive(false);
+        //Debug.Log("I am " + (_loadingIcon.activeSelf ? "active" : "not active"));
     }
 
     /// <summary>
@@ -87,18 +101,24 @@ public class TileMapGeneration : MonoBehaviour
         //Get the proper tile based on the color
         TileInfo tileInfo = _tileSetup.GetTileInfoByColor(color);
 
-        //Set the tile on the base tilemap
-        _baseTilemap.SetTile((Vector3Int)position, tileInfo.tile);
-
-        //If the tileinfo has a drag or a collide type, add an invisible tile to the corresponding tilemap
-        if(tileInfo.tileType == TileInfo.TileType.Drag)
+        switch (tileInfo.tileType)
         {
-            _dragTilemap.SetTile((Vector3Int)position, _tileSetup.GetInvisibleTile());
-        }
+            case TileInfo.TileType.Ground: 
+                return; //Main is already filled onto Base layer
 
-        if (tileInfo.tileType == TileInfo.TileType.Collide)
-        {
-            _colliderTilemap.SetTile((Vector3Int)position, _tileSetup.GetInvisibleTile());
+            case TileInfo.TileType.Mud: 
+                _dragTilemap.SetTile((Vector3Int)position, tileInfo.tile); 
+                break;
+
+            case TileInfo.TileType.Water: 
+                _lowerColliderTilemap.SetTile((Vector3Int)position, tileInfo.tile); 
+                if(tileInfo.divisionPoints.floor == 0f) //if it's the bottom layer (water) add Mud beneath
+                    _dragTilemap.SetTile((Vector3Int)position, _tileSetup.GetTileByType(TileInfo.TileType.Mud));
+                break;
+
+            case TileInfo.TileType.Forest:
+                _upperColliderTilemap.SetTile((Vector3Int)position, tileInfo.tile);
+                break;
         }
     }
 
@@ -231,7 +251,7 @@ public class TileMapGeneration : MonoBehaviour
     private Texture2D GeneratePartialPerlinTexture(PerlinNoise perlinNoise)
     {
         //Create a partial Perlin Noise map, which only shows the pixels for the main walkable tiles
-        Texture2D partialPerlinTexture = perlinNoise.GeneratePerlinBetweenValues(_tileSetup.GetMainTile().divisionPoints); //Create partial perlin map
+        Texture2D partialPerlinTexture = perlinNoise.GeneratePerlinBetweenValues(_tileSetup.GetGroundTileInfo().divisionPoints); //Create partial perlin map
 
         //If there's a test image given, draw the partial Perlin Noise map on it
         if (_testImagePerlin != null)
@@ -254,7 +274,7 @@ public class TileMapGeneration : MonoBehaviour
 
         //Find the midpoints on the partial Perlin Noise map
         //These mean those points that are equal distances from the walkable tiles' floor and ceil division points
-        List<Vector2Int> midPoints = FindMidPoints(perlinTexture, _tileSetup.GetMainTile().divisionPoints);
+        List<Vector2Int> midPoints = FindMidPoints(perlinTexture, _tileSetup.GetGroundTileInfo().divisionPoints);
 
         //Mark these midpoints on the new, marked texture
         markedTexture = MarkPoints(midPoints, markedTexture, _midPointColor);
