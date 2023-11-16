@@ -72,7 +72,7 @@ public class TileMapGeneration : MonoBehaviour
         UpdateMinimaps(baseTexture);
 
         //Fill Base layer with Main
-        _baseTilemap.BoxFill((Vector3Int)_mapSize, _tileSetup.GetGroundTileInfo().tile, 0, 0, _mapSize.x, _mapSize.y);
+        _baseTilemap.BoxFill((Vector3Int)(_mapSize - Vector2Int.one), _tileSetup.GetGroundTileInfo().tile, 0, 0, _mapSize.x-1, _mapSize.y-1);
 
         //Set the tiles based on the baseTexture
         ForEachPixel(baseTexture, (x,y) =>
