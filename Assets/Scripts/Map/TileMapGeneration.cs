@@ -60,6 +60,7 @@ public class TileMapGeneration : MonoBehaviour
         _baseTilemap.ClearAllTiles();
         _dragTilemap.ClearAllTiles();
         _lowerColliderTilemap.ClearAllTiles();
+        _upperColliderTilemap.ClearAllTiles();
 
         //Create new Perlin Noise and generate the base texture from it
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);

@@ -58,5 +58,10 @@ public class SpawnPoint : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnGameStart -= Spawn;
+    }
+
     private enum SpawnObjectType { Player, Objective, Enemy, PickUp, StaticObject}
 }
