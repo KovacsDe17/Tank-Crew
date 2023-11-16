@@ -11,6 +11,16 @@ public class FollowPlayer : MonoBehaviour
     [SerializeField]
     private Vector3 _offset;
 
+    [Header("Boundaries")]
+    [SerializeField]
+    private float _left;
+    [SerializeField]
+    private float _right;
+    [SerializeField]
+    private float _top;
+    [SerializeField]
+    private float _bottom;
+
     private Transform _playerTransform;
 
     private void Start()
@@ -40,8 +50,13 @@ public class FollowPlayer : MonoBehaviour
     private void Follow(Transform objectToFollow, float catchUpSpeed) 
     {
         Vector3 desiredPosition = objectToFollow.position + _offset;
-        Vector3 smoothPosition = Vector3.Lerp(transform.position, desiredPosition, catchUpSpeed * Time.deltaTime);
+        
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, catchUpSpeed * Time.deltaTime);
 
-        transform.position = smoothPosition;
+        transform.position = new Vector3(
+            Mathf.Clamp(transform.position.x, _left, _right),
+            Mathf.Clamp(transform.position.y, _bottom, _top),
+            transform.position.z
+        );
     }
 }

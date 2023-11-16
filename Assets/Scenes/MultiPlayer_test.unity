@@ -2848,6 +2848,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _catchUpSpeed: 10
   _offset: {x: 0, y: 0, z: -15.5}
+  _left: 20
+  _right: 236
+  _top: 247
+  _bottom: 10
 --- !u!1 &535879897
 GameObject:
   m_ObjectHideFlags: 0
