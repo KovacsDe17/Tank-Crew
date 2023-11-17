@@ -20,7 +20,7 @@ public class RelayManager : MonoBehaviour
 
     public event EventHandler OnRelayClientStarted; //When the client joins the relay
 
-    private void Start()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -30,6 +30,11 @@ public class RelayManager : MonoBehaviour
         {
             Instance = this;
         }
+
+    }
+
+    private void Start()
+    {
 
         NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
         {

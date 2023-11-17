@@ -10,21 +10,9 @@
     "m_KnownPackagesForSerialization": [
         {
             "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 6170,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
             "name": "com.sec.android.app.launcher",
             "processId": 3871,
             "exited": false
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 30148,
-            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
@@ -42,6 +30,18 @@
             "deviceId": "RF8N3022LRN",
             "name": "com.google.android.youtube",
             "processId": 8786,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 31218,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.pomodrone.app",
+            "processId": 4146,
             "exited": false
         }
     ],

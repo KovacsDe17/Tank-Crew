@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -34,11 +35,15 @@ public class PlayerTank : Entity
         SetHealthBar(GameManager.Instance.GetPlayerHealthBar());
     }
 
-    public override void Die()
+    public override async void Die()
     {
         Debug.Log("The Player has Died!");
         OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
 
         //base.Die();
+
+        await Task.Delay(2000); //Wait for two seconds
+
+        GameManager.Instance.InvokeOnGameEnd(false);
     }
 }

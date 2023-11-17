@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -19,7 +20,8 @@ public class Objective : MonoBehaviour
     private void OnObjectiveReached()
     {
         Debug.Log("The Objective has been reached!");
-        GameManager.Instance.OnGameWin();
+
+        Win();
     }
 
     /// <summary>
@@ -28,7 +30,8 @@ public class Objective : MonoBehaviour
     private void OnObjectiveDestroyed()
     {
         Debug.Log("The Objective has been destroyed!");
-        GameManager.Instance.OnGameWin();
+
+        Win();
     }
 
     /// <summary>
@@ -37,7 +40,8 @@ public class Objective : MonoBehaviour
     private void OnObjectiveCaptured()
     {
         Debug.Log("The Objective has been captured!");
-        GameManager.Instance.OnGameWin();
+
+        Win();
     }
 
     /// <summary>
@@ -66,6 +70,16 @@ public class Objective : MonoBehaviour
     {
         Debug.Log("Ended capturing objective!");
         //TODO: implement -> reset timer
+    }
+
+    /// <summary>
+    /// When the player wins, wait for two seconds before firing the event.
+    /// </summary>
+    private async void Win()
+    {
+        await Task.Delay(2000); //Wait for two seconds
+
+        GameManager.Instance.InvokeOnGameEnd(true);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

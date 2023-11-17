@@ -13,8 +13,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }    //Singleton instance
 
     public event EventHandler OnGameStart; //Event for starting the game
-    public event EventHandler OnGameOverLose; //Event for losing the game
-    public event EventHandler OnGameOverWin; //Event for winning the game
+    public event EventHandler OnGameEnd; //Event for winning the game
     public event EventHandler OnPlayerSpawn; //Event for spawning the Player
     public event EventHandler OnPause; //Event for pause
     public event EventHandler OnResume; //Event for resume
@@ -23,6 +22,10 @@ public class GameManager : MonoBehaviour
     public Transform ParentTransformPickUps; //Parent for PickUps in the game hierarchy
     public Transform ParentTransformStaticObjects;  //Parent for Static objects in the game hierarchy
     [SerializeField] private Slider _playerHealthBar; //Health Bar for the player
+
+    private float _timeOfStart;
+    private int _enemiesDestroyed;
+    private int _shotsFired;
 
     private void Awake()
     {
@@ -59,16 +62,23 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("Game Started!");
+        _timeOfStart = Time.time;
         OnGameStart?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
-    /// When the Player wins
+    /// Invoke event when the game ends.
     /// </summary>
-    public void OnGameWin()
+    /// <param name="won">Wether ot not the Player won the game.</param>
+    public void InvokeOnGameEnd(bool won)
     {
-        OnGameOverWin?.Invoke(this, EventArgs.Empty);
-        Debug.Log("Congratulations! You won!");
+        OnGameEnd?.Invoke(this, new EndGameEventArgs {
+            won = won,
+            timeElapsed = Time.time - _timeOfStart,
+            enemiesDestroyed = _enemiesDestroyed,
+            shotsFired = _shotsFired
+        });
+        Debug.Log("Victory!");
     }
 
     public void InvokeOnPlayerSpawn()
@@ -80,5 +90,13 @@ public class GameManager : MonoBehaviour
     public Slider GetPlayerHealthBar()
     {
         return _playerHealthBar;
+    }
+
+    public class EndGameEventArgs : EventArgs
+    {
+        public bool won;
+        public float timeElapsed;
+        public int enemiesDestroyed;
+        public int shotsFired;
     }
 }
