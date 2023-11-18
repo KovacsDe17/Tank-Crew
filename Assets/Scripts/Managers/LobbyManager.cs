@@ -79,11 +79,14 @@ public class LobbyManager : MonoBehaviour
     /// <returns>A Task if it was successful.</returns>
     private static async Task SignIn()
     {
-        AuthenticationService.Instance.SignedIn += () => //Subscribing to "Signed In" action
+        if (!AuthenticationService.Instance.IsSignedIn)
         {
-            Debug.Log("Signed in with ID: " + AuthenticationService.Instance.PlayerId);
-        };
-        await AuthenticationService.Instance.SignInAnonymouslyAsync(); //Signing in anonymously (using a generated ID)
+            AuthenticationService.Instance.SignedIn += () => //Subscribing to "Signed In" action
+            {
+                Debug.Log("Signed in with ID: " + AuthenticationService.Instance.PlayerId);
+            };
+            await AuthenticationService.Instance.SignInAnonymouslyAsync(); //Signing in anonymously (using a generated ID)
+        }
 
         Debug.Log("Name: " + Player.Local.GetName() + " role: " + ((int)Player.Local.GetPlayerRole()).ToString()); //Printing out the name of the local player and it's role
     }

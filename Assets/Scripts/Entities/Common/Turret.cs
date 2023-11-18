@@ -30,4 +30,10 @@ public class Turret : NetworkBehaviour
         projectile.GetComponent<AmmoProjectile>().SetDamage(damage);
         projectile.GetComponent<NetworkObject>().Spawn(true);
     }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        if (transform.parent == null)
+            Destroy(gameObject);
+    }
 }

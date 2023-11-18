@@ -62,6 +62,8 @@ public class RelayManager : MonoBehaviour
             Debug.Log("JoinCode: " + joinCode);
 
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+            
+            Debug.Log("NetworkManager Singleton: " + NetworkManager.Singleton.transform.name);
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
             NetworkManager.Singleton.StartHost();
