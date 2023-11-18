@@ -38,14 +38,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if(Input.GetKey(KeyCode.W))
-        {
-            InvokeOnGameEnd(true);
-        }
-    }
-
     /// <summary>
     /// Pause the game
     /// </summary>
