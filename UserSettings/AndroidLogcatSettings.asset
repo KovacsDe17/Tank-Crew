@@ -1,9 +1,9 @@
 {
     "m_SelectedDeviceId": "RF8N3022LRN",
     "m_SelectedPackage": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "RF8N3022LRN",
+        "name": "com.DefaultCompany.com.unity.template.mobile2D",
+        "processId": 22995,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -13,18 +13,6 @@
             "name": "com.sec.android.app.launcher",
             "processId": 3871,
             "exited": false
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 4565,
-            "exited": true
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.google.android.youtube",
-            "processId": 27819,
-            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
@@ -42,6 +30,18 @@
             "deviceId": "RF8N3022LRN",
             "name": "com.pomodrone.app",
             "processId": 4146,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 10976,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 22995,
             "exited": false
         }
     ],

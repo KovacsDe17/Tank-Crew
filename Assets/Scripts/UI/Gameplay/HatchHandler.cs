@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -11,15 +12,15 @@ public class HatchHandler : MonoBehaviour
     private Animator _animator;
     private Ammo _loadedAmmo;
 
-    void Awake()
+    void Start()
     {
-        Initialize();
+        Initialize(this, EventArgs.Empty);
     }
 
     /// <summary>
     /// Assign the RectTransform to the object, and set the rotation to the closed state
     /// </summary>
-    private void Initialize()
+    private void Initialize(object sender, EventArgs e)
     {
         _isOpen = false;
         _loadedAmmo = null;
@@ -71,6 +72,7 @@ public class HatchHandler : MonoBehaviour
         string clip = "Shoot";
         _animator.Play("Base Layer." + clip, 0, 0);
         _loadedAmmo.Fire();
+
         _turret.FireProjectileServerRPC();
     }
 

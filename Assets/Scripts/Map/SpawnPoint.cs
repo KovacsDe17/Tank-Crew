@@ -1,10 +1,11 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
 /// A point where the specified GameObject will be spawned.
 /// </summary>
-public class SpawnPoint : MonoBehaviour
+public class SpawnPoint : NetworkBehaviour
 {
     [SerializeField] private SpawnObjectType _spawnObjectType;
     [SerializeField] private GameObject _objectToSpawn; //The object to spawn
@@ -23,7 +24,8 @@ public class SpawnPoint : MonoBehaviour
     /// </summary>
     public void Spawn(object sender, EventArgs e)
     {
-        Instantiate(_objectToSpawn, transform.position, _objectToSpawn.transform.rotation, _spawnParent);
+        GameObject gameobject = Instantiate(_objectToSpawn, transform.position, _objectToSpawn.transform.rotation, _spawnParent);
+        gameobject.GetComponent<NetworkObject>().Spawn();
 
         if (_spawnObjectType == SpawnObjectType.Player)
         {

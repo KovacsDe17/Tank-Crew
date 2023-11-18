@@ -8,9 +8,12 @@ using UnityEngine;
 /// </summary>
 public class DestroyNetworkManager : MonoBehaviour
 {
+    [SerializeField] private int _multiplayerSceneId;
+
     private void OnLevelWasLoaded(int level)
     {
-        DestroyNetworkManagerInstance();
+        if(level != _multiplayerSceneId)
+            DestroyNetworkManagerInstance();
     }
 
     /// <summary>

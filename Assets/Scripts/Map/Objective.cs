@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
 /// An objective point for the Player.
 /// </summary>
-public class Objective : MonoBehaviour
+public class Objective : NetworkBehaviour
 {
     /// <summary>
     /// Wether to reach, destroy or capture this objective.

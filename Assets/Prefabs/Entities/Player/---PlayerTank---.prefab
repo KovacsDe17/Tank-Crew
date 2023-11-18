@@ -12,6 +12,10 @@ PrefabInstance:
       value: ---PlayerTank---
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533667, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 155430534422533667, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
