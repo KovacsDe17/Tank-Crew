@@ -98,11 +98,15 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     public void OnDrag()
     {
+        //Debug.Log("Drag position: " + transform.position);
+
         if (CloseTo(_origin.position, 0) && !_canMoveToHolder)
             return;
 
+        /*
         if (CloseTo(_placeInChamber, _rectTransform.rect.width) && !_hatchHandler.IsOpen())
             return;
+        */
 
         if (!_isSnappedToPlace && !_ammo.IsShot())
         {
@@ -188,12 +192,68 @@ public class AmmoMovement : MonoBehaviour
     /// <param name="position">The desired position</param>
     private void SetAmmoPosition(Vector2 position)
     {
+        Vector2 clampedPosition = ClampOnX(ClampOnY(position));
+
         _previousTouchPosition = _currentTouchPosition;
-        _currentTouchPosition = position;
+        _currentTouchPosition = clampedPosition;
 
         //Debug.Log("Prev: " + _previousTouchPosition + "\nCurr: " + _currentTouchPosition);
 
-        _rigidbody.MovePosition(position);
+        _rigidbody.MovePosition(clampedPosition);
+    }
+
+    /// <summary>
+    /// Clamp the given position on the Y axis to match with the Chamber.
+    /// This is based on the distance from the chamber on the X axis.
+    /// </summary>
+    /// <param name="position">Move position.</param>
+    /// <returns>A clamped position.</returns>
+    private Vector2 ClampOnY(Vector2 position)
+    {
+        float offset = _rectTransform.rect.width * 0.75f;
+        float distanceFromChamber = Vector2.Distance(_rectTransform.position, _placeInChamber - Vector2.right * offset);
+        float adjustment;
+
+        if (distanceFromChamber > offset)
+            adjustment = distanceFromChamber * 0.15f;
+        else
+            adjustment = 0f;
+
+        float min = _placeInChamber.y - adjustment;
+        float max = _placeInChamber.y + adjustment;
+
+        Vector2 clampedPosition = new Vector2(
+            position.x,
+            Mathf.Clamp(position.y, min, max)
+        );
+
+        return clampedPosition;
+    }
+
+    /// <summary>
+    /// Clamp the given position on the X axis to match with the Hatch.
+    /// This is based on whether the hatch is open or not.
+    /// </summary>
+    /// <param name="position">Move position.</param>
+    /// <returns>A clamped position.</returns>
+    private Vector2 ClampOnX(Vector2 position)
+    {
+        float offset;
+
+        if (_hatchHandler.IsOpen())
+            offset = 0f;
+        else
+            offset = -_rectTransform.rect.width;
+
+        float min = _origin.position.x;
+        float max = _placeInChamber.x + offset;
+
+        Vector2 clampedPosition = new Vector2(
+            Mathf.Clamp(position.x, min, max),
+            position.y
+        );
+
+        return clampedPosition;
     }
 
     private void SnapToPlace(Vector2 place)
@@ -297,9 +357,10 @@ public class AmmoMovement : MonoBehaviour
     /// <returns>True when the ammunition is within the threshold</returns>
     private bool CloseTo(Vector2 position, float threshold)
     {
-        float distance = Vector2.Distance(GetClosestTouchPosition(), position);
+        float distanceFromRect = Vector2.Distance(_rectTransform.position, position);
+        float distanceFromTouch = Vector2.Distance(GetClosestTouchPosition(), position);
 
-        return distance <= threshold;
+        return (distanceFromRect <= threshold) && (distanceFromTouch <= threshold);
     }
 
     //TODO: outsource to a unified input class?
