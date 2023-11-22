@@ -15,10 +15,15 @@ public class CreateLobbyMenuUI : MonoBehaviour
     /// </summary>
     public void CreateLobbyByFields()
     {
+        string seed = _mapSeedInputField.text;
+
+        if (_mapSeedInputField.text.Equals(""))
+            seed = "0";
+
         LobbyManager.Instance.CreateLobby(
             _lobbyNameInputField.text,
             _gameModeDropdown.options[_gameModeDropdown.value].text,
-            _mapSeedInputField.text
+            int.Parse(seed).ToString()
         );
     }
 
