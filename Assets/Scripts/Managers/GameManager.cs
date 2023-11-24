@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public event EventHandler OnGameStart; //Event for starting the game
     public event EventHandler OnGameEnd; //Event for winning the game
     public event EventHandler OnPlayerSpawn; //Event for spawning the Player
+    public event EventHandler OnSetupComplete; //Event for multiplayer setup being completed
     public event EventHandler OnPause; //Event for pause
     public event EventHandler OnResume; //Event for resume
 
@@ -84,6 +85,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("OnPlayerSpawned invoked!");
         OnPlayerSpawn?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void InvokeOnSetupComplete()
+    {
+        Debug.Log("OnSetupComplete invoked!");
+        OnSetupComplete?.Invoke(this, EventArgs.Empty);
     }
 
     public Slider GetPlayerHealthBar()

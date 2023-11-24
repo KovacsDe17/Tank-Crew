@@ -11,19 +11,9 @@ public class PlayerControl : NetworkBehaviour
     private Lever _leverLeft, _leverRight; //Lever controls from Driver UI
     private Crank _crank; //Crank control from Gunner UI
 
-    /*
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
-    }
-    */
-
-    private void Start()
-    {
-        if (PlayerTank.Instance == null)
-            GameManager.Instance.OnPlayerSpawn += Setup;
-        else
-            Setup(this, EventArgs.Empty);
+        Setup();
     }
 
     private void FixedUpdate()
@@ -70,11 +60,20 @@ public class PlayerControl : NetworkBehaviour
         Player.Local.GunnerUI.SetActive(!_isDriver);
     }
 
-    private void Setup(object sender, EventArgs e)
+    private void Setup()
     {
         if (!IsOwner) return;
 
         Initialize();
         SetupTankControlUI();
+        SetupCamera();
+    }
+
+    private void SetupCamera()
+    {
+        GameObject camera = Camera.main.gameObject;
+        FollowPlayer followPlayer = camera.GetComponent<FollowPlayer>();
+
+        followPlayer.SetPlayerTransform();
     }
 }

@@ -77,7 +77,7 @@ public class LobbyManager : MonoBehaviour
     /// Signs in the player anonymously.
     /// </summary>
     /// <returns>A Task if it was successful.</returns>
-    private static async Task SignIn()
+    private async Task SignIn()
     {
         if (!AuthenticationService.Instance.IsSignedIn)
         {
@@ -163,12 +163,11 @@ public class LobbyManager : MonoBehaviour
                 Debug.Log("Invoking Game Start...");
                 //OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
 
+                OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
                 await RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_START_GAME].Value);
             }
 
             _joinedLobby = null; //Delete the joined lobby reference
-
-            //GameManager.Instance.StartGame();   //Start the game
         }
     }
 
@@ -183,6 +182,8 @@ public class LobbyManager : MonoBehaviour
             Lobby lobby = await LobbyService.Instance.GetLobbyAsync(_joinedLobby.Id);
 
             _joinedLobby = lobby;
+
+            CheckRoles();
 
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
         }
@@ -259,6 +260,8 @@ public class LobbyManager : MonoBehaviour
 
             CheckRoles();
 
+            SyncMap();
+
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
 
             Debug.Log("Joined lobby by code \"" + lobbyCode + "\"!");
@@ -270,6 +273,20 @@ public class LobbyManager : MonoBehaviour
         {
             Debug.Log(e);
         }
+    }
+
+    /// <summary>
+    /// Retrieve the map seed from the lobby and generate the map.
+    /// </summary>
+    private void SyncMap()
+    {
+        TileMapGeneration mapGenerator = TileMapGeneration.Instance;
+        string seed = _joinedLobby.Data[KEY_GAME_MAP].Value;
+        
+        //TODO: set a loading screen?
+
+        mapGenerator.SetOffsetFromSeed(seed);
+        mapGenerator.GenerateTileMaps();
     }
 
     /// <summary>
@@ -453,10 +470,10 @@ public class LobbyManager : MonoBehaviour
     /// </summary>
     public async void InvokeGameStart()
     {
-        OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
-
         if (IsLobbyHost())
         {
+            OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
+
             try
             {
                 Debug.Log("Starting Game");

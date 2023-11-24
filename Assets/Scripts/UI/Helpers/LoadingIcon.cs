@@ -1,4 +1,8 @@
 using System;
+using System.Collections;
+using System.Threading;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +11,7 @@ using UnityEngine.UI;
 /// </summary>
 public class LoadingIcon : MonoBehaviour
 {
+    [SerializeField] float _speed;
     private Animator _animator;
     private Image _image;
 
@@ -19,7 +24,7 @@ public class LoadingIcon : MonoBehaviour
         //_image.enabled = false;
     }
 
-
+    /*
     public void Enable(object sender, EventArgs e)
     {
         _image.enabled = true;
@@ -32,9 +37,23 @@ public class LoadingIcon : MonoBehaviour
         _image.enabled = false;
         _animator.enabled = false;
     }
+    */
+
+    private void Update()
+    {
+        
+    }
+
+    IEnumerator SpinLogo()
+    {
+        Debug.Log("Started");
+        transform.Rotate(-Vector3.forward * (_speed * Time.deltaTime));
+        yield return null;
+    }
 
     private void OnEnable()
     {
-        _animator.Play("Spin");
+        StartCoroutine(SpinLogo());
+        //_animator.Play("Spin");
     }
 }

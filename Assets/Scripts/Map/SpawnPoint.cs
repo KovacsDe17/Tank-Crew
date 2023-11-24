@@ -12,7 +12,7 @@ public class SpawnPoint : NetworkBehaviour
     [SerializeField] private bool _destroyAfterSpawn = true; //Wether to destroy this spawner object after spawning
     private Transform _spawnParent; //The parent of which the GameObject will be spawned under
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         SetSpawnParent();
 
@@ -24,17 +24,25 @@ public class SpawnPoint : NetworkBehaviour
     /// </summary>
     public void Spawn(object sender, EventArgs e)
     {
+        if (!IsServer) return;
+
         GameObject gameobject = Instantiate(_objectToSpawn, transform.position, _objectToSpawn.transform.rotation, _spawnParent);
         gameobject.GetComponent<NetworkObject>().Spawn();
 
         if (_spawnObjectType == SpawnObjectType.Player)
         {
-            Debug.Log("Player spawned!");
-            GameManager.Instance.InvokeOnPlayerSpawn();
+            SetPlayerSpawned();
         }
 
-        if(_destroyAfterSpawn)
+        if (_destroyAfterSpawn)
             Destroy(gameObject);
+    }
+
+    private static void SetPlayerSpawned()
+    {
+        Debug.Log("Player spawned!");
+        GameManager.Instance.InvokeOnPlayerSpawn();
+
     }
 
     /// <summary>
@@ -60,9 +68,11 @@ public class SpawnPoint : NetworkBehaviour
         }
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
         GameManager.Instance.OnGameStart -= Spawn;
+
+        base.OnDestroy();
     }
 
     private enum SpawnObjectType { Player, Objective, Enemy, PickUp, StaticObject}

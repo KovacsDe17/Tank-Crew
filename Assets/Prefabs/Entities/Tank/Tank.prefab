@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 5215095279821639948}
   - component: {fileID: 7751969546249277444}
   - component: {fileID: 1329441883659213150}
-  - component: {fileID: 5011183136606999889}
+  - component: {fileID: 4746351763172951332}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -212,7 +212,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &5011183136606999889
+--- !u!114 &4746351763172951332
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -221,11 +221,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 155430533852083646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncPositionX: 0
-  SyncPositionY: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
   SyncPositionZ: 0
   SyncRotAngleX: 0
   SyncRotAngleY: 0
@@ -239,7 +239,7 @@ MonoBehaviour:
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
-  InLocalSpace: 1
+  InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
 --- !u!1 &155430534307669156
@@ -511,8 +511,8 @@ GameObject:
   - component: {fileID: 1084034541611652879}
   - component: {fileID: 4939029509737461353}
   - component: {fileID: 979487898955446277}
-  - component: {fileID: 7221777513159830386}
-  - component: {fileID: 384825881533330918}
+  - component: {fileID: -2454813029986059438}
+  - component: {fileID: 7785873993332459324}
   m_Layer: 6
   m_Name: Tank
   m_TagString: PlayerTank
@@ -697,7 +697,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &7221777513159830386
+--- !u!114 &-2454813029986059438
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -709,7 +709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &384825881533330918
+--- !u!114 &7785873993332459324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 155430534422533665}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SyncPositionX: 1

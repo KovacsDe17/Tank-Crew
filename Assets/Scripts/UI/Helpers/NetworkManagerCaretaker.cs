@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -12,6 +11,11 @@ using UnityEngine;
 public class NetworkManagerCaretaker : MonoBehaviour
 {
     [SerializeField] private int _multiplayerSceneId;
+
+    private void OnEnable()
+    {
+        DontDestroyOnLoad(this);
+    }
 
     /// <summary>
     /// Manage instances of NetworkManager when loading a scene.
@@ -41,24 +45,6 @@ public class NetworkManagerCaretaker : MonoBehaviour
             Destroy(gameObject);
 
         return;
-
-        List<NetworkManager> networkManagers = GetNetworkManagerList();
-
-        if (networkManagers.Count == 0)
-            throw new Exception("No NetworkManager objects were found! Ensure that at least one instance exists!");
-
-        if (NetworkManager.Singleton == null)
-        {
-            Debug.Log("Singleton was null, setting the first NetworkManager");
-            networkManagers[0].SetSingleton();
-        }
-
-        foreach(NetworkManager manager in networkManagers)
-        {
-            if (manager == NetworkManager.Singleton) continue;
-
-            Destroy(manager.gameObject);
-        }
     }
 
     /// <summary>

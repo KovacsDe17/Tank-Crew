@@ -45,6 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb3a3d93729c01e468f5bcea58594780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParentTransformEnemies: {fileID: 0}
+  ParentTransformPickUps: {fileID: 0}
+  ParentTransformStaticObjects: {fileID: 0}
+  _playerHealthBar: {fileID: 0}
 --- !u!114 &2693905141959141059
 MonoBehaviour:
   m_ObjectHideFlags: 0

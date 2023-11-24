@@ -44,7 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75abbd276a5ed0a4cb5462b8d1e78837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minimap: {fileID: 0}
+  _minimaps:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   _testImagePerlin: {fileID: 0}
   _testImageMarked: {fileID: 0}
   _mapSize: {x: 256, y: 256}
@@ -52,10 +55,10 @@ MonoBehaviour:
   _offset: {x: 0, y: 0}
   _baseTilemap: {fileID: 0}
   _dragTilemap: {fileID: 0}
-  _colliderTilemap: {fileID: 0}
+  _lowerColliderTilemap: {fileID: 0}
+  _upperColliderTilemap: {fileID: 0}
   _tileSetup: {fileID: 11400000, guid: c914dc800455e4f4b88b568c1c070aac, type: 2}
+  _loadingIcon: {fileID: 0}
   _parentGrid: {fileID: 0}
   _playerSpawnPointPrefab: {fileID: 2083113295324096695, guid: 091f11b4bd9a76a4eb75abb7d4213de6, type: 3}
   _objectiveSpawnPointPrefab: {fileID: 4366970493290526977, guid: a0c0eaa8581c15b47ae8426a1fc18c6d, type: 3}
-  _startPointImage: {fileID: 0}
-  _objectivePointImage: {fileID: 0}

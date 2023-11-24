@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
@@ -25,8 +26,9 @@ public class PlayerTank : Entity
         }
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         AssignHealthBar();
     }
 

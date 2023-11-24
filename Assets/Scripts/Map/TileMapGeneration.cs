@@ -1,17 +1,34 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// This object is responsible for the generation of different Tilemaps and a minimap.
 /// </summary>
 public class TileMapGeneration : MonoBehaviour
 {
+    public static TileMapGeneration Instance;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        } 
+        else
+        {
+            Instance = this;
+        }
+    }
+
     //Colors for the marked texture
     private Color _playerSpawnPointColor = Color.blue;
     private Color _objectivePointColor = Color.magenta;
@@ -48,22 +65,30 @@ public class TileMapGeneration : MonoBehaviour
     
     private EndPoints _endPoints; //The position of the Player's and the objective's spawn point
 
+    public void GenerateTileMaps()
+    {
+        StartCoroutine(GenerateTileMapsCR());
+    }
+
     /// <summary>
     /// Generate tilemaps based on the previously set size, scale and offset.
     /// </summary>
-    public void GenerateTileMaps()
+    public IEnumerator GenerateTileMapsCR()
     {
-        //_loadingIcon.SetActive(true);
-        //Debug.Log("I am " + (_loadingIcon.activeSelf ? "active" : "not active"));
+        Stopwatch stopwatch = new Stopwatch();
+
+        _loadingIcon.SetActive(true);
+
+        yield return new WaitUntil(() => _loadingIcon.activeSelf);
 
         //Clear all tilemaps
-        _baseTilemap.ClearAllTiles();
         _dragTilemap.ClearAllTiles();
         _lowerColliderTilemap.ClearAllTiles();
         _upperColliderTilemap.ClearAllTiles();
 
         //Create new Perlin Noise and generate the base texture from it
         PerlinNoise perlinNoise = new PerlinNoise(_mapSize, _mapScale, _offset);
+
         Texture2D baseTexture = GenerateBaseTexture();
 
         //Set the spawn points. The informataion needed for them are updated during the texture generation
@@ -72,17 +97,152 @@ public class TileMapGeneration : MonoBehaviour
         //Update all of the minimaps
         UpdateMinimaps(baseTexture);
 
-        //Fill Base layer with Main
-        _baseTilemap.BoxFill((Vector3Int)(_mapSize - Vector2Int.one), _tileSetup.GetGroundTileInfo().tile, 0, 0, _mapSize.x-1, _mapSize.y-1);
+        stopwatch.Start();
 
+        //SetIndividually(baseTexture);
+        SetInBatch(baseTexture);
+
+
+        stopwatch.Stop();
+        Debug.Log("Set Tiles in batch - " + stopwatch.ElapsedMilliseconds + " ms");
+
+        _loadingIcon.SetActive(false);
+    }
+
+    /// <summary>
+    /// Sets the position of the tiles one by one according to the given texture.
+    /// </summary>
+    /// <param name="texture">The texture to base to positioning on.</param>
+    private void SetIndividually(Texture2D texture)
+    {
         //Set the tiles based on the baseTexture
-        ForEachPixel(baseTexture, (x,y) =>
+        ForEachPixel(texture, (x, y) =>
         {
-            SetTileToPosition(baseTexture, x, y);
+            SetTileToPosition(texture, x, y);
+        });
+    }
+
+    /// <summary>
+    /// Calculates the position of the tiles and then sets their position in batch according to the given texture.
+    /// </summary>
+    /// <param name="baseTexture">The texture to base to positioning on.</param>
+    public void SetInBatch(Texture2D baseTexture)
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        TilePositions tilePositions = CalculatePositions(baseTexture); //Positions for each type
+
+        stopwatch.Stop();
+        Debug.Log("Tile position calc - " + stopwatch.ElapsedMilliseconds + " ms");
+
+        stopwatch.Restart();
+
+        TileBase[] tilesOfMud = new TileBase[tilePositions.positionsOfMud.Length]; //Create array for Mud
+        Array.Fill(tilesOfMud, _tileSetup.GetTileByType(TileInfo.TileType.Mud)); //Fill array with Mud Type Tiles
+
+        TileBase[] tilesOfWater = new TileBase[tilePositions.positionsOfWater.Length]; //Create array for Water
+        Array.Fill(tilesOfWater, _tileSetup.GetTileByType(TileInfo.TileType.Water)); //Fill array with Water Type Tiles
+
+        TileBase[] tilesOfForest = new TileBase[tilePositions.positionsOfForest.Length]; //Create array for Forest
+        Array.Fill(tilesOfForest, _tileSetup.GetTileByType(TileInfo.TileType.Forest)); //Fill array with Forest Type Tiles
+
+        stopwatch.Stop();
+        Debug.Log("Filling arrays - " + stopwatch.ElapsedMilliseconds + " ms");
+
+        stopwatch.Restart();
+
+        _dragTilemap.SetTiles(tilePositions.positionsOfMud, tilesOfMud); //Set Mud tiles on the corresponding tilemap
+        _lowerColliderTilemap.SetTiles(tilePositions.positionsOfWater, tilesOfWater); //Set Water tiles on the corresponding tilemap
+        _upperColliderTilemap.SetTiles(tilePositions.positionsOfForest, tilesOfForest); //Set Forest tiles on the corresponding tilemap
+
+        stopwatch.Stop();
+        Debug.Log("Setting tiles - " + stopwatch.ElapsedMilliseconds + " ms");
+    }
+
+    /// <summary>
+    /// Calculate the positions of the tiles with the given type and put them in an array.
+    /// </summary>
+    /// <param name="texture">The texture which the calculation is based on.</param>
+    /// <param name="tileType">The type of the tile to calculate the positions of.</param>
+    /// <returns>An array of Vector3Int positions.</returns>
+    private TilePositions CalculatePositions(Texture2D texture)
+    {
+        int size = texture.width * texture.height; //Size of the texture
+
+        TilePositions tilePositions = new TilePositions //The position storage
+        {
+            positionsOfMud = new Vector3Int[size],
+            indexOfMud = 0,
+
+            positionsOfWater = new Vector3Int[size],
+            indexOfWater = 0,
+
+            positionsOfForest = new Vector3Int[size],
+            indexOfForest = 0
+        };
+
+        ForEachPixel(texture, (x, y) =>
+        {
+            AddTilePosition(texture, x, y, ref tilePositions);
         });
 
-        //_loadingIcon.SetActive(false);
-        //Debug.Log("I am " + (_loadingIcon.activeSelf ? "active" : "not active"));
+        return tilePositions;
+    }
+
+    private void AddTilePosition(Texture2D texture, int x, int y, ref TilePositions tilePositions)
+    {
+        //Get the color of the pixel at the given position
+        Color color = texture.GetPixel(x, y);
+
+        //Get the proper tile based on the color
+        TileInfo tileInfo = _tileSetup.GetTileInfoByColor(color);
+
+        //Based on the tile, add the positions to the corresponding array
+        switch (tileInfo.tileType)
+        {
+            case TileInfo.TileType.Ground:
+                return; //Ground is already filled on the Base layer
+
+            case TileInfo.TileType.Mud:
+                tilePositions.positionsOfMud[tilePositions.indexOfMud] = new Vector3Int(x, y);
+                tilePositions.indexOfMud++;
+                break;
+
+            case TileInfo.TileType.Water:
+                tilePositions.positionsOfWater[tilePositions.indexOfWater] = new Vector3Int(x, y);
+                tilePositions.indexOfWater++;
+
+                tilePositions.positionsOfMud[tilePositions.indexOfMud] = new Vector3Int(x, y);
+                tilePositions.indexOfMud++;
+                break;
+
+            case TileInfo.TileType.Forest:
+                tilePositions.positionsOfForest[tilePositions.indexOfForest] = new Vector3Int(x, y);
+                tilePositions.indexOfForest++;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Basic struct for storing tile positions.
+    /// (Positions of the Ground types are irrelevant as it fills the whole map.)
+    /// </summary>
+    internal struct TilePositions
+    {
+        internal Vector3Int[] positionsOfMud;
+        internal int indexOfMud;
+        internal Vector3Int[] positionsOfWater;
+        internal int indexOfWater;
+        internal Vector3Int[] positionsOfForest;
+        internal int indexOfForest;
+    }
+
+    private TileBase[] CalculateTiles(Texture2D texture)
+    {
+        TileBase[] tiles = new TileBase[texture.width * texture.height];
+
+        return tiles;
     }
 
     /// <summary>
@@ -112,15 +272,30 @@ public class TileMapGeneration : MonoBehaviour
                 break;
 
             case TileInfo.TileType.Water: 
-                _lowerColliderTilemap.SetTile((Vector3Int)position, tileInfo.tile); 
-                if(tileInfo.divisionPoints.floor == 0f) //if it's the bottom layer (water) add Mud beneath
-                    _dragTilemap.SetTile((Vector3Int)position, _tileSetup.GetTileByType(TileInfo.TileType.Mud));
+                _lowerColliderTilemap.SetTile((Vector3Int)position, tileInfo.tile);
+                _dragTilemap.SetTile((Vector3Int)position, _tileSetup.GetTileByType(TileInfo.TileType.Mud));
                 break;
 
             case TileInfo.TileType.Forest:
                 _upperColliderTilemap.SetTile((Vector3Int)position, tileInfo.tile);
                 break;
         }
+    }
+
+    private void SetTilesInBatch(Texture2D baseTexture, int x, int y)
+    {
+        //Construct a position based on the coordinates
+        Vector2Int position = new Vector2Int(x, y);
+        
+
+
+        //Get the color of the pixel at the given position
+        Color color = baseTexture.GetPixel(x, y);
+
+        //Get the proper tile based on the color
+        TileInfo tileInfo = _tileSetup.GetTileInfoByColor(color);
+
+
     }
 
     /// <summary>
@@ -143,8 +318,6 @@ public class TileMapGeneration : MonoBehaviour
         _objectiveSpawnPoint = Instantiate(_objectiveSpawnPointPrefab,(Vector2)_endPoints.objectivePoint, _objectiveSpawnPointPrefab.transform.rotation);
         //Set the parent to the map
         _objectiveSpawnPoint.GetComponent<SpawnPoint>().SetSpawnParent(_parentGrid);
-       
-        Debug.Log("EndPoints - OBJ: " + _endPoints.objectivePoint + ", PSP: " + _endPoints.playerSpawnPoint);
     }
 
     /// <summary>

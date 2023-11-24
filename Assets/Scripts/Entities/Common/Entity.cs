@@ -1,11 +1,12 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// The representation of a tank.
 /// </summary>
-public class Entity : MonoBehaviour
+public class Entity : NetworkBehaviour
 {
     [SerializeField] private float _maxHealth = 100f;
     private float _currentHealth = 100f;
@@ -14,8 +15,9 @@ public class Entity : MonoBehaviour
     [SerializeField] private GameObject _destroyedEntity;
     private Turret _turret;
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         Initialize();
     }
 

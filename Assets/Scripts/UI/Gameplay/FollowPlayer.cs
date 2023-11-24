@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -23,9 +24,11 @@ public class FollowPlayer : MonoBehaviour
 
     private Transform _playerTransform;
 
+    private bool _cameraIsAtPosition = false;
+
     private void Start()
     {
-        GameManager.Instance.OnPlayerSpawn += SetPlayerTransform;
+        StartCoroutine(WaitForCameraSetup());
     }
 
     private void FixedUpdate()
@@ -38,6 +41,14 @@ public class FollowPlayer : MonoBehaviour
     /// Set the Player transform
     /// </summary>
     private void SetPlayerTransform(object sender, EventArgs e)
+    {
+        _playerTransform = PlayerTank.Instance.transform;
+    }
+
+    /// <summary>
+    /// Set the Player transform
+    /// </summary>
+    public void SetPlayerTransform()
     {
         _playerTransform = PlayerTank.Instance.transform;
     }
@@ -58,5 +69,27 @@ public class FollowPlayer : MonoBehaviour
             Mathf.Clamp(transform.position.y, _bottom, _top),
             transform.position.z
         );
+
+        if(ApproxEqual(transform.position, desiredPosition))
+            _cameraIsAtPosition=true;
+        else
+            _cameraIsAtPosition=false;
+    }
+
+    private IEnumerator WaitForCameraSetup()
+    {
+        Debug.Log("Waiting for camera position...");
+        yield return new WaitUntil(() => _cameraIsAtPosition == true);
+
+        Debug.Log("Camera is at position!");
+        GameManager.Instance.InvokeOnSetupComplete();
+    }
+
+    private bool ApproxEqual(Vector3 a, Vector3 b)
+    {
+        Vector2Int a_v2 = new Vector2Int(Mathf.RoundToInt(a.x), Mathf.RoundToInt(a.y));
+        Vector2Int b_v2 = new Vector2Int(Mathf.RoundToInt(b.x), Mathf.RoundToInt(b.y));
+
+        return (a_v2 == b_v2);
     }
 }

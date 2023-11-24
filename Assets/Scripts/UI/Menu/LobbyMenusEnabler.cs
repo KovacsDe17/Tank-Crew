@@ -26,7 +26,7 @@ public class LobbyMenusEnabler : MonoBehaviour
         lobby.OnJoinedLobby += EnableJoinedLobbyUI;
         lobby.OnGameStartInvoked += OnGameStartInvoked_ChangeUI;
 
-        relay.OnRelayClientStarted += OnClientStarted_ChangeUI;
+        GameManager.Instance.OnSetupComplete += OnClientStarted_ChangeUI;
     }
 
     /// <summary>

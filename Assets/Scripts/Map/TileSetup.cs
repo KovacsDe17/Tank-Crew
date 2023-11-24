@@ -87,7 +87,7 @@ public class TileSetup : ScriptableObject
     }
 
     /// <summary>
-    /// Return a TileInfo it's alias color.
+    /// Return a TileInfo by it's alias color.
     /// </summary>
     /// <param name="color">The color to search by.</param>
     /// <returns>The TileInfo which's alias color matches the given color.</returns>

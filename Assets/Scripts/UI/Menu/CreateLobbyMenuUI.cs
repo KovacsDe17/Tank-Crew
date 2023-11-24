@@ -23,7 +23,7 @@ public class CreateLobbyMenuUI : MonoBehaviour
         LobbyManager.Instance.CreateLobby(
             _lobbyNameInputField.text,
             _gameModeDropdown.options[_gameModeDropdown.value].text,
-            int.Parse(seed).ToString()
+            ulong.Parse(seed).ToString()
         );
     }
 
