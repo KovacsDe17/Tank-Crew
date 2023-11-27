@@ -75,5 +75,5 @@ public class SpawnPoint : NetworkBehaviour
         base.OnDestroy();
     }
 
-    private enum SpawnObjectType { Player, Objective, Enemy, PickUp, StaticObject}
+    private enum SpawnObjectType { Player, Enemy, PickUp, StaticObject}
 }

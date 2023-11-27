@@ -14,6 +14,7 @@ public class PlayerTank : Entity
     public static PlayerTank Instance { get; private set; }    //Singleton instance
 
     [HideInInspector] public EventHandler OnPlayerDestroyed;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

@@ -78,10 +78,8 @@ public class FollowPlayer : MonoBehaviour
 
     private IEnumerator WaitForCameraSetup()
     {
-        Debug.Log("Waiting for camera position...");
         yield return new WaitUntil(() => _cameraIsAtPosition == true);
 
-        Debug.Log("Camera is at position!");
         GameManager.Instance.InvokeOnSetupComplete();
     }
 

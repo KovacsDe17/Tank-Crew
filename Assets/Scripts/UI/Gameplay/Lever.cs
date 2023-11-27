@@ -41,4 +41,9 @@ public class Lever : MonoBehaviour
     {
         return leverScrollbar == null ? 0 : Normalize(leverScrollbar.value);
     }
+
+    public bool HasMoved()
+    {
+        return leverScrollbar.value != 0.5f;
+    }
 }

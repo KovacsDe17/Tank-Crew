@@ -35,7 +35,6 @@ public class RelayManager : MonoBehaviour
 
     private void Start()
     {
-
         NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
         {
             Debug.Log("Client with Id: " + clientId + " has entered the game!");

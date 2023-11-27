@@ -26,15 +26,15 @@ public class PlayerControl : NetworkBehaviour
         {
             if (_leverLeft == null || _leverRight == null) return;
 
-            //TODO: check if current value is different from previous --> only send data if an action was made
-            MultiplayerTankAccess.Instance.MoveTankServerRPC(_leverLeft.GetNormalizedValue(), _leverRight.GetNormalizedValue());
+            if(_leverLeft.HasMoved() || _leverRight.HasMoved())
+                MultiplayerTankAccess.Instance.MoveTankServerRPC(_leverLeft.GetNormalizedValue(), _leverRight.GetNormalizedValue());
         }
         else
         {
             if (_crank == null) return;
 
-            //TODO: check if current value is different from previous --> only send data if an action was made
-            MultiplayerTankAccess.Instance.RotateTurretServerRPC(_crank.GetRotation());
+            if(_crank.HasMoved())
+                MultiplayerTankAccess.Instance.RotateTurretServerRPC(_crank.GetRotation());
         }
     }
 

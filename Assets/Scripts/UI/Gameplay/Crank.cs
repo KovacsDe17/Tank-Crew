@@ -13,6 +13,9 @@ public class Crank : MonoBehaviour
     private RectTransform _rectTransform;
     private Vector2 _touchPosition;
 
+    private float _currentAngle = 0f;
+    private float _previousAngle = 0f;
+
     private void Awake()
     {
         Initialize();
@@ -56,11 +59,15 @@ public class Crank : MonoBehaviour
     /// <param name="rotation">Rotation in Euler angles. Up is 0, right is 90 degrees</param>
     private void RotateCrankTo(float rotation)
     {
+        _previousAngle = _currentAngle;
+
         _rectTransform.rotation = Quaternion.Euler(
             _rectTransform.eulerAngles.x,
             _rectTransform.eulerAngles.y,
             SnapAngleToSteps(rotation)
             );
+
+        _currentAngle = _rectTransform.rotation.eulerAngles.z;
     }
 
     /// <summary>
@@ -103,5 +110,10 @@ public class Crank : MonoBehaviour
     public float GetRotation()
     {
         return transform.rotation.eulerAngles.z;
+    }
+
+    public bool HasMoved()
+    {
+        return _currentAngle != _previousAngle;
     }
 }

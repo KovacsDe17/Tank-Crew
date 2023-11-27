@@ -10,6 +10,12 @@ public class CreateLobbyMenuUI : MonoBehaviour
     [SerializeField] private TMP_InputField _mapSeedInputField;
     [SerializeField] private TMP_Dropdown _gameModeDropdown;
 
+    private void Start()
+    {
+        _gameModeDropdown.ClearOptions();
+        _gameModeDropdown.AddOptions(Objective.GetObjectiveTypeNames());
+    }
+
     /// <summary>
     /// Create a lobby by the previously given parameters.
     /// </summary>

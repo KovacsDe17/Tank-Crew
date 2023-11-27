@@ -39,6 +39,7 @@ public class LobbyManager : MonoBehaviour
     
     [SerializeField] public List<Button> hostButtons;
     [SerializeField] private GameObject _multiplayerMenu;
+    [SerializeField] private GameObject _loadingIcon;
 
     public static LobbyManager Instance { get; private set; }
 
@@ -260,6 +261,8 @@ public class LobbyManager : MonoBehaviour
 
             CheckRoles();
 
+            await WaitForLoadingIcon(_loadingIcon);
+
             SyncMap();
 
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
@@ -275,6 +278,15 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    private Task WaitForLoadingIcon(GameObject loadingIcon)
+    {
+        loadingIcon.SetActive(true);
+
+        while (!loadingIcon.activeSelf) { }
+
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Retrieve the map seed from the lobby and generate the map.
     /// </summary>
@@ -283,8 +295,6 @@ public class LobbyManager : MonoBehaviour
         TileMapGeneration mapGenerator = TileMapGeneration.Instance;
         string seed = _joinedLobby.Data[KEY_GAME_MAP].Value;
         
-        //TODO: set a loading screen?
-
         mapGenerator.SetOffsetFromSeed(seed);
         mapGenerator.GenerateTileMaps();
     }

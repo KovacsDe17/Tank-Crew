@@ -1,9 +1,9 @@
 {
     "m_SelectedDeviceId": "RF8N3022LRN",
     "m_SelectedPackage": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "RF8N3022LRN",
+        "name": "com.DefaultCompany.com.unity.template.mobile2D",
+        "processId": 28487,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -13,12 +13,6 @@
             "name": "com.sec.android.app.launcher",
             "processId": 3871,
             "exited": false
-        },
-        {
-            "deviceId": "RF8N3022LRN",
-            "name": "com.DefaultCompany.com.unity.template.mobile2D",
-            "processId": 27146,
-            "exited": true
         },
         {
             "deviceId": "RF8N3022LRN",
@@ -37,6 +31,24 @@
             "name": "com.DefaultCompany.com.unity.template.mobile2D",
             "processId": 19706,
             "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 19875,
+            "exited": true
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 21177,
+            "exited": false
+        },
+        {
+            "deviceId": "RF8N3022LRN",
+            "name": "com.DefaultCompany.com.unity.template.mobile2D",
+            "processId": 28487,
+            "exited": false
         }
     ],
     "m_Tags": {

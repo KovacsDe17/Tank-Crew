@@ -9,6 +9,7 @@ public class LobbyMenusEnabler : MonoBehaviour
     [SerializeField] private GameObject _joinedLobbyMenu;
     [SerializeField] private GameObject _multiplayerMenu;
     [SerializeField] private GameObject _loadingScreen;
+    [SerializeField] private GameObject _loadingIcon;
 
     void Start()
     {
@@ -36,6 +37,7 @@ public class LobbyMenusEnabler : MonoBehaviour
     {
         _joinedLobbyMenu.transform.localScale = new Vector3(0, 0, 0); //Hide even when enabled
         _joinedLobbyMenu.SetActive(true); //Enable
+        _loadingIcon.SetActive(false);
     }
 
     /// <summary>

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,6 +17,21 @@ public class Objective : NetworkBehaviour
 
     //The Objective Type of this objective
     [SerializeField] private ObjectiveType _objectiveType;
+
+    public static List<string> GetObjectiveTypeNames()
+    {
+        return Enum.GetNames(typeof(ObjectiveType)).ToList();
+    }
+
+
+    /// <summary>
+    /// Set the type of the objective.
+    /// </summary>
+    /// <param name="type">The type to change the objective to.</param>
+    public void SetType(ObjectiveType type)
+    {
+        _objectiveType = type;
+    }
 
     /// <summary>
     /// When the Player reaches the objective.
@@ -104,7 +122,7 @@ public class Objective : NetworkBehaviour
             EndCapturing();
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
         if(_objectiveType == ObjectiveType.Destroy)
             OnObjectiveDestroyed();
