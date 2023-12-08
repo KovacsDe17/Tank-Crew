@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,18 +12,33 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerSpawn += Initialize;
+        GameManager.Instance.OnSetupComplete += Initialize;
     }
 
-    private void Initialize(object sender, EventArgs e)
+    private void OnEnable()
     {
+        Debug.Log("Enemy enabled...");
+        //Initialize(this, EventArgs.Empty);
+    }
+
+    public void Initialize(object sender, EventArgs e)
+    {
+        Debug.Log("Initializing Enemy Movement...");
+
         _agent = GetComponent<NavMeshAgent>();
         _enemy = GetComponentInChildren<Enemy>();
         _playerTransform = PlayerTank.Instance.transform;
 
+        _agent.enabled = false;
         _agent.stoppingDistance = _enemy.GetRange() * 0.75f;
+        _agent.enabled = true;
 
         PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
+        {
+            enabled = false;
+        };
+
+        GameManager.Instance.OnGameEnd += (sender, eventArgs) =>
         {
             enabled = false;
         };
@@ -33,7 +46,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
-        if (PlayerTank.Instance == null) return;
+        if (PlayerTank.Instance == null || _enemy == null || _agent == null) return;
         
         if (_enemy.PlayerTankIsSpotted())
             MoveToPlayerProximity();

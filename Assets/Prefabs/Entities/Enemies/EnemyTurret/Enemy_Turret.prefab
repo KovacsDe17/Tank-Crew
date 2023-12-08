@@ -221,7 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 50
   _healthBar: {fileID: 2929289396818909186}
-  _destroyedEntity: {fileID: 6803392003550760193, guid: 8f41a9bb4be856148adb5f3713de7c55, type: 3}
+  _destroyedEntity: {fileID: 6803392003550760193, guid: 4a130bc3369528a4088e7a407578c8d4, type: 3}
   _obscureVisionLayerMask:
     serializedVersion: 2
     m_Bits: 192

@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        Debug.Log("Game Started!");
+        Debug.Log("OnGameStart Invoked using GameManager.StartGame()!");
         _timeOfStart = Time.time;
         OnGameStart?.Invoke(this, EventArgs.Empty);
     }

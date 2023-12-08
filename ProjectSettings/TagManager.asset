@@ -14,6 +14,7 @@ TagManager:
   - EnemyHolder
   - PlayerSpawnPoint
   - ObjectiveSpawnPoint
+  - EnemyTank
   layers:
   - Default
   - TransparentFX
@@ -28,10 +29,10 @@ TagManager:
   - Collectible
   - Objective
   - MapEdge
-  - 
-  - 
-  - 
-  - 
+  - CircularZone
+  - LowerCollider
+  - UpperCollider
+  - SpawnPoint
   - 
   - 
   - 

@@ -704,7 +704,7 @@ MonoBehaviour:
   _destroyedEntity: {fileID: 155430534422533665, guid: a87037f4272ec524bb6abc25e11c52ca, type: 3}
   _obscureVisionLayerMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 32960
   _range: 10
   _canSeePlayer: 1
   _playerTankIsSpotted: 0

@@ -31,7 +31,7 @@ public class MultiplayerTankAccess : NetworkBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerSpawn += Setup;
+        GameManager.Instance.OnSetupComplete += Setup;
     }
 
     /// <summary>
@@ -39,6 +39,8 @@ public class MultiplayerTankAccess : NetworkBehaviour
     /// </summary>
     private void Initialize()
     {
+
+        Debug.Log("MultiplayerTankAccess is being initialized...");
         Transform playerTank = PlayerTank.Instance.transform;
 
         _tankMove = playerTank.GetComponent<TankMove>();
@@ -68,6 +70,8 @@ public class MultiplayerTankAccess : NetworkBehaviour
 
     private void Setup(object sender, EventArgs e)
     {
+        Debug.Log("MultiplayerTankAccess setup with GameManager.OnSetupComplete event");
+
         if (!IsOwner) return;
 
         Initialize();

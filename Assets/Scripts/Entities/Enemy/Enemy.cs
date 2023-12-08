@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The enemies the player can destroy
+/// The enemy the players can destroy
 /// </summary>
 public class Enemy : Entity
 {
@@ -21,12 +21,13 @@ public class Enemy : Entity
     }
     private void OnEnable()
     {
-        Initialize();
+        //Initialize();
     }
 
     private void Update()
     {
-        CheckIfCanSeePlayer(_playerTransform);
+        if(_playerTransform != null)
+            CheckIfCanSeePlayer(_playerTransform);
     }
 
     #endregion
@@ -36,13 +37,14 @@ public class Enemy : Entity
     /// <summary>
     /// Setup variables.
     /// </summary>
-    private void Initialize()
+    public void Initialize()
     {
-        if(PlayerTank.Instance != null)
-            _playerTransform = PlayerTank.Instance.transform;
-
+        _playerTransform = PlayerTank.Instance.transform;
         _canSeePlayer = false;
         _playerTankIsSpotted = false;
+
+        GetComponentInParent<EnemyMovement>().Initialize(this, EventArgs.Empty);
+        GetComponent<EnemyTurret>().Initialize(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -50,8 +52,6 @@ public class Enemy : Entity
     /// </summary>
     private void SetEnabling()
     {
-        enabled = false;
-
         GameManager.Instance.OnPlayerSpawn += (sender, eventArgs) =>
         {
             enabled = true;

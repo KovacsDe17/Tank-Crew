@@ -43,10 +43,11 @@ public class PlayerTank : Entity
         Debug.Log("The Player has Died!");
         OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
 
-        //base.Die();
+        base.Die();
 
         await Task.Delay(2000); //Wait for two seconds
 
         GameManager.Instance.InvokeOnGameEnd(false);
+
     }
 }

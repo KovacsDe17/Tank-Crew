@@ -93,8 +93,16 @@ public class Entity : NetworkBehaviour
         Rigidbody2D _rigidbody = gameObject.GetComponent<Rigidbody2D>();
 
         GameObject deadEnemy = Instantiate(_destroyedEntity, transform.position, transform.rotation);
-        Rigidbody2D rigidbody = deadEnemy.GetComponent<Rigidbody2D>();
 
+        if(_turret != null)
+        {
+            Debug.Log("Entity had a turret, setting its rotation...");
+            Transform deadEnemyTurret = deadEnemy.GetComponentInChildren<Turret>().transform;
+            deadEnemyTurret.rotation = _turret.transform.rotation;
+        }
+
+
+        Rigidbody2D rigidbody = deadEnemy.GetComponent<Rigidbody2D>();
         rigidbody.velocity = _rigidbody.velocity;
         rigidbody.angularVelocity = _rigidbody.angularVelocity;
 

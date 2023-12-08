@@ -42,6 +42,7 @@ public class RelayManager : MonoBehaviour
 
         NetworkManager.Singleton.OnClientStarted += () =>
         {
+            Debug.Log("RelayManager.OnRelayClientStarted event invoked with NetworkManager.OnClientStarted event");
             OnRelayClientStarted?.Invoke(this, EventArgs.Empty);
         };
     }

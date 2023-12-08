@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof (Enemy))]
@@ -15,13 +16,19 @@ public class EnemyTurret : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerSpawn += Initialize;
+        GameManager.Instance.OnSetupComplete += Initialize;
+    }
+
+    private void OnEnable()
+    {
+        Debug.Log("EnemyTurret enabled...");
+        //Initialize(this, EventArgs.Empty);
     }
 
 
     private void Update()
     {
-        if (PlayerTank.Instance == null) return;
+        if (PlayerTank.Instance == null || _enemy == null) return;
 
         AimAndShootAtPlayer(_enemy.GetPlayerTransform());
     }
@@ -29,11 +36,11 @@ public class EnemyTurret : MonoBehaviour
     /// <summary>
     /// Setup variables
     /// </summary>
-    private void Initialize(object sender, EventArgs e)
+    public void Initialize(object sender, EventArgs e)
     {
-        _enemy = GetComponent<Enemy>();
+        Debug.Log("Initializing Enemy Turret...");
 
-        enabled = false;
+        _enemy = gameObject.GetComponent<Enemy>();
 
         GameManager.Instance.OnGameStart += (sender, eventArgs) =>
         {
@@ -41,6 +48,11 @@ public class EnemyTurret : MonoBehaviour
         };
 
         PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
+        {
+            enabled = false;
+        };
+
+        GameManager.Instance.OnGameEnd += (sender, eventArgs) =>
         {
             enabled = false;
         };
@@ -150,6 +162,7 @@ public class EnemyTurret : MonoBehaviour
 
     private void Shoot()
     {
+        Debug.Log("Shoot called by Enemy");
         _turret.FireProjectileServerRPC(_damage);
 
         _reloaded = false;

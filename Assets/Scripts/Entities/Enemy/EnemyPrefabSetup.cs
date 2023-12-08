@@ -17,12 +17,7 @@ public class EnemyPrefabSetup : MonoBehaviour
         throw new Exception("No Enemy of the given type was found!");
     }
 
-    public Transform GetCommonParent()
-    {
-        return transform;
-    }
-
-    public enum EnemyType { Dummy, Tank, Tower, Landmine }
+    public enum EnemyType { Dummy, Tank, Turret, Landmine }
 
     [System.Serializable]
     internal class EnemyPrefab
