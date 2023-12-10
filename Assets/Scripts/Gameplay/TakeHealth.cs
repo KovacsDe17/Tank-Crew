@@ -10,6 +10,7 @@ public class TakeHealth : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         TakeHealthFromEntity(collision);
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Landmine_Explosion);
     }
 
     /// <summary>

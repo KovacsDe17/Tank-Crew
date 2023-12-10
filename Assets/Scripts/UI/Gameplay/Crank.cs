@@ -104,6 +104,8 @@ public class Crank : MonoBehaviour
 
         float angle = rotation - remainder;
 
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Crank_Turn);
+
         return angle;
     }
 

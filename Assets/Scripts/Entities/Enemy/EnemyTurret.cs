@@ -73,6 +73,8 @@ public class EnemyTurret : MonoBehaviour
         {
             AimAtPlayer(playerTransform);
             ShootAtPlayer(playerTransform);
+
+            AudioManager.Instance.PlayMusic(AudioManager.Music.GameplayFight);
         }
     }
 
@@ -112,6 +114,8 @@ public class EnemyTurret : MonoBehaviour
         {
             Shoot();
             StartCoroutine(Reload());
+
+            AudioManager.Instance.PlaySound(AudioManager.Sound.Tank_Shoot);
         }
     }
 

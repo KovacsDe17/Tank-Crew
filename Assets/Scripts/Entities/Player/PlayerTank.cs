@@ -41,9 +41,9 @@ public class PlayerTank : Entity
     public override async void Die()
     {
         Debug.Log("The Player has Died!");
-        OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
-
         base.Die();
+
+        OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
 
         await Task.Delay(2000); //Wait for two seconds
 

@@ -45,6 +45,8 @@ public class Enemy : Entity
 
         GetComponentInParent<EnemyMovement>().Initialize(this, EventArgs.Empty);
         GetComponent<EnemyTurret>().Initialize(this, EventArgs.Empty);
+
+        AudioManager.Instance.AttachConstantSound(AudioManager.Sound.Tank_Exhaust, transform, 0.5f);
     }
 
     /// <summary>

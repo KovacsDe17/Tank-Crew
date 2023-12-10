@@ -116,6 +116,8 @@ public class EnemySpawnPoint : NetworkBehaviour
         Enemy tank = pool.SpawnNextTank(transform.position).GetComponentInChildren<Enemy>();
         tank.Initialize();
 
+        tank.AddComponent<SoundOnMove>();
+
         //If destroy is set, do it
         if (_canDestroyAfterSpawn)
         {

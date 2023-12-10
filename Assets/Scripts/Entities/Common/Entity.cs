@@ -65,6 +65,8 @@ public class Entity : NetworkBehaviour
         }
 
         UpdateHealthBar();
+
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Tank_Hit, transform.position);
     }
 
     /// <summary>
@@ -97,8 +99,8 @@ public class Entity : NetworkBehaviour
         if(_turret != null)
         {
             Debug.Log("Entity had a turret, setting its rotation...");
-            Transform deadEnemyTurret = deadEnemy.GetComponentInChildren<Turret>().transform;
-            deadEnemyTurret.rotation = _turret.transform.rotation;
+            Transform deadEntityTurret = deadEnemy.GetComponentInChildren<Turret>().transform;
+            deadEntityTurret.rotation = _turret.transform.rotation;
         }
 
 
@@ -106,7 +108,7 @@ public class Entity : NetworkBehaviour
         rigidbody.velocity = _rigidbody.velocity;
         rigidbody.angularVelocity = _rigidbody.angularVelocity;
 
-        Destroy(gameObject);
+        gameObject.GetComponent<NetworkObject>().Despawn();
     }
 
     public Turret GetTurret()

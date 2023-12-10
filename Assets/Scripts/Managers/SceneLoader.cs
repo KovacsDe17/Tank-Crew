@@ -30,4 +30,12 @@ public class SceneLoader : MonoBehaviour
     {
         Application.Quit();
     }
+
+    private void Start()
+    {
+        AudioManager.Instance.PlayMusic(AudioManager.Music.MainTheme);
+
+        if(gameObject.GetComponent<MenuButtonSounds>() == null)
+            gameObject.AddComponent<MenuButtonSounds>();
+    }
 }

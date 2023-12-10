@@ -50,6 +50,8 @@ public class HatchHandler : MonoBehaviour
         _loadedAmmo = ammo;
 
         SwitchEasyGrab(false);
+
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Load_Ammo_Into_Chamber);
     }
 
     /// <summary>
@@ -74,6 +76,8 @@ public class HatchHandler : MonoBehaviour
         _loadedAmmo.Fire();
 
         _turret.FireProjectileServerRPC();
+
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Tank_Shoot);
     }
 
     public void SwitchOpenState()
@@ -88,6 +92,8 @@ public class HatchHandler : MonoBehaviour
         SwitchEasyGrab(_isOpen);
 
         _isOpen = !_isOpen;
+
+        AudioManager.Instance.PlaySound(AudioManager.Sound.Hatch_Close);
     }
 
     private void SwitchEasyGrab(bool activate)

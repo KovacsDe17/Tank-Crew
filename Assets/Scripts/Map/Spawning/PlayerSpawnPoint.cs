@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerSpawnPoint : MonoBehaviour
@@ -19,6 +20,8 @@ public class PlayerSpawnPoint : MonoBehaviour
     {
         Debug.Log("PlayerSpawnPoint.SpawnPlayer() is being called with TileMapGeneration.OnMapGenerated event");
         PlayerTank.Instance.transform.position = transform.position;
+
+        PlayerTank.Instance.transform.AddComponent<SoundOnMove>();
 
         gameObject.GetComponent<NetworkObject>().Despawn();
     }

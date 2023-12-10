@@ -80,6 +80,8 @@ public class FollowPlayer : MonoBehaviour
     {
         yield return new WaitUntil(() => _cameraIsAtPosition == true);
 
+        AudioManager.Instance.PlayMusic(AudioManager.Music.GameplayCalm);
+
         GameManager.Instance.InvokeOnSetupComplete();
     }
 
