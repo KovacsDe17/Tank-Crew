@@ -16,8 +16,6 @@ public class AudioHelper : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log("AudioHelper has been destroyed!");
-
         if(containingList != null && containingList.Contains(this))
             containingList.Remove(this);
     }

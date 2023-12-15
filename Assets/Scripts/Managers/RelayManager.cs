@@ -42,7 +42,6 @@ public class RelayManager : MonoBehaviour
 
         NetworkManager.Singleton.OnClientStarted += () =>
         {
-            Debug.Log("RelayManager.OnRelayClientStarted event invoked with NetworkManager.OnClientStarted event");
             OnRelayClientStarted?.Invoke(this, EventArgs.Empty);
         };
     }
@@ -73,7 +72,7 @@ public class RelayManager : MonoBehaviour
             return joinCode;
         } catch (RelayServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             return null;
         }
     }
@@ -100,7 +99,7 @@ public class RelayManager : MonoBehaviour
 
         } catch (RelayServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 

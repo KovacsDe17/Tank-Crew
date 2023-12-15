@@ -34,7 +34,10 @@ public class TileMapGeneration : MonoBehaviour
 
     private void Start()
     {
-        LobbyManager.Instance.OnJoinedLobby += SetObjectiveType;
+        if (LobbyManager.Instance != null)
+            LobbyManager.Instance.OnJoinedLobby += SetObjectiveType;
+        else
+            Debug.LogWarning("LobbyManager Instance not found!");
     }
 
 
@@ -97,6 +100,11 @@ public class TileMapGeneration : MonoBehaviour
     public void GenerateMapForClient()
     {
         StartCoroutine(GenerateMapCRClient());
+
+        OnMapGenerated += (s, e) =>
+        {
+            Debug.Log("Map Generated for Client!");
+        };
     }
 
     /// <summary>
@@ -145,7 +153,6 @@ public class TileMapGeneration : MonoBehaviour
 
         navMeshSurface.BuildNavMesh();
 
-        Debug.Log("Map generation done, invoking TileMapGeneration.OnMapGenerated event");
         OnMapGenerated?.Invoke(this, EventArgs.Empty);
     }
 
@@ -194,7 +201,6 @@ public class TileMapGeneration : MonoBehaviour
 
         navMeshSurface.BuildNavMesh();
 
-        Debug.Log("Map generation done, invoking TileMapGeneration.OnMapGenerated event");
         OnMapGenerated?.Invoke(this, EventArgs.Empty);
     }
 
@@ -267,6 +273,8 @@ public class TileMapGeneration : MonoBehaviour
     /// </summary>
     private void DestroyAllEnemies()
     {
+        if (_enemyParent == null) return;
+
         for(int i = 0; i<_enemyParent.childCount; i++)
         {
            Destroy(_enemyParent.GetChild(i).gameObject);
@@ -517,7 +525,7 @@ public class TileMapGeneration : MonoBehaviour
     {
         //If there is already a spawn point, destroy it
         if (_playerSpawnPoint != null)
-            Destroy(_playerSpawnPoint.gameObject);
+            Destroy(_playerSpawnPoint);
         
         //Instantiate a new one and assign
         _playerSpawnPoint = Instantiate(_playerSpawnPointPrefab, (Vector2)_endPoints.playerSpawnPoint, _playerSpawnPointPrefab.transform.rotation);

@@ -85,14 +85,9 @@ public class EnemySpawner : NetworkBehaviour
     /// <param name="type">Type of the enemy to spawn.</param>
     private IEnumerator SpawnWithDelay(int numberOfEnemies, int delay, EnemyPrefabSetup.EnemyType type)
     {
-        Debug.Log("Started spawning " + numberOfEnemies + 
-            " enemies of type " + Enum.GetName(typeof(EnemyPrefabSetup.EnemyType), type));
-
         for (int i=0; i < numberOfEnemies; i++)
         {
-            Debug.Log("Spawning enemy...");
             SpawnOnPlayer(type);
-            Debug.Log("Waiting " + delay + " seconds...");
             yield return new WaitForSeconds(delay);
         }
     }

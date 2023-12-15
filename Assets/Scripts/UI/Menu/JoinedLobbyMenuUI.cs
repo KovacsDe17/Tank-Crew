@@ -51,8 +51,6 @@ public class JoinedLobbyMenuUI : MonoBehaviour
     /// </summary>
     private void UpdateJoinedLobbyUI(object sender, LobbyManager.LobbyEventArgs lobbyEventArgs)
     {
-        Debug.Log("joinedLobbyMenuUI.UpdateJoinedLobbyUI called with LobbyManager.OnJoinedLobbyUpdate event");
-
         if (transform.localScale.x == 0) //If it is hidden
             transform.localScale = Vector3.one; //Unhide it
 

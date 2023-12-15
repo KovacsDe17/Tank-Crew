@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91bfecd450e2e8a4c9df4323eea55383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rotationThreshold: 15
 --- !u!114 &4781264194054046867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,20 +86,20 @@ MonoBehaviour:
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
+  UseQuaternionSynchronization: 1
+  UseQuaternionCompression: 1
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &1035860249122420544
 MonoBehaviour:
@@ -129,7 +130,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 155430534422533665, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
       propertyPath: m_Name
-      value: Tank
+      value: EnemyTank
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533667, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
       propertyPath: m_RootOrder
@@ -184,12 +185,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4230735763692868945, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
-      propertyPath: SyncPositionX
-      value: 0
+      propertyPath: SyncRotAngleX
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4230735763692868945, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
-      propertyPath: SyncPositionY
-      value: 0
+      propertyPath: SyncRotAngleY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4230735763692868945, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
+      propertyPath: UseQuaternionCompression
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4230735763692868945, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
+      propertyPath: UseQuaternionSynchronization
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8051545768463506483, guid: 2ead41d9340ed924ba0242a3b340bad9, type: 3}
       propertyPath: GlobalObjectIdHash

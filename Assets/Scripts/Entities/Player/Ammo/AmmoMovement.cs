@@ -98,30 +98,32 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     public void OnDrag()
     {
-        //Debug.Log("Drag position: " + transform.position);
+        float proximityThreshold = 100f;
 
         if (CloseTo(_origin.position, 0) && !_canMoveToHolder)
             return;
 
-        /*
-        if (CloseTo(_placeInChamber, _rectTransform.rect.width) && !_hatchHandler.IsOpen())
-            return;
-        */
-
         if (!_isSnappedToPlace && !_ammo.IsShot())
         {
-            if (CloseTo(_placeInChamber, 100f))
+            if (CloseTo(_placeInChamber, proximityThreshold))
             {
                 SnapToPlace(_placeInChamber);
                 _hatchHandler.LoadAmmo(_ammo);
                 _ammo.SetReady(true);
                 return;
             }
+            /*
+            else
+            {   
+                _hatchHandler.UnloadAmmo(_ammo);
+                _ammo.SetReady(false);
+            }
+            */
 
-            if (CloseTo(_origin.position, 100f))
+            if (CloseTo(_origin.position, proximityThreshold))
             {
                 SnapToPlace(_origin.position);
-                _hatchHandler.UnloadAmmo();
+                _hatchHandler.UnloadAmmo(_ammo);
                 SavePrevious();
                 return;
             }
@@ -197,8 +199,6 @@ public class AmmoMovement : MonoBehaviour
         _previousTouchPosition = _currentTouchPosition;
         _currentTouchPosition = clampedPosition;
 
-        //Debug.Log("Prev: " + _previousTouchPosition + "\nCurr: " + _currentTouchPosition);
-
         _rigidbody.MovePosition(clampedPosition);
     }
 
@@ -240,7 +240,7 @@ public class AmmoMovement : MonoBehaviour
     {
         float offset;
 
-        if (_hatchHandler.IsOpen())
+        if (_hatchHandler.IsOpen() && !_hatchHandler.IsLoaded(_ammo))
             offset = 0f;
         else
             offset = -_rectTransform.rect.width;
@@ -278,7 +278,7 @@ public class AmmoMovement : MonoBehaviour
     /// </summary>
     private void Discard()
     {
-        _hatchHandler.UnloadAmmo();
+        _hatchHandler.UnloadAmmo(_ammo);
         _rigidbody.bodyType = RigidbodyType2D.Dynamic;
         _rigidbody.gravityScale = 500;
 
@@ -289,7 +289,6 @@ public class AmmoMovement : MonoBehaviour
         ReleaseFromPlace();
         Destroy(gameObject, 3f);
 
-        //Debug.Log("EJECTED with force: " + force);
         //TODO: load a new ammo to this ammo's origin [?]
     }
 
@@ -355,7 +354,7 @@ public class AmmoMovement : MonoBehaviour
     /// <param name="position">The position to be compared to</param>
     /// <param name="threshold">The distance which is close enough</param>
     /// <returns>True when the ammunition is within the threshold</returns>
-    private bool CloseTo(Vector2 position, float threshold)
+    private bool CloseTo(Vector2 position, float threshold, bool toLeft = true)
     {
         float distanceFromRect = Vector2.Distance(_rectTransform.position, position);
         float distanceFromTouch = Vector2.Distance(GetClosestTouchPosition(), position);

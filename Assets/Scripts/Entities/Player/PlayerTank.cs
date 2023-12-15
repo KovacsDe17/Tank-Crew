@@ -41,13 +41,18 @@ public class PlayerTank : Entity
     public override async void Die()
     {
         Debug.Log("The Player has Died!");
-        base.Die();
 
         OnPlayerDestroyed?.Invoke(this, EventArgs.Empty);
 
-        await Task.Delay(2000); //Wait for two seconds
+        if (IsServer)
+        {
+            GameplaySync.Instance.SetTimerServerRPC();
 
-        GameManager.Instance.InvokeOnGameEnd(false);
+            base.Die();
+            
+            await Task.Delay(2000); //Wait for two seconds
 
+            GameplaySync.Instance.IsDead.Value = true;
+        }
     }
 }

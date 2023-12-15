@@ -17,11 +17,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533667, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.890279
+      value: 3.88
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533667, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.3156557
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 155430534422533667, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: m_LocalPosition.z
@@ -62,6 +62,46 @@ PrefabInstance:
     - target: {fileID: 1329441883659213150, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 951099334
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746351763172951332, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: InLocalSpace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746351763172951332, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: SyncRotAngleX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746351763172951332, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: SyncRotAngleY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746351763172951332, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: UseQuaternionCompression
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746351763172951332, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: UseQuaternionSynchronization
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7785873993332459324, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: SyncRotAngleX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7785873993332459324, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: SyncRotAngleY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7785873993332459324, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: UseQuaternionCompression
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7785873993332459324, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: UseQuaternionSynchronization
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291330418893111697, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}
+      propertyPath: _destroyedEntity
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e33b493b2e2eb04abf9907ac1498d82, type: 3}

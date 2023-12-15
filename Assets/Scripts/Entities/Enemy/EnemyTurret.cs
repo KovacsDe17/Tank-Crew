@@ -14,17 +14,13 @@ public class EnemyTurret : MonoBehaviour
     [SerializeField] private float _damage = 25f; //Seconds to pass between each shot
     [SerializeField] private bool _reloaded = true; //Wether the turret has reloaded
 
+    private EventHandler enableTurret;
+    private EventHandler disableTurret;
+
     private void Start()
     {
         GameManager.Instance.OnSetupComplete += Initialize;
     }
-
-    private void OnEnable()
-    {
-        Debug.Log("EnemyTurret enabled...");
-        //Initialize(this, EventArgs.Empty);
-    }
-
 
     private void Update()
     {
@@ -38,24 +34,27 @@ public class EnemyTurret : MonoBehaviour
     /// </summary>
     public void Initialize(object sender, EventArgs e)
     {
+        enableTurret = (s,e) => 
+        {
+            if (this == null) return;
+
+            enabled = true;
+        };
+
+        disableTurret = (s, e) =>
+        {
+            if (this == null) return;
+            
+            enabled = false;
+        };
+
         Debug.Log("Initializing Enemy Turret...");
 
         _enemy = gameObject.GetComponent<Enemy>();
 
-        GameManager.Instance.OnGameStart += (sender, eventArgs) =>
-        {
-            enabled = true;
-        };
-
-        PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
-        {
-            enabled = false;
-        };
-
-        GameManager.Instance.OnGameEnd += (sender, eventArgs) =>
-        {
-            enabled = false;
-        };
+        GameManager.Instance.OnGameStart += enableTurret;
+        PlayerTank.Instance.OnPlayerDestroyed += disableTurret;
+        GameManager.Instance.OnGameEnd += disableTurret;
     }
 
    
@@ -166,7 +165,6 @@ public class EnemyTurret : MonoBehaviour
 
     private void Shoot()
     {
-        Debug.Log("Shoot called by Enemy");
         _turret.FireProjectileServerRPC(_damage);
 
         _reloaded = false;
@@ -177,5 +175,12 @@ public class EnemyTurret : MonoBehaviour
         yield return new WaitForSeconds(_reloadTime);
 
         _reloaded = true;
+    }
+
+    public void CleanUp()
+    {
+        GameManager.Instance.OnGameStart -= enableTurret;
+        PlayerTank.Instance.OnPlayerDestroyed -= disableTurret;
+        GameManager.Instance.OnGameEnd -= disableTurret;
     }
 }

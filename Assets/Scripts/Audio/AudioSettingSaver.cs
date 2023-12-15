@@ -17,8 +17,6 @@ public class AudioSettingSaver : MonoBehaviour
 
     private void Initialize()
     {
-        Debug.Log("A - Initializing AudioSettingSaver");
-
         menuMusicSlider.onValueChanged.AddListener((value) =>
         {
             SaveAndLoad.SaveAudioSetting(SaveAndLoad.MENU_MUSIC_KEY, value);
@@ -54,7 +52,6 @@ public class AudioSettingSaver : MonoBehaviour
 
     private void UpdateSliderValues()
     {
-        Debug.Log("A - Updating slider values in AudioSettingSaver");
         menuMusicSlider.value = SaveAndLoad.LoadAudioSetting(SaveAndLoad.MENU_MUSIC_KEY);
         ingameMusicSlider.value = SaveAndLoad.LoadAudioSetting(SaveAndLoad.INGAME_MUSIC_KEY);
         menuSoundSlider.value = SaveAndLoad.LoadAudioSetting(SaveAndLoad.MENU_SOUND_KEY);

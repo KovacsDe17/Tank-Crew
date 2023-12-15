@@ -7,22 +7,21 @@ using UnityEngine;
 
 public class PlayerSpawnPoint : MonoBehaviour
 {
-    private void Awake()
+    private void Start()
     {
-        Debug.Log("PlayerSpawnPoint Started");
-        TileMapGeneration.Instance.OnMapGenerated += SpawnPlayer;
+        SpawnPlayer();
     }
 
     /// <summary>
     /// Move the PlayerTank to the position of this Transform then destroy this GameObject.
     /// </summary>
-    private void SpawnPlayer(object sender, EventArgs e)
+    private void SpawnPlayer()
     {
-        Debug.Log("PlayerSpawnPoint.SpawnPlayer() is being called with TileMapGeneration.OnMapGenerated event");
         PlayerTank.Instance.transform.position = transform.position;
 
-        PlayerTank.Instance.transform.AddComponent<SoundOnMove>();
+        PlayerTank.Instance.transform.GetOrAddComponent<SoundOnMove>();
 
-        gameObject.GetComponent<NetworkObject>().Despawn();
+        //gameObject.GetComponent<NetworkObject>().Despawn();
+        //Destroy(gameObject);
     }
 }

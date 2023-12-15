@@ -7,10 +7,14 @@ public class EndGameMenu : MonoBehaviour
     private const string ON_WIN_TITLE = "Glorious Victory!";
     private const string ON_LOSE_TITLE = "Miserable Defeat!";
 
+    [Header("Elements of End Game Menu")]
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _timeElapsedText;
     [SerializeField] private TextMeshProUGUI _enemiesDestroyedText;
     [SerializeField] private TextMeshProUGUI _shotsFiredText;
+
+    [Header("Other UI elements")]
+    [SerializeField] private GameObject _playerControls;
 
     private void Start()
     {
@@ -22,6 +26,7 @@ public class EndGameMenu : MonoBehaviour
     private void ShowMenuOnGameEnd(object sender, EventArgs e)
     {
         UpdateInfos((GameManager.EndGameEventArgs) e);
+        _playerControls.SetActive(false);
         Show();
     }
 
@@ -54,5 +59,10 @@ public class EndGameMenu : MonoBehaviour
         _enemiesDestroyedText.SetText(e.enemiesDestroyed.ToString());
 
         _shotsFiredText.SetText(e.shotsFired.ToString());
+    }
+
+    public void UnMuteIngameSounds()
+    {
+        AudioManager.Instance.MuteCategory(AudioManager.Category.IngameSound, false);
     }
 }

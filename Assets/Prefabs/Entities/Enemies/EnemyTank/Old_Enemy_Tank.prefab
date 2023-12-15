@@ -327,8 +327,8 @@ MonoBehaviour:
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
   SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
@@ -336,8 +336,8 @@ MonoBehaviour:
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
+  UseQuaternionSynchronization: 1
+  UseQuaternionCompression: 1
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   Interpolate: 1
@@ -699,7 +699,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f88c2350d957c143b049b5a5c3bbbe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 80
+  _maxHealth:
+    m_InternalValue: 100
   _healthBar: {fileID: 858718298831662748}
   _destroyedEntity: {fileID: 155430534422533665, guid: a87037f4272ec524bb6abc25e11c52ca, type: 3}
   _obscureVisionLayerMask:
@@ -784,8 +785,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
   SyncPositionZ: 0
   SyncRotAngleX: 0
   SyncRotAngleY: 0

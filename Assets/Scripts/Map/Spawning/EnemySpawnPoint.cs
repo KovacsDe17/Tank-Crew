@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -36,6 +37,8 @@ public class EnemySpawnPoint : NetworkBehaviour
 
     private void UpdateRelativePosition()
     {
+        if(PlayerTank.Instance == null) return;
+
         transform.position = _playerTransform.TransformPoint((Vector3)(Vector2.up * _distanceFromPlayer));
 
         _canPlace = !_colliding;
@@ -94,11 +97,15 @@ public class EnemySpawnPoint : NetworkBehaviour
         enemy.GetComponent<NetworkObject>().Spawn(true);
 
         enemy.transform.SetParent(_setup.transform);
+
+        bool isTank = type == EnemyPrefabSetup.EnemyType.Tank;
+        if(type == EnemyPrefabSetup.EnemyType.Tank || type == EnemyPrefabSetup.EnemyType.Turret)
+            enemy.GetComponent<Enemy>().Initialize(isTank);
         
         //If destroy is set, do it
         if (_canDestroyAfterSpawn)
         {
-            gameObject.GetComponent<NetworkObject>().Despawn(true);
+            gameObject.GetComponent<NetworkObject>().Despawn();
         }
     }
 
@@ -113,8 +120,21 @@ public class EnemySpawnPoint : NetworkBehaviour
         yield return new WaitForSeconds(2f);
         yield return new WaitUntil(() => _canPlace);
 
+        if (PlayerTank.Instance == null)
+        {
+            //If destroy is set, do it
+            if (_canDestroyAfterSpawn)
+            {
+                gameObject.GetComponent<NetworkObject>().Despawn(true);
+            }
+
+            yield break;
+        }
+
         Enemy tank = pool.SpawnNextTank(transform.position).GetComponentInChildren<Enemy>();
-        tank.Initialize();
+        tank.Initialize(true);
+
+        tank.GetComponent<NetworkTransform>().Interpolate = true;
 
         tank.AddComponent<SoundOnMove>();
 

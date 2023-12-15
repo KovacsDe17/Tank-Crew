@@ -70,8 +70,6 @@ public class MultiplayerTankAccess : NetworkBehaviour
 
     private void Setup(object sender, EventArgs e)
     {
-        Debug.Log("MultiplayerTankAccess setup with GameManager.OnSetupComplete event");
-
         if (!IsOwner) return;
 
         Initialize();

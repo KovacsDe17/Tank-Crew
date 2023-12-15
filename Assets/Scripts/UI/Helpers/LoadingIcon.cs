@@ -46,7 +46,6 @@ public class LoadingIcon : MonoBehaviour
 
     IEnumerator SpinLogo()
     {
-        Debug.Log("Started");
         transform.Rotate(-Vector3.forward * (_speed * Time.deltaTime));
         yield return null;
     }

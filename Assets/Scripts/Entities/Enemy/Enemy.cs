@@ -37,16 +37,19 @@ public class Enemy : Entity
     /// <summary>
     /// Setup variables.
     /// </summary>
-    public void Initialize()
+    public void Initialize(bool isTank)
     {
         _playerTransform = PlayerTank.Instance.transform;
         _canSeePlayer = false;
         _playerTankIsSpotted = false;
 
-        GetComponentInParent<EnemyMovement>().Initialize(this, EventArgs.Empty);
+        if(isTank)
+            GetComponentInParent<EnemyMovement>().Initialize(this, EventArgs.Empty);
+        
         GetComponent<EnemyTurret>().Initialize(this, EventArgs.Empty);
 
-        AudioManager.Instance.AttachConstantSound(AudioManager.Sound.Tank_Exhaust, transform, 0.5f);
+        if(isTank)
+            AudioManager.Instance.AttachConstantSound(AudioManager.Sound.Tank_Exhaust, transform, 0.5f);
     }
 
     /// <summary>
@@ -94,6 +97,11 @@ public class Enemy : Entity
     public override void Die()
     {
         DropPickUps();
+        GameplaySync.Instance.AddDestroyedEnemyServerRPC();
+
+        EnemyTurret enemyTurret = GetComponent<EnemyTurret>();
+        if (enemyTurret != null)
+            enemyTurret.CleanUp();
 
         base.Die();
     }

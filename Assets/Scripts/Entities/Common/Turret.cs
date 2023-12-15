@@ -26,7 +26,6 @@ public class Turret : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void FireProjectileServerRPC(float damage)
     {
-        Debug.Log("Firing projectile using ServerRPC");
         GameObject projectile = Instantiate(projectilePrefab, barrelEnd.position, barrelEnd.rotation);
         projectile.GetComponent<AmmoProjectile>().SetDamage(damage);
         projectile.GetComponent<NetworkObject>().Spawn(true);

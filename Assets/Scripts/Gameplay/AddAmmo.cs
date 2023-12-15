@@ -14,15 +14,11 @@ public class AddAmmo : MonoBehaviour
     /// </summary>
     private void AddAmmoToHolder()
     {
-        Debug.Log("Touchy");
-
         AmmoHolder ammoHolder = GameObject.FindGameObjectWithTag("AmmoHolder").GetComponent<AmmoHolder>();
         if (ammoHolder == null)
             return;
 
         ammoHolder.AddAmmo(ammoType, count);
-
-        Debug.Log("yaay, ammo added");
 
         Destroy(gameObject);
     }

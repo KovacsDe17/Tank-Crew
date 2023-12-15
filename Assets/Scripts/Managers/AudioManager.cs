@@ -40,6 +40,7 @@ public class AudioManager : MonoBehaviour
     public Dictionary<Sound, float> soundTimerDictionary;
     private Dictionary<Sound, Category> soundCategoryDictionary;
     private Dictionary<Music, Category> musicCategoryDictionary;
+    private Dictionary<Category, float> categoryVolumeModifiers;
     private List<AudioHelper> audioHelperList = new List<AudioHelper>();
 
     public GameObject oneShotGameObject;
@@ -59,10 +60,7 @@ public class AudioManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(this);
-    }
 
-    private void Start()
-    {
         Initialize();
     }
 
@@ -92,6 +90,14 @@ public class AudioManager : MonoBehaviour
             { Music.GameplayFight, Category.IngameMusic}
         };
 
+        categoryVolumeModifiers = new Dictionary<Category, float> 
+        {
+            { Category.MenuMusic, 0.3f },
+            { Category.MenuSound, 0.3f },
+            { Category.IngameMusic, 0.3f },
+            { Category.IngameSound, 0.3f }
+        };
+
         audioHelperList = new List<AudioHelper>();
 
         UpdateVolumeSettings();
@@ -99,8 +105,6 @@ public class AudioManager : MonoBehaviour
 
     public void UpdateVolumeSettings()
     {
-        Debug.Log("Updating volume settings in AudioManager");
-
         UpdateVolumes(Category.MenuMusic);
         UpdateVolumes(Category.MenuSound);
         UpdateVolumes(Category.IngameMusic);
@@ -125,22 +129,28 @@ public class AudioManager : MonoBehaviour
                 audioHelper = oneShotGameObject.GetComponent<AudioHelper>();
             }
 
-            audioHelper.audioCategory = GetCategory(sound);
+            Category category = GetCategory(sound);
+            float outputVolume = GetVolumeSetting(category) * categoryVolumeModifiers[category];
 
-            if(!audioHelperList.Contains(audioHelper))
+            audioHelper.audioCategory = category;
+
+            if (!audioHelperList.Contains(audioHelper))
                 audioHelperList.Add(audioHelper);
 
-            oneShotAudioSource.volume = GetVolumeSetting(GetCategory(sound)) * volume;
+            oneShotAudioSource.volume = outputVolume;
             oneShotAudioSource.PlayOneShot(GetAudioClip(sound));
         }
     }
 
-    public void PlaySound(Sound sound, Vector3 position, float volume = 1f)
+    public void PlaySound(Sound sound, Vector3 position)
     {
         if (CanPlaySound(sound))
         {
             GameObject soundGameObject = new GameObject("Sound");
             soundGameObject.transform.position = position;
+
+            Category category = GetCategory(sound);
+            float outputVolume = GetVolumeSetting(category) * categoryVolumeModifiers[category];
 
             AudioHelper audioHelper = soundGameObject.AddComponent<AudioHelper>();
             audioHelper.audioCategory = GetCategory(sound);
@@ -153,18 +163,21 @@ public class AudioManager : MonoBehaviour
             audioSource.spatialBlend = 1f;
             audioSource.rolloffMode = AudioRolloffMode.Linear;
             audioSource.dopplerLevel = 0f;
-            audioSource.volume = GetVolumeSetting(GetCategory(sound)) * volume;
+            audioSource.volume = outputVolume;
             audioSource.Play();
 
             Object.Destroy(soundGameObject, audioSource.clip.length);
         }
     }
 
-    public AudioSource AttachConstantSound(Sound sound, Transform transform, float volume = 1f)
+    public AudioSource AttachConstantSound(Sound sound, Transform transform, float fadeDuration = 0f)
     {
         GameObject soundGameObject = new GameObject("Sound");
         soundGameObject.transform.SetParent(transform);
         soundGameObject.transform.localPosition = Vector3.zero;
+
+        Category category = GetCategory(sound);
+        float outputVolume = GetVolumeSetting(category) * categoryVolumeModifiers[category];
 
         AudioHelper audioHelper = soundGameObject.AddComponent<AudioHelper>();
         audioHelper.audioCategory = GetCategory(sound);
@@ -177,18 +190,18 @@ public class AudioManager : MonoBehaviour
         audioSource.spatialBlend = 1f;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.dopplerLevel = 0f;
-        audioSource.volume = GetVolumeSetting(GetCategory(sound)) * volume;
+        audioSource.volume = outputVolume;
 
         audioSource.loop = true;
         audioSource.Play();
 
+        audioHelper.StartCoroutine(StartFade(audioSource, fadeDuration, outputVolume));
+
         return audioSource;
     }
 
-    public void PlayMusic(Music music, float volume = 1f)
+    public void PlayMusic(Music music, float fadeDuration = 3f)
     {
-        float fadeDuration = 3f;
-
         if(musicPlayingGameObject != null && musicPlayingAudioSource != null)
         {
             if (musicPlayingAudioSource.clip == GetAudioClip(music))
@@ -200,6 +213,9 @@ public class AudioManager : MonoBehaviour
 
         GameObject musicGameObject = new GameObject("Music");
 
+        Category category = GetCategory(music);
+        float outputVolume = GetVolumeSetting(category) * categoryVolumeModifiers[category];
+
         AudioHelper audioHelper = musicGameObject.AddComponent<AudioHelper>();
         audioHelper.audioCategory = GetCategory(music);
         audioHelper.SetDontDestroyOnLoad(true);
@@ -208,16 +224,14 @@ public class AudioManager : MonoBehaviour
 
         AudioSource audioSource = musicGameObject.AddComponent<AudioSource>();
         audioSource.clip = GetAudioClip(music);
-        audioSource.maxDistance = 100f;
-        audioSource.spatialBlend = 1f;
-        audioSource.rolloffMode = AudioRolloffMode.Linear;
+        audioSource.spatialBlend = 0f;
         audioSource.dopplerLevel = 0f;
-        audioSource.volume = GetVolumeSetting(GetCategory(music)) * volume;
+        audioSource.volume = outputVolume;
         audioSource.loop = true;
 
         audioSource.Play();
 
-        audioHelper.StartCoroutine(StartFade(audioSource, fadeDuration, GetVolumeSetting(GetCategory(music)) * volume));
+        audioHelper.StartCoroutine(StartFade(audioSource, fadeDuration, outputVolume));
 
         musicPlayingGameObject = musicGameObject;
         musicPlayingAudioSource = audioSource;
@@ -225,8 +239,6 @@ public class AudioManager : MonoBehaviour
 
     public IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
     {
-        Debug.Log("Started fading!");
-
         float currentTime = 0;
         float start = audioSource.volume;
         while (currentTime < duration)
@@ -334,8 +346,7 @@ public class AudioManager : MonoBehaviour
     {
         foreach(AudioSource source in GetAudioSourcesOfCategory(category))
         {
-            //Debug.Log("Updating " + source.gameObject.name + " to " + volume);
-            source.volume = GetVolumeSetting(category);
+            source.volume = GetVolumeSetting(category) * categoryVolumeModifiers[category];
         }
     }
 
@@ -343,16 +354,20 @@ public class AudioManager : MonoBehaviour
     {
         List<AudioSource> result = new List<AudioSource>();
 
-        Debug.Log("AudioHelperList - " + audioHelperList);
-
         foreach(AudioHelper audioHelper in audioHelperList)
         {
-            Debug.Log("AudioHelperList -> " + audioHelper);
-
             if(audioHelper.audioCategory == category)
                 result.Add(audioHelper.GetComponent<AudioSource>());
         }
 
         return result;
+    }
+
+    public void MuteCategory(Category category, bool mute)
+    {
+        foreach(AudioSource audioSource in GetAudioSourcesOfCategory(category))
+        {
+            audioSource.mute = mute;
+        }
     }
 }

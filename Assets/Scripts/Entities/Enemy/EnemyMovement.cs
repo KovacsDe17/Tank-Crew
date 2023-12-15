@@ -8,7 +8,8 @@ public class EnemyMovement : MonoBehaviour
     private NavMeshAgent _agent; //The Agent which moves the Enemy
     private Enemy _enemy; //The Enemy script attached to this object
     private Transform _playerTransform; //The Transform of the PlayerTank
-    //[SerializeField] private float _rotationThreshold = 15f; //Threshold for checking the look rotation to face the player in degrees
+    [SerializeField] private float _rotationThreshold = 15f; //Threshold for checking the look rotation to face the player in degrees
+    private float _maxSpeed;
 
     private void Start()
     {
@@ -33,6 +34,8 @@ public class EnemyMovement : MonoBehaviour
         _agent.stoppingDistance = _enemy.GetRange() * 0.75f;
         _agent.enabled = true;
 
+        _maxSpeed = _agent.speed;
+
         PlayerTank.Instance.OnPlayerDestroyed += (sender, eventArgs) =>
         {
             enabled = false;
@@ -51,8 +54,6 @@ public class EnemyMovement : MonoBehaviour
         if (_enemy.PlayerTankIsSpotted())
             MoveToPlayerProximity();
     }
-        
-
 
     /// <summary>
     /// Move the enemy to the specified proximity of the PlayerTank.
@@ -63,16 +64,30 @@ public class EnemyMovement : MonoBehaviour
         Vector3 target = new Vector3(_playerTransform.position.x, _playerTransform.position.y, transform.position.z);
         _agent.SetDestination(target);
 
-
+        /*
+        if(Mathf.RoundToInt(EulerAnglesToPlayer(_playerTransform)) != Mathf.RoundToInt(transform.rotation.eulerAngles.z))
+        {
+            _agent.speed = 0;
+            Debug.Log("EM - NO");
+        }
+        else
+        {
+            _agent.speed = _maxSpeed;
+            Debug.Log("EM - YES");
+        }
+        */
+        
         /*
         if (!RotationCloseToPlayer(_playerTransform, _rotationThreshold))
         {
-            _agent.enabled = false;
+            _agent.isStopped = true;
+            _agent.updateRotation = false;
             RotateTowardsPlayer(_playerTransform);
         } else
         {
+            _agent.updateRotation = true;
+            _agent.isStopped = false;
             Vector3 target = new Vector3(_playerTransform.position.x, _playerTransform.position.y, transform.position.z);
-            _agent.enabled = true;
             _agent.SetDestination(target);
         }
         */
@@ -86,19 +101,40 @@ public class EnemyMovement : MonoBehaviour
     /// <returns>True if the rotation is in the threshold.</returns>
     private bool RotationCloseToPlayer(Transform playerTransform, float threshold)
     {
-        float angleToPlayer = Vector2.Angle(playerTransform.position, transform.position);
+        bool inside = false;
 
-        float wrappedAngleToPlayer = WrapAngle(angleToPlayer);
-        float wrappedCurrentRotation = WrapAngle(transform.rotation.eulerAngles.z);
+        float angleToPlayer = EulerAnglesToPlayer(playerTransform);
 
-        float upperThreshold = wrappedAngleToPlayer + threshold;
-        float bottomThreshold = wrappedAngleToPlayer - threshold;
+        //float wrappedAngleToPlayer = WrapAngle(angleToPlayer);
+        //float wrappedCurrentRotation = WrapAngle(transform.rotation.eulerAngles.z);
 
-        Debug.Log("Angle: " + wrappedCurrentRotation + "/" + wrappedAngleToPlayer);
+        float upperThreshold = angleToPlayer + threshold;
+        float lowerThreshold = angleToPlayer - threshold;
 
-        if (wrappedCurrentRotation <= upperThreshold && wrappedCurrentRotation >= bottomThreshold) return true;
+        float currentRotation = transform.rotation.eulerAngles.z - 90f;
 
-        return false;
+        if (currentRotation <= upperThreshold && currentRotation >= lowerThreshold) inside = true;
+
+        Debug.Log("Angle: " + currentRotation + "/" + angleToPlayer + " | inside: " + (inside?"yes":"no"));
+
+        return inside;
+    }
+
+
+    /// <summary>
+    /// Calculate the rotation on the Z axis, when facing the player.
+    /// </summary>
+    /// <param name="playerTransform">The Transform of the Player.</param>
+    /// <returns></returns>
+    private float EulerAnglesToPlayer(Transform playerTransform)
+    {
+        //Offset for rotation in euler angles
+        const float rotationOffset = -90;
+
+        Vector2 directionTowardsPlayer = playerTransform.position - transform.position;
+        float angle = Mathf.Atan2(directionTowardsPlayer.y, directionTowardsPlayer.x) * Mathf.Rad2Deg;
+
+        return angle + rotationOffset;
     }
 
     /// <summary>
@@ -121,7 +157,13 @@ public class EnemyMovement : MonoBehaviour
     /// <param name="playerTransform">The Transform of the PlayerTank.</param>
     private void RotateTowardsPlayer(Transform playerTransform)
     {
-        transform.Rotate(Vector3.forward * AngleCloserToPlayer(playerTransform) * Time.deltaTime * _agent.angularSpeed);
+        //Getting the target rotation
+        float rotationToPlayer = EulerAnglesToPlayer(playerTransform);
+        Quaternion targetRotation = Quaternion.Euler(0, 0, rotationToPlayer);
+
+        //Setting up new rotation (and position) based on the target rotation
+        Quaternion rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _agent.angularSpeed * Time.deltaTime);
+        Vector3 position = transform.position;
     }
 
     /// <summary>

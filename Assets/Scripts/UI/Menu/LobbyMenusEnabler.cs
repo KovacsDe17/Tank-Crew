@@ -35,8 +35,6 @@ public class LobbyMenusEnabler : MonoBehaviour
     /// </summary>
     private void EnableJoinedLobbyUI(object sender, LobbyManager.LobbyEventArgs lobbyEventArgs)
     {
-        Debug.Log("LobbyMenusEnabler.EnableJoinedLobbyUI() called with LobbyManager.OnJoinedLobby event");
-
         _joinedLobbyMenu.transform.localScale = new Vector3(0, 0, 0); //Hide even when enabled
         _joinedLobbyMenu.SetActive(true); //Enable
         _loadingIcon.SetActive(false);
@@ -47,9 +45,6 @@ public class LobbyMenusEnabler : MonoBehaviour
     /// </summary>
     private void OnClientStarted_ChangeUI(object sender, EventArgs e)
     {
-        Debug.Log("LobbyMenusEnabler.OnClientStarted_ChangeUI() called with GameManager.OnSetupComplete event");
-        Debug.Log("Relay Client started, changing UI");
-
         _joinedLobbyMenu.SetActive(false);
         _multiplayerMenu.SetActive(false);
         Player.Local.BaseUI.SetActive(true); //TODO: swap this
@@ -62,9 +57,6 @@ public class LobbyMenusEnabler : MonoBehaviour
     /// </summary>
     private void OnGameStartInvoked_ChangeUI(object sender, EventArgs e)
     {
-        Debug.Log("LobbyMenusEnabler.OnGameStartInvoked_ChangeUI() called with LobbyManager.OnGameStartInvoked event");
-
-        Debug.Log("Game Start invoked, changing UI");
         _loadingScreen.SetActive(true);
     }
 }

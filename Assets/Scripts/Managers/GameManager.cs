@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Slider _playerHealthBar; //Health Bar for the player
 
     private float _timeOfStart;
+    private float _elapsedTime;
     private int _enemiesDestroyed;
     private int _shotsFired;
 
@@ -34,6 +35,31 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+    }
+
+    private void Start()
+    {
+        GameplaySync.Instance.IsDead.OnValueChanged += (p, n) =>
+        {
+            if(n == true)
+            {
+                Debug.Log("Player has died, calling InvokeOnEndGame(false)!");
+                InvokeOnGameEnd(false);
+            }
+        };
+
+        GameplaySync.Instance.HasWonGame.OnValueChanged += (p, n) =>
+        {
+            if (n == true)
+            {
+                Debug.Log("Player has won, calling InvokeOnEndGame(true)!");
+                InvokeOnGameEnd(true);
+            }
+        };
+
+        GameplaySync.Instance.ShotsFired.OnValueChanged += (p, n) => _shotsFired = n;
+        GameplaySync.Instance.EnemiesDestroyed.OnValueChanged += (p, n) => _enemiesDestroyed = n;
+        GameplaySync.Instance.TimeElapsed.OnValueChanged += (p, n) => _elapsedTime = n;
     }
 
     /// <summary>
@@ -59,7 +85,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        Debug.Log("OnGameStart Invoked using GameManager.StartGame()!");
         _timeOfStart = Time.time;
         OnGameStart?.Invoke(this, EventArgs.Empty);
     }
@@ -72,10 +97,13 @@ public class GameManager : MonoBehaviour
     {
         OnGameEnd?.Invoke(this, new EndGameEventArgs {
             won = won,
-            timeElapsed = Time.time - _timeOfStart,
+            timeElapsed = _elapsedTime,
             enemiesDestroyed = _enemiesDestroyed,
             shotsFired = _shotsFired
         });
+
+        AudioManager.Instance.MuteCategory(AudioManager.Category.IngameSound, true);
+        AudioManager.Instance.PlayMusic(AudioManager.Music.MainTheme);
     }
 
     public void InvokeOnPlayerSpawn()
@@ -93,6 +121,11 @@ public class GameManager : MonoBehaviour
     public Slider GetPlayerHealthBar()
     {
         return _playerHealthBar;
+    }
+
+    public float GetTimeOfStart()
+    {
+        return _timeOfStart;
     }
 
     public class EndGameEventArgs : EventArgs

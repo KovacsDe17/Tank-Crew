@@ -22,7 +22,7 @@ public class JoinLobbyByCodeUI : MonoBehaviour
         catch (LobbyServiceException e)
         {
             //TODO: Create error panel and send output there
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 }

@@ -96,9 +96,16 @@ public class Objective : NetworkBehaviour
     /// </summary>
     private async void Win()
     {
-        await Task.Delay(2000); //Wait for two seconds
+        if (IsServer)
+        {
+            PlayerTank player = PlayerTank.Instance;
 
-        GameManager.Instance.InvokeOnGameEnd(true);
+            GameplaySync.Instance.SetTimerServerRPC();
+            
+            await Task.Delay(2000); //Wait for two seconds
+            
+            GameplaySync.Instance.HasWonGame.Value = true;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

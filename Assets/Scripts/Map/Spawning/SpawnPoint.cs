@@ -24,8 +24,6 @@ public class SpawnPoint : NetworkBehaviour
     /// </summary>
     public void Spawn(object sender, EventArgs e)
     {
-        Debug.Log("SpawnPoint.Spawn() called with GameManager.OnGameStart event");
-
         if (!IsServer) return;
 
         GameObject gameobject = Instantiate(_objectToSpawn, transform.position, _objectToSpawn.transform.rotation, _spawnParent);

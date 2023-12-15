@@ -49,19 +49,21 @@ public class AmmoProjectile : NetworkBehaviour
     /// <param name="collision">The object which the projectile collided with</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if ((_layerMask.value & (1 << collision.gameObject.layer)) > 0)
+        if (IsServer)
         {
-            Entity tank = collision.collider.GetComponent<Entity>();
-            if(tank != null)
+            if ((_layerMask.value & (1 << collision.gameObject.layer)) > 0)
             {
-                tank.TakeDamage(_damage);
+                Entity tank = collision.collider.GetComponent<Entity>();
+                if(tank != null)
+                {
+                    tank.TakeDamage(_damage);
+                }
+
+                //TODO: Insert effect
+                //Instantiate(_explosionEffect, transform.position, Quaternion.identity);
+
+                gameObject.GetComponent<NetworkObject>().Despawn();
             }
-
-            //TODO: Insert effect
-            //Instantiate(_explosionEffect, transform.position, Quaternion.identity);
-
-            Destroy(gameObject);
         }
-
     }
 }

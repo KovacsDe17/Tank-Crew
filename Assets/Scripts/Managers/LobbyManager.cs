@@ -161,9 +161,6 @@ public class LobbyManager : MonoBehaviour
             //The host automatically joines the relay, only the client needs to connect
             if (!IsLobbyHost()) //Not the host = the client
             {
-                //OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
-
-                Debug.Log("LobbyManger.OnGameStartInvoked is invoked from LobbyManager.CheckGameStarted()");
                 OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
                 await RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_START_GAME].Value);
             }
@@ -186,14 +183,13 @@ public class LobbyManager : MonoBehaviour
 
             CheckRoles();
 
-            Debug.Log("LobbyManager.OnJoinedLobbyUpdate invoked");
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
         }
         catch (LobbyServiceException e)
         {
             OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
 
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -231,7 +227,6 @@ public class LobbyManager : MonoBehaviour
             _joinedLobby = lobby;
             _hostOfJoinedLobby = GetHostOfLobby(lobby);
 
-            Debug.Log("OnJoinedLobby invoked with LobbyManager.CreateLobby(...)");
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
 
             Debug.Log("Lobby created with name " + lobby.Name + "(ID: " + lobby.Id + ") , and has " + lobby.MaxPlayers + " players max. The lobby code is \"" + lobby.LobbyCode + "\"");
@@ -239,7 +234,7 @@ public class LobbyManager : MonoBehaviour
             PrintPlayers(_hostLobby);
         } catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -267,7 +262,6 @@ public class LobbyManager : MonoBehaviour
 
             SyncMap();
 
-            Debug.Log("OnJoinedLobby invoked in LobbyManager.JoinLobby(lobbycode)");
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { Lobby = _joinedLobby });
 
             Debug.Log("Joined lobby by code \"" + lobbyCode + "\"!");
@@ -277,7 +271,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -300,6 +294,8 @@ public class LobbyManager : MonoBehaviour
         
         mapGenerator.SetOffsetFromSeed(seed);
         mapGenerator.GenerateMapForClient();
+
+        //TODO: Signal that the client is ready!
     }
 
     /// <summary>
@@ -347,14 +343,13 @@ public class LobbyManager : MonoBehaviour
             _hostLobby = lobby;
             _joinedLobby = lobby;
 
-            Debug.Log("LobbyManager.OnJoinedLobbyUpdate invoked");
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
 
             PrintPlayers(_hostLobby);
 
         } catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -380,12 +375,11 @@ public class LobbyManager : MonoBehaviour
 
             _joinedLobby = lobby;
 
-            Debug.Log("LobbyManager.OnJoinedLobbyUpdate invoked");
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
 
         } catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -411,12 +405,11 @@ public class LobbyManager : MonoBehaviour
             _joinedLobby = lobby;
             _hostOfJoinedLobby = GetHostOfLobby(lobby);
 
-            Debug.Log("LobbyManager.OnJoinedLobbyUpdate invoked");
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { Lobby = lobby });
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -432,7 +425,7 @@ public class LobbyManager : MonoBehaviour
             OnLeaveLobby?.Invoke(this, EventArgs.Empty);
         } catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -448,7 +441,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -467,7 +460,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -488,8 +481,6 @@ public class LobbyManager : MonoBehaviour
     {
         if (IsLobbyHost())
         {
-
-            Debug.Log("LobbyManger.OnGameStartInvoked is invoked from LobbyManager.InvokeGameStart()");
             OnGameStartInvoked?.Invoke(this, EventArgs.Empty);
 
             try
@@ -636,7 +627,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 

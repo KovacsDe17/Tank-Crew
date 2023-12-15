@@ -23,7 +23,6 @@ public static class SaveAndLoad
 
     public static void SaveAudioSetting(string key, float value)
     {
-        Debug.Log("A - Saving " + value + " into " + key);
         PlayerPrefs.SetFloat(key, value);
         AudioManager.Instance.UpdateVolumeSettings();
     }
@@ -35,8 +34,6 @@ public static class SaveAndLoad
 
     public static float LoadAudioSetting(string key)
     {
-        Debug.Log("A - Loading audio setting " + key);
-
         if (!PlayerPrefs.HasKey(key))
         {
             Debug.LogWarning("Key " + key + " has not been found in PlayerPrefs! Assigning 1f by default!");

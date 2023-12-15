@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SettingsMenu.unity
     guid: 8a89923ac086a49489e1e633f85eccae
+  - enabled: 1
+    path: Assets/Scenes/EnemyAI_test.unity
+    guid: eeffab4e49615d44eb1b098e6dad7c73
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 41ef1ca033011f241920b24b22c04735, type: 2}
     com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 6d744c5c95463084294ffd4c72dd57e5, type: 2}

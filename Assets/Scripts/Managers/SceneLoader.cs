@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,9 @@ public class SceneLoader : MonoBehaviour
     /// <param name="sceneIndex">The unique index of the scene to be loaded</param>
     public void LoadScene(int sceneIndex)
     {
+        if(NetworkManager.Singleton != null)
+            Destroy(NetworkManager.Singleton.gameObject);
+
         SceneManager.LoadScene(sceneIndex);
     }
 
@@ -20,7 +24,7 @@ public class SceneLoader : MonoBehaviour
     /// </summary>
     public void ReloadScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     /// <summary>

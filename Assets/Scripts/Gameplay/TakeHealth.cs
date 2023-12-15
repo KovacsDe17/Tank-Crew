@@ -19,10 +19,11 @@ public class TakeHealth : MonoBehaviour
     /// <param name="entity">The entity that collides with this object.</param>
     private void TakeHealthFromEntity(Collider2D entity)
     {
+        if (entity == null) return;
+
         Entity tank = entity.GetComponent<Entity>();
 
-        if (tank == null)
-            return;
+        if (tank == null) return;
 
         else tank.TakeDamage(_healthToTake);
 

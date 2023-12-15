@@ -13,7 +13,7 @@ public class SoundOnMove : MonoBehaviour
 
     void Start()
     {
-        _audioSource = AudioManager.Instance.AttachConstantSound(AudioManager.Sound.Tank_Exhaust, transform, 0.5f);
+        _audioSource = AudioManager.Instance.AttachConstantSound(AudioManager.Sound.Tank_Exhaust, transform, 2f);
         _rigidbody = transform.GetComponent<Rigidbody2D>();
     }
 

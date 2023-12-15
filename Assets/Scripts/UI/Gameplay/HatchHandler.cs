@@ -57,8 +57,10 @@ public class HatchHandler : MonoBehaviour
     /// <summary>
     /// Discard the currently loaded ammunition
     /// </summary>
-    public void UnloadAmmo()
+    public void UnloadAmmo(Ammo ammo)
     {
+        if (ammo != _loadedAmmo) return;
+
         SwitchEasyGrab(true);
         _loadedAmmo = null;
     }
@@ -75,6 +77,7 @@ public class HatchHandler : MonoBehaviour
         _animator.Play("Base Layer." + clip, 0, 0);
         _loadedAmmo.Fire();
 
+        GameplaySync.Instance.AddShotFiredServerRPC();
         _turret.FireProjectileServerRPC();
 
         AudioManager.Instance.PlaySound(AudioManager.Sound.Tank_Shoot);
@@ -103,5 +106,16 @@ public class HatchHandler : MonoBehaviour
 
         GameObject easyGrab = _loadedAmmo.transform.Find("EasyDrag").gameObject;
         easyGrab.SetActive(!activate);
+    }
+
+    public bool IsLoaded(Ammo ammo)
+    {
+        /*
+        Debug.Log("IsLoaded? - _loadedAmmo: " + (_loadedAmmo!=null?_loadedAmmo.GetInstanceID():"null") + 
+        ", ammo: " + ammo.GetInstanceID() + 
+        " -> IsLoaded=" + ((_loadedAmmo != null && _loadedAmmo != ammo)?"true":"false"));
+        */
+
+        return _loadedAmmo != null && _loadedAmmo != ammo;
     }
 }
