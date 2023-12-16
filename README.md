@@ -6,7 +6,7 @@ A játék működését bemutató videók az alábbi linkeken érhetőek el:
 * [Fő funkciók](https://youtu.be/x00jQDIPgo0)
 * [Többjátékos mód](https://youtu.be/5DKCjgzVxmk)
 
-A játék telepítő APK fájlja [itt](https://drive.google.com/file/d/1U7B3j2Cv_jAy1CT5Q65hohPq7a56yhNm/view?usp=sharing) érhető el. A játék minimális követelménye a 13-as verziószámú *Tiramisu*.
+A játék telepítő APK fájlja [itt](https://drive.google.com/file/d/1U7B3j2Cv_jAy1CT5Q65hohPq7a56yhNm/view?usp=sharing) érhető el. A játék minimális követelménye a 13-as verziószámú Android, a *Tiramisu*.
 
 ---
 
