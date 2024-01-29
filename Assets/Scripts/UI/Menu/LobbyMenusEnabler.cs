@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
@@ -28,6 +30,9 @@ public class LobbyMenusEnabler : MonoBehaviour
         lobby.OnGameStartInvoked += OnGameStartInvoked_ChangeUI;
 
         GameManager.Instance.OnSetupComplete += OnClientStarted_ChangeUI;
+
+        GameplaySync.Instance.NumberOfPlayersInGame.OnValueChanged += (p, n) => Debug.Log("Number of players in game changed to " + n);
+        GameplaySync.Instance.NumberOfPlayersInLobby.OnValueChanged += (p, n) => Debug.Log("Number of players in lobby changed to " + n);
     }
 
     /// <summary>
@@ -45,9 +50,20 @@ public class LobbyMenusEnabler : MonoBehaviour
     /// </summary>
     private void OnClientStarted_ChangeUI(object sender, EventArgs e)
     {
+        /*
+        //TODO: timeout timer (10 sec?)
+        await Task.Run(() =>
+        {
+            //Wait till everyone joins the game
+            while (!GameplaySync.Instance.EveryoneJoinedGame()) { }
+        });
+        */
+
         _joinedLobbyMenu.SetActive(false);
         _multiplayerMenu.SetActive(false);
         Player.Local.BaseUI.SetActive(true); //TODO: swap this
+
+        Debug.Log("With " + Player.Local.GetName() + " connected, there are " + GameplaySync.Instance.GetPlayerCount() + " players on the server.");
 
         _loadingScreen.SetActive(false);
     }

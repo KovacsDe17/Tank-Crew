@@ -51,7 +51,9 @@ public class LobbyManager : MonoBehaviour
 
     private async void Start()
     {
-        await UnityServices.InitializeAsync(); //Initializing the UnityServices for later purposes
+        InitializationOptions options = new InitializationOptions();
+        options.SetProfile(Player.Local.name);
+        await UnityServices.InitializeAsync(options); //Initializing the UnityServices for later purposes
 
         await SignIn();
 
@@ -499,6 +501,8 @@ public class LobbyManager : MonoBehaviour
                     );
 
                 _joinedLobby = lobby;
+
+                GameplaySync.Instance.NumberOfPlayersInLobby.Value = _joinedLobby.Players.Count;
 
             } catch (LobbyServiceException e)
             {

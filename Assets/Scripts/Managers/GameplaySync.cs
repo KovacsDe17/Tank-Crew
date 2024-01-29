@@ -12,6 +12,8 @@ public class GameplaySync : NetworkBehaviour
     public NetworkVariable<float> TimeElapsed = new NetworkVariable<float>(0);
     public NetworkVariable<int> EnemiesDestroyed = new NetworkVariable<int>(0);
     public NetworkVariable<int> ShotsFired = new NetworkVariable<int>(0);
+    public NetworkVariable<int> NumberOfPlayersInLobby = new NetworkVariable<int>(0);
+    public NetworkVariable<int> NumberOfPlayersInGame = new NetworkVariable<int>(0);
 
     private void Awake()
     {
@@ -46,5 +48,26 @@ public class GameplaySync : NetworkBehaviour
             Debug.Log("Shot fired, increasing ShotsFired");
             ShotsFired.Value++;
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdatePlayerCountServerRPC()
+    {
+        if (IsServer)
+        {
+            NumberOfPlayersInGame.Value = NetworkManager.Singleton.ConnectedClients.Count;
+        }
+    }
+
+    public int GetPlayerCount()
+    {
+        UpdatePlayerCountServerRPC();
+
+        return NumberOfPlayersInGame.Value;
+    }
+
+    public bool EveryoneJoinedGame()
+    {
+        return NumberOfPlayersInLobby.Value == NumberOfPlayersInGame.Value;
     }
 }
