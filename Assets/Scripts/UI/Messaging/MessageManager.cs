@@ -42,7 +42,7 @@ public class MessageManager : MonoBehaviour
         return _messageCarrier;
     }
 
-    private IEnumerator ShowMessageCR(string message, float duration)
+    private IEnumerator ShowMessageCR(string title, string message, float duration)
     {
         if (!_messageCarrier.IsUp())
         {
@@ -50,7 +50,7 @@ public class MessageManager : MonoBehaviour
             yield return new WaitUntil(() => _messageCarrier.IsUp());
         }
 
-        _messageCarrier.SetMessage(message);
+        _messageCarrier.SetMessage(title, message);
         _messageCarrier.GoDown();
 
         yield return new WaitForSecondsRealtime(duration);
@@ -58,10 +58,10 @@ public class MessageManager : MonoBehaviour
         _messageCarrier.GoUp();
     }
 
-    public void ShowMessage(string message, float duration = 2f)
+    public void ShowMessage(string title, string message, float duration = 2f)
     {
         StopAllCoroutines();
-        StartCoroutine(ShowMessageCR(message, duration));
+        StartCoroutine(ShowMessageCR(title, message, duration));
     }
 }
 
@@ -75,8 +75,8 @@ class Message
     /// </summary>
     /// <param name="message">The message to show.</param>
     /// <param name="duration">For how long the message stays on screen, in seconds.</param>
-    public static void Show(string message, float duration = 2f)
+    public static void Show(string title, string message, float duration = 3f)
     {
-        MessageManager.Instance.ShowMessage(message, duration);
+        MessageManager.Instance.ShowMessage(title, message, duration);
     }
 }

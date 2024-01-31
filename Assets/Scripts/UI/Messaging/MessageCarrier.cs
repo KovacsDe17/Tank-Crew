@@ -15,6 +15,8 @@ public class MessageCarrier : MonoBehaviour
     Animator animator;
 
     [SerializeField]
+    TextMeshProUGUI messageTitle;    //Title to display
+    [SerializeField]
     TextMeshProUGUI messageText;    //Text to display
 
     private void Awake()
@@ -44,8 +46,9 @@ public class MessageCarrier : MonoBehaviour
     /// Set the text of the message.
     /// </summary>
     /// <param name="message">The text to display.</param>
-    public void SetMessage(string message)
+    public void SetMessage(string title, string message)
     {
+        messageTitle.text = title;
         messageText.text = message;
     }
 }

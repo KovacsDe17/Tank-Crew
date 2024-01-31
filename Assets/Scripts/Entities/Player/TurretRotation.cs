@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// This class is responsible for the movement of the player tanks turret
+/// This class is responsible for the rotation of the player tanks turret
 /// </summary>
 public class TurretRotation : MonoBehaviour
 {
