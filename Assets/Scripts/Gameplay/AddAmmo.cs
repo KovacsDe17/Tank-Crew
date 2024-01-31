@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Add ammo to an Ammo Holder.
+/// </summary>
 public class AddAmmo : MonoBehaviour
 {
     [SerializeField]

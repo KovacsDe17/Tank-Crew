@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using UnityEditor.VersionControl;
 using UnityEngine;
 
+/// <summary>
+/// Create new messages.
+/// </summary>
 public class MessageManager : MonoBehaviour
 {
     [SerializeField]
@@ -62,8 +65,16 @@ public class MessageManager : MonoBehaviour
     }
 }
 
+/// <summary>
+/// Made for easier reference.
+/// </summary>
 class Message
 {
+    /// <summary>
+    /// Show a message.
+    /// </summary>
+    /// <param name="message">The message to show.</param>
+    /// <param name="duration">For how long the message stays on screen, in seconds.</param>
     public static void Show(string message, float duration = 2f)
     {
         MessageManager.Instance.ShowMessage(message, duration);

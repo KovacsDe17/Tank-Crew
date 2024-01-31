@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class is responsible for the UI of the joined lobby.
+/// Sets the "Joined Lobby" Menu UI based on the given fields.
 /// </summary>
 public class JoinedLobbyMenuUI : MonoBehaviour
 {

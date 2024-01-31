@@ -1,23 +1,17 @@
-﻿using System;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// The representation of a tank.
+/// The representation of an entity.
 /// </summary>
 public class Entity : NetworkBehaviour
 {
-    //[SerializeField] private float _maxHealth = 100f;
-    //private float _currentHealth = 100f;
-
-    [SerializeField] private NetworkVariable<float> _maxHealth = new NetworkVariable<float>(100f);
-    private NetworkVariable<float> _currentHealth = new NetworkVariable<float>(100f);
+    [SerializeField] private NetworkVariable<float> net_maxHealth = new NetworkVariable<float>(100f);
+    private NetworkVariable<float> net_currentHealth = new NetworkVariable<float>(100f);
 
     [SerializeField] internal Slider _healthBar;
     [SerializeField] internal GameObject _destroyedEntity;
-    internal Turret _turret;
 
     public override void OnNetworkSpawn()
     {
@@ -30,8 +24,6 @@ public class Entity : NetworkBehaviour
     /// </summary>
     private void Initialize()
     {
-        _turret = GetComponentInChildren<Turret>();
-
         UpdateHealthBar();
     }
 
@@ -45,9 +37,9 @@ public class Entity : NetworkBehaviour
             return;
         }
 
-        _healthBar.value = _currentHealth.Value / _maxHealth.Value;
+        _healthBar.value = net_currentHealth.Value / net_maxHealth.Value;
 
-        Debug.Log("Entity healthbar: " + _currentHealth.Value + "/" + _maxHealth.Value);
+        Debug.Log("Entity healthbar: " + net_currentHealth.Value + "/" + net_maxHealth.Value);
     }
 
     /// <summary>
@@ -61,14 +53,14 @@ public class Entity : NetworkBehaviour
             return;
         }
 
-        _healthBar.value = currentHealth / _maxHealth.Value;
+        _healthBar.value = currentHealth / net_maxHealth.Value;
 
-        Debug.Log("Entity healthbar: " + currentHealth + "/" + _maxHealth.Value);
+        Debug.Log("Entity healthbar: " + currentHealth + "/" + net_maxHealth.Value);
     }
 
     public float GetCurrentHealth()
     {
-        return _currentHealth.Value;
+        return net_currentHealth.Value;
     }
 
     /// <summary>
@@ -77,13 +69,13 @@ public class Entity : NetworkBehaviour
     /// <param name="damage">The amount of points to subtract</param>
     public void TakeDamage(float damage)
     {
-        if(_currentHealth.Value <= damage)
+        if(net_currentHealth.Value <= damage)
         {
-            _currentHealth.Value = 0f;
+            net_currentHealth.Value = 0f;
             Die();
         } else
         {
-            _currentHealth.Value -= damage;
+            net_currentHealth.Value -= damage;
         }
 
         UpdateHealthBar();
@@ -97,13 +89,13 @@ public class Entity : NetworkBehaviour
     /// <param name="health">The amount of points to add</param>
     public void RestoreHealth(float health)
     {
-        if ((_currentHealth.Value + health) > _maxHealth.Value)
+        if ((net_currentHealth.Value + health) > net_maxHealth.Value)
         {
-            _currentHealth.Value = _maxHealth.Value;
+            net_currentHealth.Value = net_maxHealth.Value;
         }
         else
         {
-            _currentHealth.Value += health;
+            net_currentHealth.Value += health;
         }
 
         UpdateHealthBar();
@@ -114,7 +106,7 @@ public class Entity : NetworkBehaviour
     /// </summary>
     public virtual void Die()
     {
-        Debug.Log("Enemy died!");
+        Debug.Log("Entity died!");
 
         if (IsServer)
         {
@@ -133,18 +125,12 @@ public class Entity : NetworkBehaviour
                 destroyedEntity.GetComponent<NetworkObject>().Spawn();
             }
 
-            if (_turret != null)
-            {
-                Transform deadEntityTurret = destroyedEntity.GetComponentInChildren<Turret>().transform;
-                deadEntityTurret.rotation = _turret.transform.rotation;
-            }
-
             Rigidbody2D rigidbody = destroyedEntity.GetComponent<Rigidbody2D>();
             rigidbody.velocity = _rigidbody.velocity;
             rigidbody.angularVelocity = _rigidbody.angularVelocity;
 
 
-            //TODO: way to ugly, make this prettier next time!
+            //TODO: way too ugly, make this prettier next time!
             Transform root;
             if (transform.name == "EnemyTank")
                 root = gameObject.transform.parent;
@@ -155,16 +141,11 @@ public class Entity : NetworkBehaviour
         }
     }
 
-    public Turret GetTurret()
-    {
-        return _turret;
-    }
-
     public void SetHealthBar(Slider healthBar)
     {
         _healthBar = healthBar;
 
-        _currentHealth.OnValueChanged += (p, n) => UpdateHealthBar(n);
+        net_currentHealth.OnValueChanged += (p, n) => UpdateHealthBar(n);
     }
 
     internal bool DestroyedEntityIsFromScene()

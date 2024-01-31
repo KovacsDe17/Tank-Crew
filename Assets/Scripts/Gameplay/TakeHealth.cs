@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Reduces health of the given entity.
+/// </summary>
 public class TakeHealth : MonoBehaviour
 {
     [SerializeField]

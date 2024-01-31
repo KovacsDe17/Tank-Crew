@@ -1,8 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Makes a sound based on the movement of the given Rigidbody2D.
+/// </summary>
 public class SoundOnMove : MonoBehaviour
 {
     private AudioSource _audioSource;

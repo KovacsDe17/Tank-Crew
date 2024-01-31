@@ -8,6 +8,9 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the Lobby.
+/// </summary>
 public class LobbyManager : MonoBehaviour
 {
     public const string KEY_GAME_MODE = "GameMode";

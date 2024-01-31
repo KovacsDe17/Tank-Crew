@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class manages the games main mechanincs
+/// Manages the states of the game
 /// </summary>
 public class GameManager : MonoBehaviour
 {

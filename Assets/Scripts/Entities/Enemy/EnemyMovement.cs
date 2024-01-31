@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// This class is responsible for the CPU enemy movement.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyMovement : MonoBehaviour
 {
@@ -19,7 +22,6 @@ public class EnemyMovement : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("Enemy enabled...");
-        //Initialize(this, EventArgs.Empty);
     }
 
     public void Initialize(object sender, EventArgs e)
@@ -63,34 +65,6 @@ public class EnemyMovement : MonoBehaviour
     {
         Vector3 target = new Vector3(_playerTransform.position.x, _playerTransform.position.y, transform.position.z);
         _agent.SetDestination(target);
-
-        /*
-        if(Mathf.RoundToInt(EulerAnglesToPlayer(_playerTransform)) != Mathf.RoundToInt(transform.rotation.eulerAngles.z))
-        {
-            _agent.speed = 0;
-            Debug.Log("EM - NO");
-        }
-        else
-        {
-            _agent.speed = _maxSpeed;
-            Debug.Log("EM - YES");
-        }
-        */
-        
-        /*
-        if (!RotationCloseToPlayer(_playerTransform, _rotationThreshold))
-        {
-            _agent.isStopped = true;
-            _agent.updateRotation = false;
-            RotateTowardsPlayer(_playerTransform);
-        } else
-        {
-            _agent.updateRotation = true;
-            _agent.isStopped = false;
-            Vector3 target = new Vector3(_playerTransform.position.x, _playerTransform.position.y, transform.position.z);
-            _agent.SetDestination(target);
-        }
-        */
     }
 
     /// <summary>

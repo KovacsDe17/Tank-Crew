@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class is responsible for creating a lobby through UI.
+/// Sets the "Create Lobby" Menu UI based on the given fields.
 /// </summary>
 public class CreateLobbyMenuUI : MonoBehaviour
 {

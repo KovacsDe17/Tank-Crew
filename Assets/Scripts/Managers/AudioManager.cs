@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static AudioManager;
+
+/// <summary>
+/// Manager class for audio.
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
     public enum Sound
@@ -103,6 +105,9 @@ public class AudioManager : MonoBehaviour
         UpdateVolumeSettings();
     }
 
+    /// <summary>
+    /// Updates all audio sources based on their category.
+    /// </summary>
     public void UpdateVolumeSettings()
     {
         UpdateVolumes(Category.MenuMusic);
@@ -111,6 +116,11 @@ public class AudioManager : MonoBehaviour
         UpdateVolumes(Category.IngameSound);
     }
 
+    /// <summary>
+    /// Plays a sound once at a given volume.
+    /// </summary>
+    /// <param name="sound">The sound to play.</param>
+    /// <param name="volume">The normalized volume to play at.</param>
     public void PlaySound(Sound sound, float volume = 1f)
     {
         AudioHelper audioHelper;
@@ -142,6 +152,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Play a sound at a given position in world space.
+    /// </summary>
+    /// <param name="sound">The sound to play.</param>
+    /// <param name="position">The position of the sound.</param>
     public void PlaySound(Sound sound, Vector3 position)
     {
         if (CanPlaySound(sound))
@@ -166,10 +181,17 @@ public class AudioManager : MonoBehaviour
             audioSource.volume = outputVolume;
             audioSource.Play();
 
-            Object.Destroy(soundGameObject, audioSource.clip.length);
+            Destroy(soundGameObject, audioSource.clip.length);
         }
     }
 
+    /// <summary>
+    /// Attach sound to a transform and play it on loop.
+    /// </summary>
+    /// <param name="sound">The sound to play.</param>
+    /// <param name="transform">The transform which carries the sound.</param>
+    /// <param name="fadeDuration">Time (in seconds) for fading between different sounds.</param>
+    /// <returns></returns>
     public AudioSource AttachConstantSound(Sound sound, Transform transform, float fadeDuration = 0f)
     {
         GameObject soundGameObject = new GameObject("Sound");
@@ -200,6 +222,11 @@ public class AudioManager : MonoBehaviour
         return audioSource;
     }
 
+    /// <summary>
+    /// Play music.
+    /// </summary>
+    /// <param name="music">The music to play.</param>
+    /// <param name="fadeDuration">Time (in seconds) for fading between different musics.</param>
     public void PlayMusic(Music music, float fadeDuration = 3f)
     {
         if(musicPlayingGameObject != null && musicPlayingAudioSource != null)
@@ -237,6 +264,13 @@ public class AudioManager : MonoBehaviour
         musicPlayingAudioSource = audioSource;
     }
 
+    /// <summary>
+    /// Start fading the given audio.
+    /// </summary>
+    /// <param name="audioSource">The audio source that fades.</param>
+    /// <param name="duration">Time in seconds.</param>
+    /// <param name="targetVolume">The volume to fade to.</param>
+    /// <returns></returns>
     public IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
     {
         float currentTime = 0;
@@ -249,7 +283,7 @@ public class AudioManager : MonoBehaviour
         }
 
         if(targetVolume == 0)
-            Object.Destroy(audioSource.gameObject);
+            Destroy(audioSource.gameObject);
     }
 
     public static AudioClip GetAudioClip(Sound sound)
@@ -306,10 +340,10 @@ public class AudioManager : MonoBehaviour
     {
         switch(category)
         {
-            case Category.MenuMusic: return SaveAndLoad.LoadAudioSetting(SaveAndLoad.MENU_MUSIC_KEY);
-            case Category.MenuSound: return SaveAndLoad.LoadAudioSetting(SaveAndLoad.MENU_SOUND_KEY);
-            case Category.IngameMusic: return SaveAndLoad.LoadAudioSetting(SaveAndLoad.INGAME_MUSIC_KEY);
-            case Category.IngameSound: return SaveAndLoad.LoadAudioSetting(SaveAndLoad.INGAME_SOUND_KEY);
+            case Category.MenuMusic: return AudioSettingSaver.LoadAudioSetting(AudioSettingSaver.MENU_MUSIC_KEY);
+            case Category.MenuSound: return AudioSettingSaver.LoadAudioSetting(AudioSettingSaver.MENU_SOUND_KEY);
+            case Category.IngameMusic: return AudioSettingSaver.LoadAudioSetting(AudioSettingSaver.INGAME_MUSIC_KEY);
+            case Category.IngameSound: return AudioSettingSaver.LoadAudioSetting(AudioSettingSaver.INGAME_SOUND_KEY);
             default: return 1f;
         }
     }
@@ -342,6 +376,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the volume of each audio source to the ones saved in the settings, based on their category.
+    /// </summary>
+    /// <param name="category">The category of the audio sources.</param>
     public void UpdateVolumes(Category category)
     {
         foreach(AudioSource source in GetAudioSourcesOfCategory(category))
@@ -363,6 +401,11 @@ public class AudioManager : MonoBehaviour
         return result;
     }
 
+    /// <summary>
+    /// Mute or unmute all audio sources of the given category.
+    /// </summary>
+    /// <param name="category">The category to mute/unmute.</param>
+    /// <param name="mute">True = mute, False = unmute.</param>
     public void MuteCategory(Category category, bool mute)
     {
         foreach(AudioSource audioSource in GetAudioSourcesOfCategory(category))

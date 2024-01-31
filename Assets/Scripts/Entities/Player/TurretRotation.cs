@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// This class is responsible for the movement of the tanks turret
+/// This class is responsible for the movement of the player tanks turret
 /// </summary>
 public class TurretRotation : MonoBehaviour
 {
@@ -98,7 +98,6 @@ public class TurretRotation : MonoBehaviour
     /// </summary>
     private void InitalizeValues()
     {
-        //_crank = Player.Local.GetCrank();
         _rotation = 0;  // Mathf.RoundToInt(_crank.GetRotation()) + 360 * _rotationOverflow;
         _previousRotation = _rotation;
         _rotationDifference = _rotation - _previousRotation;

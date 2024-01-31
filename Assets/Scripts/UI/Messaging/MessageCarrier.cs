@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-using TMPro;
-using Unity.Collections.LowLevel.Unsafe;
+﻿using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Displays the given message.
+/// </summary>
 [RequireComponent(typeof(Animator))]
 public class MessageCarrier : MonoBehaviour
 {

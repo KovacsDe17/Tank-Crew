@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A helper class for the Audio Manager.
+/// </summary>
 public class AudioHelper : MonoBehaviour
 {
     public AudioManager.Category audioCategory;

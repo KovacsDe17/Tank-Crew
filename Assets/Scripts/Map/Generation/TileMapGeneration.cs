@@ -231,7 +231,7 @@ public class TileMapGeneration : MonoBehaviour
                 _enemyParent
                 ).GetComponent<EnemySpawnPoint>();
 
-            spawnPoint.UpdateEnemyType(EnemyPrefabSetup.EnemyType.Turret);
+            spawnPoint.UpdateEnemyType(EnemyPrefabSetup.EnemyType.Tower);
         }
 
         stopwatch.Stop();

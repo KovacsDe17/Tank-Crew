@@ -2,6 +2,9 @@ using System;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Sets the End Game Menu.
+/// </summary>
 public class EndGameMenu : MonoBehaviour
 {
     private const string ON_WIN_TITLE = "Glorious Victory!";

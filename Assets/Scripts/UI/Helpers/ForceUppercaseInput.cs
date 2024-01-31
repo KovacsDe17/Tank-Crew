@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Forces uppercase input for the attached input field.
+/// </summary>
 public class ForceUppercaseInput : MonoBehaviour
 {
     private void Start()

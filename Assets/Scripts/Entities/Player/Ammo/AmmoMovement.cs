@@ -112,13 +112,6 @@ public class AmmoMovement : MonoBehaviour
                 _ammo.SetReady(true);
                 return;
             }
-            /*
-            else
-            {   
-                _hatchHandler.UnloadAmmo(_ammo);
-                _ammo.SetReady(false);
-            }
-            */
 
             if (CloseTo(_origin.position, proximityThreshold))
             {

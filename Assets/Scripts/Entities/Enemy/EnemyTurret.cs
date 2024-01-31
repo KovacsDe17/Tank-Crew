@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof (Enemy))]
 public class EnemyTurret : MonoBehaviour
 {
-     private Enemy _enemy; //The Enemy script on this object
+    private Enemy _enemy; //The Enemy script on this object
     [SerializeField] private Turret _turret; //The turret which rotates
     [SerializeField] private float _rotationSpeed = 15f; //How fast the turret can rotate
     [SerializeField] private float _reloadTime = 3f; //Seconds to pass between each shot

@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// The enemy the players can destroy
 /// </summary>
-public class Enemy : Entity
+public class Enemy : Unit
 {
     private Transform _playerTransform; //The transform of the player
 
@@ -18,10 +17,6 @@ public class Enemy : Entity
     private void Start()
     {
         SetEnabling();
-    }
-    private void OnEnable()
-    {
-        //Initialize();
     }
 
     private void Update()

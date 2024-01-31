@@ -1,9 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// This class represents the spawn place of the UI Ammos.
+/// </summary>
 public class AmmoHolder : MonoBehaviour
 {
     [SerializeField]

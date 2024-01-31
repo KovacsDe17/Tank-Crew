@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.VisualScripting;
@@ -99,7 +98,7 @@ public class EnemySpawnPoint : NetworkBehaviour
         enemy.transform.SetParent(_setup.transform);
 
         bool isTank = type == EnemyPrefabSetup.EnemyType.Tank;
-        if(type == EnemyPrefabSetup.EnemyType.Tank || type == EnemyPrefabSetup.EnemyType.Turret)
+        if(type == EnemyPrefabSetup.EnemyType.Tank || type == EnemyPrefabSetup.EnemyType.Tower)
             enemy.GetComponent<Enemy>().Initialize(isTank);
         
         //If destroy is set, do it

@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
+/// <summary>
+/// Syncronizes elements of the game for the multiplayer.
+/// </summary>
 public class GameplaySync : NetworkBehaviour
 {
     public static GameplaySync Instance { get; private set; }

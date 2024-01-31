@@ -1,9 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// A round zone that is centered at the objective point.
+/// </summary>
 public class CircularZone : MonoBehaviour
 {
     private Zone _currentZone;

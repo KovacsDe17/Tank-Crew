@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Copy text from a given input field.
+/// </summary>
 public class CopyValue : MonoBehaviour
 {
     private TMP_InputField _myInputField;

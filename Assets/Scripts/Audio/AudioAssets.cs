@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using static AudioManager;
 
+/// <summary>
+/// This class is for holding audio assets for the AudioManager.
+/// </summary>
 public class AudioAssets : MonoBehaviour
 {
     public static AudioAssets _i;
 
+    //If the assets are not cached, instantiate their holding object from the resources.
     public static AudioAssets i {  
         get { 
             if( _i == null ) _i = Instantiate(Resources.Load("AudioAssets") as GameObject).GetComponent<AudioAssets>();

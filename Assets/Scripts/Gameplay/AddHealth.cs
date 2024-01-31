@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Add health to an entity.
+/// </summary>
 public class AddHealth : MonoBehaviour
 {
     [SerializeField]

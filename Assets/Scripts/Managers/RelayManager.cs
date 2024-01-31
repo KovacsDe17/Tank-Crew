@@ -9,7 +9,7 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 
 /// <summary>
-/// This class is responsible for the Relay connection between the Players.
+/// Manages the Relay connection between the Players.
 /// </summary>
 public class RelayManager : MonoBehaviour
 {

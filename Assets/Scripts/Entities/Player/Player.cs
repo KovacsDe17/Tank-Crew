@@ -1,6 +1,3 @@
-using System;
-using Unity.Netcode;
-using Unity.Services.Authentication;
 using UnityEngine;
 
 /// <summary>
@@ -17,30 +14,13 @@ public class Player : MonoBehaviour
     public const string DRIVER_ROLE = "Driver";
     public const string GUNNER_ROLE = "Gunner";
 
-    [Header("Main Properties")]
     [SerializeField] private string _name;
     [SerializeField] private PlayerRole _role;
     [SerializeField] private ulong _clientId;
 
-    [Header("Controls")]
-    [SerializeField] private Crank _crank;
-    [SerializeField] private Lever _leverLeft;
-    [SerializeField] private Lever _leverRight;
-
-    [Header("UI")]
-    [SerializeField] public GameObject BaseUI;
-    [SerializeField] public GameObject DriverUI;
-    [SerializeField] public GameObject GunnerUI;
-    [SerializeField] public GameObject LoadingScreen;
-
     private void Awake()
     {
         SetLocalPlayerRandom();
-    }
-
-    private void Start()
-    {
-        Initialize();
     }
 
     /// <summary>
@@ -57,13 +37,7 @@ public class Player : MonoBehaviour
             Local = this;
         }
 
-        Local.SetName("Player_" + UnityEngine.Random.Range(10, 100));
-    }
-
-    private void Initialize()
-    {
-        //Not in use
-        //_type = PlayerType.Driver;
+        Local.SetName("Player_" + Random.Range(10, 100));
     }
 
     public void SetName(string name)
@@ -96,8 +70,6 @@ public class Player : MonoBehaviour
         return (playerRole == PlayerRole.Driver) ? DRIVER_ROLE : GUNNER_ROLE;
     }
 
-    
-
     /// <summary>
     /// Change the playerType between driver and gunner
     /// </summary>
@@ -110,19 +82,5 @@ public class Player : MonoBehaviour
         {
             _role = PlayerRole.Driver;
         }
-    }
-
-    public Crank GetCrank()
-    {
-        return _crank;
-    }
-
-    public Lever GetLeverLeft()
-    {
-        return _leverLeft;
-    }
-    public Lever GetLeverRight()
-    {
-        return _leverRight;
     }
 }

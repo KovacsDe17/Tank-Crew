@@ -56,9 +56,4 @@ public class NetworkManagerCaretaker : MonoBehaviour
         
         Destroy(NetworkManager.Singleton.gameObject);
     }
-
-    private List<NetworkManager> GetNetworkManagerList()
-    {
-        return FindObjectsByType<NetworkManager>(FindObjectsSortMode.InstanceID).ToList();
-    }
 }
