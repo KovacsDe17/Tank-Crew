@@ -72,6 +72,7 @@ public class RelayManager : MonoBehaviour
             return joinCode;
         } catch (RelayServiceException e)
         {
+            Message.Show("Error!", "Couldn't create relay connection!");
             Debug.LogError(e);
             return null;
         }
@@ -99,6 +100,7 @@ public class RelayManager : MonoBehaviour
 
         } catch (RelayServiceException e)
         {
+            Message.Show("Error!", "Couldn't join to host relay!");
             Debug.LogError(e);
         }
     }

@@ -193,7 +193,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
-
+            Message.Show("Error!", "Connection to the Joined Lobby has been lost!");
             Debug.LogError(e);
         }
     }
@@ -239,6 +239,7 @@ public class LobbyManager : MonoBehaviour
             PrintPlayers(_hostLobby);
         } catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't create Lobby '" + lobbyName + "'!");
             Debug.LogError(e);
         }
     }
@@ -276,6 +277,8 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
+            Message.Show("Error!", "Couldn't join lobby by code '" + lobbyCode + "'!");
             Debug.LogError(e);
         }
     }
@@ -354,6 +357,7 @@ public class LobbyManager : MonoBehaviour
 
         } catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't update to GameMode '" + gameMode + "' for the lobby!");
             Debug.LogError(e);
         }
     }
@@ -384,6 +388,7 @@ public class LobbyManager : MonoBehaviour
 
         } catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't update Player Data!");
             Debug.LogError(e);
         }
     }
@@ -414,6 +419,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't update Player Data!");
             Debug.LogError(e);
         }
     }
@@ -430,6 +436,7 @@ public class LobbyManager : MonoBehaviour
             OnLeaveLobby?.Invoke(this, EventArgs.Empty);
         } catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't leave lobby!");
             Debug.LogError(e);
         }
     }
@@ -446,6 +453,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't remove Player '" + _joinedLobby.Players[1].Data[KEY_PLAYER_NAME] + "'!");
             Debug.LogError(e);
         }
     }
@@ -465,6 +473,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            Message.Show("Error!", "Couldn't remove Player '" + player.Data[KEY_PLAYER_NAME] + "'!");
             Debug.LogError(e);
         }
     }
@@ -509,6 +518,7 @@ public class LobbyManager : MonoBehaviour
 
             } catch (LobbyServiceException e)
             {
+                Message.Show("Error!", "Couldn't start game!");
                 Debug.Log(e);
             }
         }
