@@ -42,7 +42,6 @@ public class LobbyManager : MonoBehaviour
     
     [SerializeField] public List<Button> hostButtons;
     [SerializeField] private GameObject _multiplayerMenu;
-    [SerializeField] private GameObject _loadingIcon;
 
     public static LobbyManager Instance { get; private set; }
 
@@ -206,6 +205,8 @@ public class LobbyManager : MonoBehaviour
     /// <param name="map">The map used in the game.</param>
     public async void CreateLobby(string lobbyName, string gameMode, string map)
     {
+        UIManager.Instance.ShowLoadingIcon();
+
         try
         {
             int maxPlayers = 2;
@@ -241,6 +242,9 @@ public class LobbyManager : MonoBehaviour
         {
             Message.Show("Error!", "Couldn't create Lobby '" + lobbyName + "'!");
             Debug.LogError(e);
+        } finally
+        {
+            UIManager.Instance.HideLoadingIcon();
         }
     }
 
@@ -250,6 +254,8 @@ public class LobbyManager : MonoBehaviour
     /// <param name="lobbyCode">The Lobby Code which is used to connect to a lobby.</param>
     public async void JoinLobby(string lobbyCode)
     {
+        UIManager.Instance.ShowLoadingIcon();
+
         try
         {
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions
@@ -263,8 +269,6 @@ public class LobbyManager : MonoBehaviour
             _hostOfJoinedLobby = GetHostOfLobby(lobby);
 
             CheckRoles();
-
-            await WaitForLoadingIcon(_loadingIcon);
 
             SyncMap();
 
@@ -280,6 +284,9 @@ public class LobbyManager : MonoBehaviour
             OnKickedFromLobby?.Invoke(this, EventArgs.Empty);
             Message.Show("Error!", "Couldn't join lobby by code '" + lobbyCode + "'!");
             Debug.LogError(e);
+        } finally
+        {
+            UIManager.Instance.HideLoadingIcon();
         }
     }
 

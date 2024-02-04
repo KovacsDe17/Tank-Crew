@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// An image that is playing it's animation automatically when enabling it.
@@ -16,6 +16,7 @@ public class LoadingIcon : MonoBehaviour
 
     private void OnEnable()
     {
+        transform.localRotation = Quaternion.Euler(Vector3.zero);
         StartCoroutine(SpinLogo());
     }
 }

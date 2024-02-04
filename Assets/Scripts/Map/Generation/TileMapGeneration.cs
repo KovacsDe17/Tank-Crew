@@ -67,9 +67,6 @@ public class TileMapGeneration : MonoBehaviour
     [Header("Tiles")]
     [SerializeField] private TileSetup _tileSetup; //TileSetup that is being applied
     [Space]
-    [Header("Loading Icon")]
-    [SerializeField] private GameObject _loadingIcon; //The loading icon get's enabled on map generation
-    [Space]
     [Header("Spawning")]
     [SerializeField] private Transform _parentGrid; //The Grid that parents the tilemaps
     [SerializeField] private Transform _enemyParent; //The Grid that parents the tilemaps
@@ -114,9 +111,9 @@ public class TileMapGeneration : MonoBehaviour
     {
         Stopwatch stopwatch = new Stopwatch();
 
-        _loadingIcon.SetActive(true);
+        UIManager.Instance.ShowLoadingIcon();
 
-        yield return new WaitUntil(() => _loadingIcon.activeSelf);
+        yield return new WaitUntil(() => UIManager.Instance.LoadingIconIsActive());
 
         //Clear all tilemaps
         ClearTileMaps();
@@ -149,7 +146,7 @@ public class TileMapGeneration : MonoBehaviour
         stopwatch.Stop();
         Debug.Log("Set Tiles in batch - " + stopwatch.ElapsedMilliseconds + " ms");
 
-        _loadingIcon.SetActive(false);
+        UIManager.Instance.HideLoadingIcon();
 
         navMeshSurface.BuildNavMesh();
 
@@ -163,9 +160,9 @@ public class TileMapGeneration : MonoBehaviour
     {
         Stopwatch stopwatch = new Stopwatch();
 
-        _loadingIcon.SetActive(true);
+        UIManager.Instance.ShowLoadingIcon();
 
-        yield return new WaitUntil(() => _loadingIcon.activeSelf);
+        yield return new WaitUntil(() => UIManager.Instance.LoadingIconIsActive());
 
         //Clear all tilemaps
         ClearTileMaps();
@@ -197,7 +194,7 @@ public class TileMapGeneration : MonoBehaviour
         stopwatch.Stop();
         Debug.Log("Set Tiles in batch - " + stopwatch.ElapsedMilliseconds + " ms");
 
-        //_loadingIcon.SetActive(false);  //Loading icon will be deactivated on Lobby join
+        UIManager.Instance.HideLoadingIcon();
 
         navMeshSurface.BuildNavMesh();
 

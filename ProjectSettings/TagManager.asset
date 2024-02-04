@@ -15,6 +15,7 @@ TagManager:
   - PlayerSpawnPoint
   - ObjectiveSpawnPoint
   - EnemyTank
+  - LoadingIcon
   layers:
   - Default
   - TransparentFX
